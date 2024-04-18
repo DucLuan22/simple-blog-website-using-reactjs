@@ -1,6 +1,7 @@
-import { Menu, Moon, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ThemeToggle } from "./theme-toggle";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -66,8 +67,8 @@ function Navbar() {
       </ul>
       <h1 className="font-bold text-2xl mx-auto">luanblog</h1>
 
-      <div className="flex gap-4">
-        <Moon className="w-6 h-6" />
+      <div className="flex gap-4 items-center">
+        <ThemeToggle />
         <div className="md:flex md:visible hidden gap-4 font-semibold">
           <NavLink />
         </div>

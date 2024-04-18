@@ -23,6 +23,10 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": [
+    "src",
+    "src/components/ui/theme-provider.tsx",
+    "src/components/theme-toggle.tsx"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

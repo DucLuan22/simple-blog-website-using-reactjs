@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 
 function Root() {
   return (
-    <div className="w-screen h-screen px-3 md:px-[5%] lg:px-[10%] bg-dark">
+    <div className="w-screen h-screen px-3 md:px-[5%] lg:px-[10%] ">
       <Navbar />
       <Outlet />
     </div>
