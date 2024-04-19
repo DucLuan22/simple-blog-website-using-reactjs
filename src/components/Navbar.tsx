@@ -2,6 +2,7 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./theme-toggle";
+import { cn } from "@/lib/utils";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,14 +75,19 @@ function Navbar() {
         </div>
       </div>
 
-      {isOpen && (
-        <div className="flex flex-col items-center basis-full gap-y-4 mt-5">
-          <NavLink />
-          <div className="flex gap-5 mt-2">
-            <NavSocialIcon />
-          </div>
+      <div
+        className={cn(
+          `relative transition-all duration-100 ease-in-out flex flex-col items-center basis-full gap-y-4 mt-5  ${
+            isOpen ? "h-auto opacity-100" : "h-0 opacity-0"
+          }`,
+          !isOpen && "invisible -translate-y-14"
+        )}
+      >
+        <NavLink />
+        <div className="flex gap-5 mt-2 ">
+          <NavSocialIcon />
         </div>
-      )}
+      </div>
     </nav>
   );
 }
