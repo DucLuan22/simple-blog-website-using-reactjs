@@ -1,5 +1,8 @@
 import PopularCategories from "@/components/homepage/PopularCategories";
+import PopularPost from "@/components/homepage/PopularPost";
+
 import RandomPost from "@/components/homepage/RandomPost";
+import RecentPostList from "@/components/homepage/RecentPostList";
 
 function Homepage() {
   return (
@@ -11,6 +14,13 @@ function Homepage() {
 
       <RandomPost />
       <PopularCategories />
+      <div className="flex flex-col lg:flex-row md:gap-10 ">
+        <RecentPostList />
+        <div>
+          <PopularPost />
+          <div></div>
+        </div>
+      </div>
     </div>
   );
 }
