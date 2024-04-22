@@ -1,8 +1,8 @@
 import PopularPostCard from "./PopularPostCard";
 
-function PopularPost() {
+function EditorPick() {
   return (
-    <div className="mt-14 lg:mt-0">
+    <div>
       <div className="space-y-10">
         <div>
           <p>What's hot</p>
@@ -15,4 +15,4 @@ function PopularPost() {
   );
 }
 
-export default PopularPost;
+export default EditorPick;

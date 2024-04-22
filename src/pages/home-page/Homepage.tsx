@@ -1,3 +1,5 @@
+import Categories from "@/components/homepage/Categories";
+import EditorPick from "@/components/homepage/EditorPick";
 import PopularCategories from "@/components/homepage/PopularCategories";
 import PopularPost from "@/components/homepage/PopularPost";
 
@@ -16,9 +18,10 @@ function Homepage() {
       <PopularCategories />
       <div className="flex flex-col lg:flex-row md:gap-10 ">
         <RecentPostList />
-        <div>
+        <div className="space-y-10">
           <PopularPost />
-          <div></div>
+          <Categories />
+          <EditorPick />
         </div>
       </div>
     </div>
