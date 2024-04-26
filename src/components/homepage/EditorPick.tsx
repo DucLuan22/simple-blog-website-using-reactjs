@@ -1,15 +1,14 @@
-import PopularPostCard from "./PopularPostCard";
+import EditorPickCard from "./EditorPickCard";
 
 function EditorPick() {
   return (
     <div>
       <div className="space-y-10">
         <div>
-          <p>What's hot</p>
-          <h1 className="text-lg md:text-xl font-bold">Most popular</h1>
+          <p>Chosen by the editor</p>
+          <h1 className="text-lg md:text-xl font-bold">Editors Pick</h1>
         </div>
-        <PopularPostCard />
-        <PopularPostCard />
+        <EditorPickCard />
       </div>
     </div>
   );

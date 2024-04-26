@@ -11,7 +11,7 @@ function CategoryCard({ backgroundColor }: CategoryCardProps) {
         backgroundColor
       )}
     >
-      <div className="rounded-[100%] border-[1px] border-black  w-[40px] overflow-hidden">
+      <div className="rounded-[100%] border-[1px] border-black w-[40px] overflow-hidden">
         <img
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
           alt="Technology"
