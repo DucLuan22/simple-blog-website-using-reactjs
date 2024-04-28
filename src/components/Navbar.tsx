@@ -66,7 +66,8 @@ function Navbar() {
       <ul className="md:flex gap-x-4 hidden md:visible">
         <NavSocialIcon />
       </ul>
-      <h1 className="font-bold text-2xl mx-auto">luanblog</h1>
+
+      <h1 className="font-bold text-2xl mx-auto inline-block">luanblog</h1>
 
       <div className="flex gap-4 items-center">
         <ThemeToggle />
