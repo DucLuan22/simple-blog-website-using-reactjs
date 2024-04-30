@@ -33,7 +33,7 @@ const router = createBrowserRouter([
         element: <Login />,
       },
       {
-        path: "/post/:postId",
+        path: "/posts/:postId",
         element: <BlogPost />,
       },
     ],
