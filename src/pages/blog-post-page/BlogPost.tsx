@@ -92,7 +92,7 @@ function BlogPost() {
                   Login to write a comment
                 </p>
               )}
-              <div className="h-[80px] flex w-full  items-center space-x-2">
+              <div className="h-[80px] flex w-full items-center space-x-2">
                 <Input
                   type="text"
                   placeholder="Type your comment..."

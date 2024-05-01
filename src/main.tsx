@@ -10,6 +10,7 @@ import Root from "./root.tsx";
 import About from "./pages/about-page/About.tsx";
 import Login from "./pages/login-page/Login.tsx";
 import { ThemeProvider } from "./components/ui/theme-provider.tsx";
+import Category from "./pages/category-page/Category.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "/posts/:postId",
         element: <BlogPost />,
+      },
+      {
+        path: "/category/:categoryId",
+        element: <Category />,
       },
     ],
   },

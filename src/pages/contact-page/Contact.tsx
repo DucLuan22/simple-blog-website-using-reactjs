@@ -1,5 +1,5 @@
 function Contact() {
-  return <div>Contact</div>;
+  return <div className="w-full"></div>;
 }
 
 export default Contact;
