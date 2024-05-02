@@ -11,6 +11,7 @@ import About from "./pages/about-page/About.tsx";
 import Login from "./pages/login-page/Login.tsx";
 import { ThemeProvider } from "./components/ui/theme-provider.tsx";
 import Category from "./pages/category-page/Category.tsx";
+import Writepage from "./pages/write-page/Writepage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/category/:categoryId",
         element: <Category />,
+      },
+      {
+        path: "/write",
+        element: <Writepage />,
       },
     ],
   },

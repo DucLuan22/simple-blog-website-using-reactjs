@@ -69,3 +69,13 @@ body {
   font-family: "Lora", serif;
   font-optical-sizing: auto;
 }
+.ql-container {
+  font-size: 28px !important;
+}
+.quill > .ql-container > .ql-editor.gl-blank::before {
+  color: #b3b3b1;
+}
+
+.quill > .ql-container > .ql-hidden {
+  visibility: hidden;
+}
