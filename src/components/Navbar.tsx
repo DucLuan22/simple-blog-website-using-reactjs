@@ -3,10 +3,19 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const [isLogin, setIsLogin] = useState(true);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 640) {
@@ -25,7 +34,26 @@ function Navbar() {
         <Link to="/">Homepage</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/about">About</Link>
-        <Link to="/login">Login</Link>
+        {isLogin && <Link to="/write">Write</Link>}
+        {isLogin ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>ducluandang22@gmail.com</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Post History</DropdownMenuItem>
+              <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link to="/login">Login</Link>
+        )}
       </>
     );
   };
@@ -69,9 +97,9 @@ function Navbar() {
 
       <h1 className="font-bold text-2xl mx-auto inline-block">luanblog</h1>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-x-4 items-center">
         <ThemeToggle />
-        <div className="md:flex md:visible hidden gap-4 font-semibold">
+        <div className="md:flex md:visible hidden gap-4 font-semibold items-center">
           <NavLink />
         </div>
       </div>

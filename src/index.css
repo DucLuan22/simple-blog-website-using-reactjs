@@ -79,3 +79,8 @@ body {
 .quill > .ql-container > .ql-hidden {
   visibility: hidden;
 }
+
+.quill > .ql-container > .ql-editor.ql-blank::before {
+  color: var(--accent-foreground);
+  opacity: 70%;
+}
