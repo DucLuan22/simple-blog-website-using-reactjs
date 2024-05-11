@@ -3,34 +3,15 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import useAuthenticatedRequest from "./hooks/useAuthenticate";
+import { useQueryClient } from "react-query";
 function Root() {
-  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
+  const { isLoading, isError, data, error } = useAuthenticatedRequest();
 
-  useEffect(() => {
-    const getUser = () => {
-      axios
-        .get("http://localhost:5000/auth/login/success", {
-          withCredentials: true,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) return response.data;
-          throw new Error("Authentication has failed!");
-        })
-        .then((resObject) => {
-          setUser(resObject.user);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+  if (isLoading) return <div>Loading...</div>;
 
-    getUser();
-  }, []);
-
+  console.log(data);
   return (
     <div className="w-screen h-screen px-3 md:px-[5%] lg:px-[10%] ">
       <Navbar />
