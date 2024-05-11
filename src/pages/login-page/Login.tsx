@@ -1,10 +1,16 @@
 import { Button } from "@/components/ui/button";
 
 function Login() {
+  const handleGoogleAuth = () => {
+    window.open("http://localhost:5000/auth/google", "_self");
+  };
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="w-full h-[600px] max-w-[500px] font-bold md:max-w-[600px] bg-secondary flex flex-col gap-9 rounded-3xl justify-center items-center p-6">
-        <Button className="w-[300px] py-6 text-white hover:bg-green-400 bg-green-500 font-semibold">
+        <Button
+          onClick={handleGoogleAuth}
+          className="w-[300px] py-6 text-white hover:bg-green-400 bg-green-500 font-semibold"
+        >
           <span className="w-7">
             <img src="/logos/google.svg" alt="YouTube" />
           </span>
