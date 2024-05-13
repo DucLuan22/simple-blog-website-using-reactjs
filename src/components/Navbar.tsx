@@ -12,10 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useCounterStore } from "@/store";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
+
+  const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 640) {
@@ -34,8 +36,8 @@ function Navbar() {
         <Link to="/">Homepage</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/about">About</Link>
-        {isLogin && <Link to="/write">Write</Link>}
-        {isLogin ? (
+        {isAuthenticated && <Link to="/write">Write</Link>}
+        {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
@@ -48,7 +50,9 @@ function Navbar() {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Post History</DropdownMenuItem>
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem>
+                <a href="http://localhost:5000/auth/logout">Logout</a>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
