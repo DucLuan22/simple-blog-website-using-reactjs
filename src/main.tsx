@@ -6,7 +6,7 @@ import Contact from "./pages/contact-page/Contact.tsx";
 import Error from "./pages/error-page/Error.tsx";
 import Homepage from "./pages/home-page/Homepage.tsx";
 import BlogPost from "./pages/blog-post-page/BlogPost.tsx";
-import Root from "./root.tsx";
+
 import About from "./pages/about-page/About.tsx";
 import Login from "./pages/login-page/Login.tsx";
 import { ThemeProvider } from "./components/ui/theme-provider.tsx";
@@ -14,6 +14,9 @@ import Category from "./pages/category-page/Category.tsx";
 import Writepage from "./pages/write-page/Writepage.tsx";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { useCounterStore } from "./store.ts";
+import Profile from "./pages/profile-page/Profile.tsx";
+import Root from "./routes/root.tsx";
+import ProfileRoutes from "./routes/ProfileRoutes.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
@@ -40,6 +43,9 @@ const App = () => (
           path="/write"
           element={<PrivateRoute element={<Writepage />} />}
         />
+      </Route>
+      <Route element={<ProfileRoutes />}>
+        <Route path="/profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<Error />} />
     </Routes>

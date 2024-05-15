@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
-import useAuthenticatedRequest from "./hooks/useAuthenticate";
+import useAuthenticatedRequest from "../hooks/useAuthenticate";
 import { useQueryClient } from "react-query";
-import { useCounterStore } from "./store";
+import { useCounterStore } from "../store";
 function Root() {
   useAuthenticatedRequest();
 
