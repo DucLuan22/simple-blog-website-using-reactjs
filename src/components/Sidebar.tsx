@@ -20,16 +20,15 @@ const Sidebar = ({ children }: SidebarProps) => {
             isOpen ? "translate-x-0" : "-translate-x-full"
           } bg-gray-800 text-white w-64 h-full lg:translate-x-0 lg:static lg:w-64`}
         >
-          <div className="p-4 mt-16 lg:mt-0">
-            <h1 className="text-2xl font-bold">Sidebar</h1>
+          <div className="p-4 mt-8 lg:mt-0">
             <nav className="mt-6">
               <ul>
                 <li>
                   <Link
-                    to="/"
+                    to="/profile"
                     className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                   >
-                    Home
+                    Profile
                   </Link>
                 </li>
                 <li>
@@ -70,7 +69,7 @@ const Sidebar = ({ children }: SidebarProps) => {
                 ></path>
               </svg>
             </button>
-            <h1 className="text-xl font-bold">My App</h1>
+            <h1 className="text-xl font-bold">luanblog</h1>
           </header>
           <main className="flex-1 p-4">{children}</main>
         </div>
