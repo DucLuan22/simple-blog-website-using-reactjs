@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -17,9 +18,9 @@ function Profile() {
             <p className="text-lg">ducluandang@gmail.com</p>
           </div>
         </div>
-        <div className="pl-3 pt-12 lg:pl-8 lg:pt-14 w-full">
+        <div className="pl-3 pt-12 lg:pl-8 lg:pt-14 w-full space-y-5">
           <h1 className="text-xl font-bold">Edit your profile</h1>
-          <div className="grid grid-cols-2 gap-4 mt-5">
+          <div className="grid grid-cols-2 gap-4 ">
             <div>
               <Label htmlFor="name">Name</Label>
               <Input type="text" id="name" placeholder="Name" />
@@ -46,6 +47,7 @@ function Profile() {
               <Input type="text" placeholder="Region/State" />
             </div>
           </div>
+          <Button>Save</Button>
         </div>
       </div>
     </div>

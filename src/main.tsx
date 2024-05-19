@@ -17,6 +17,7 @@ import { useCounterStore } from "./store.ts";
 import Profile from "./pages/profile-page/Profile.tsx";
 import Root from "./routes/root.tsx";
 import ProfileRoutes from "./routes/ProfileRoutes.tsx";
+import PostHistory from "./pages/post-history-page/PostHistory.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
@@ -44,8 +45,9 @@ const App = () => (
           element={<PrivateRoute element={<Writepage />} />}
         />
       </Route>
-      <Route element={<ProfileRoutes />}>
+      <Route element={<PrivateRoute element={<ProfileRoutes />} />}>
         <Route path="/profile" element={<Profile />} />
+        <Route path="/post-history" element={<PostHistory />} />
       </Route>
       <Route path="*" element={<Error />} />
     </Routes>

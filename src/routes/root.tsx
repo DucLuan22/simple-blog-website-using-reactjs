@@ -3,8 +3,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 import useAuthenticatedRequest from "../hooks/useAuthenticate";
-import { useQueryClient } from "react-query";
-import { useCounterStore } from "../store";
 function Root() {
   useAuthenticatedRequest();
 

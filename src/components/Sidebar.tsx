@@ -33,18 +33,18 @@ const Sidebar = ({ children }: SidebarProps) => {
                 </li>
                 <li>
                   <Link
-                    to="/about"
+                    to="/post-history"
                     className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                   >
-                    About
+                    Post History
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/contact"
+                    to="/"
                     className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                   >
-                    Contact
+                    Return Home
                   </Link>
                 </li>
               </ul>

@@ -13,7 +13,6 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useCounterStore } from "@/store";
-
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,8 +47,11 @@ function Navbar() {
             <DropdownMenuContent>
               <DropdownMenuLabel>ducluandang22@gmail.com</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Post History</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Link to="/profile" className="w-full h-full">
+                  Profile
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <a href="http://localhost:5000/auth/logout">Logout</a>
               </DropdownMenuItem>
