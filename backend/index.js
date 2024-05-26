@@ -8,6 +8,7 @@ const authRoute = require("./routes/auth");
 const app = express();
 const dotenv = require("dotenv");
 const path = require("path");
+const bodyParser = require("body-parser");
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -17,6 +18,11 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
 
 app.use(
   cors({
