@@ -9,6 +9,7 @@ const app = express();
 const dotenv = require("dotenv");
 const path = require("path");
 const bodyParser = require("body-parser");
+const isAuthenticated = require("./middlewares/isAuthenticated");
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 

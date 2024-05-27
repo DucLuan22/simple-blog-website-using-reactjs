@@ -8,8 +8,8 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 
 router.get("/getUsers", isAuthenticated, getUsers);
 
-router.get("/getUser", getUser);
+router.get("/getUser", isAuthenticated, getUser);
 
-router.post("/addUser", addUser);
+router.post("/addUser", isAuthenticated, addUser);
 
 module.exports = router;

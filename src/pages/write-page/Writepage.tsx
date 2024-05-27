@@ -5,29 +5,18 @@ import "../../index.css";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
 function Writepage() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const [text, setText] = useState("");
   const [value, setValue] = useState("");
   const reactQuillRef = useRef<ReactQuill>(null);
-  const handleOpenFileUploader = () => {
-    setIsOpen(!isOpen);
-  };
 
   const handleSetText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const data = e.target.value;
     setText(data);
   };
 
-  const openFileSelector = () => {
-    const input = document.getElementById("file-input");
-
-    if (input) {
-      input.click();
-    }
-  };
-
   return (
-    <div className="h-full w-full space-y-5">
+    <div className="h-full w-full space-y-5 mb-96">
       <div className="w-full flex justify-end">
         <Button variant={"default"}>Publish</Button>
       </div>
@@ -64,54 +53,52 @@ function Writepage() {
         )}
       </div> */}
 
-      <div>
-        <ReactQuill
-          theme="snow"
-          ref={reactQuillRef}
-          placeholder="Tell your story..."
-          modules={{
-            toolbar: {
-              container: [
-                [{ header: "1" }, { header: "2" }, { font: [] }],
-                [{ size: [] }],
-                ["bold", "italic", "underline", "strike", "blockquote"],
-                [
-                  { list: "ordered" },
-                  { list: "bullet" },
-                  { indent: "-1" },
-                  { indent: "+1" },
-                ],
-                ["link", "image", "video"],
-                ["code-block"],
-                ["clean"],
+      <ReactQuill
+        theme="snow"
+        ref={reactQuillRef}
+        placeholder="Tell your story..."
+        modules={{
+          toolbar: {
+            container: [
+              [{ header: "1" }, { header: "2" }, { font: [] }],
+              [{ size: [] }],
+              ["bold", "italic", "underline", "strike", "blockquote"],
+              [
+                { list: "ordered" },
+                { list: "bullet" },
+                { indent: "-1" },
+                { indent: "+1" },
               ],
-            },
-            clipboard: {
-              matchVisual: false,
-            },
-          }}
-          formats={[
-            "header",
-            "font",
-            "size",
-            "bold",
-            "italic",
-            "underline",
-            "strike",
-            "blockquote",
-            "list",
-            "bullet",
-            "indent",
-            "link",
-            "image",
-            "video",
-            "code-block",
-          ]}
-          value={value}
-          onChange={setValue}
-          className="w-full text-foreground"
-        />
-      </div>
+              ["link", "image", "video"],
+              ["code-block"],
+              ["clean"],
+            ],
+          },
+          clipboard: {
+            matchVisual: false,
+          },
+        }}
+        formats={[
+          "header",
+          "font",
+          "size",
+          "bold",
+          "italic",
+          "underline",
+          "strike",
+          "blockquote",
+          "list",
+          "bullet",
+          "indent",
+          "link",
+          "image",
+          "video",
+          "code-block",
+        ]}
+        value={value}
+        onChange={setValue}
+        className="w-full text-foreground h-full"
+      />
     </div>
   );
 }

@@ -41,14 +41,14 @@ const useAuthenticatedRequest = () => {
       if (user.data.success === false) {
         const insertUser = await axios.post(
           "http://localhost:5000/api/user/addUser",
-          data
+          { ...data, authentication: response.data.success }
         );
       }
+
+      setAuthenticated();
     } catch (error) {
       throw error;
     }
-
-    setAuthenticated();
     return response.data;
   });
 };
