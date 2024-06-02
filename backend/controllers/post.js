@@ -6,3 +6,30 @@ exports.getPosts = async (req, res, next) => {
     res.status(400).json({ message: err });
   });
 };
+
+exports.uploadPost = async (req, res, next) => {
+  const { title, thumbnail, content, user_id, category_id } = req.body;
+
+  const query =
+    "INSERT INTO `posts` (`title`, `thumbnail`, `content`, `user_id`, `category_id`) VALUES (?, ?, ?, ?, ?)";
+  const values = [title, thumbnail, content, user_id, category_id];
+
+  connection.query(query, values, (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err,
+      });
+    }
+
+    // Send success response
+    return res.status(201).json({
+      success: true,
+      message: "Post uploaded successfully",
+      data: {
+        title,
+        thumbnail,
+      },
+    });
+  });
+};

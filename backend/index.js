@@ -5,6 +5,7 @@ const passportSetup = require("./passport");
 const passport = require("passport");
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
+const categoryRoute = require("./routes/category");
 const app = express();
 const dotenv = require("dotenv");
 const path = require("path");
@@ -34,7 +35,11 @@ app.use(
 );
 
 app.use("/auth", authRoute);
+
 app.use("/api/user", userRoute);
+
+app.use("/api/category", categoryRoute);
+
 app.listen("5000", () => {
   console.log("Server is running on port " + process.env.PORT);
 });

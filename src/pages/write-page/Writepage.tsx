@@ -1,11 +1,9 @@
-import { ExternalLink, FileVideo, Image, PlusCircle } from "lucide-react";
 import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "../../index.css";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
 function Writepage() {
-
   const [text, setText] = useState("");
   const [value, setValue] = useState("");
   const reactQuillRef = useRef<ReactQuill>(null);
