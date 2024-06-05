@@ -1,17 +1,21 @@
 import { create } from "zustand";
 
-type CounterStore = {
+interface AuthState {
   isAuthenticated: boolean;
   setAuthenticated: () => void;
   setNotAuthenticated: () => void;
-};
+}
 
-export const useCounterStore = create<CounterStore>((set) => ({
-  isAuthenticated: false,
-  setAuthenticated() {
+export const useCounterStore = create<AuthState>((set) => ({
+  isAuthenticated: JSON.parse(
+    localStorage.getItem("isAuthenticated") || "false"
+  ),
+  setAuthenticated: () => {
+    localStorage.setItem("isAuthenticated", "true");
     set({ isAuthenticated: true });
   },
-  setNotAuthenticated() {
+  setNotAuthenticated: () => {
+    localStorage.setItem("isAuthenticated", "false");
     set({ isAuthenticated: false });
   },
 }));

@@ -18,15 +18,16 @@ import Profile from "./pages/profile-page/Profile.tsx";
 import Root from "./routes/root.tsx";
 import ProfileRoutes from "./routes/ProfileRoutes.tsx";
 import PostHistory from "./pages/post-history-page/PostHistory.tsx";
+import Admin from "./pages/admin-page/Admin.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
 
   if (!isAuthenticated) {
-    console.log(isAuthenticated);
     return <Navigate to="/login" replace />;
   }
 
+  console.log(isAuthenticated);
   return element;
 };
 
@@ -48,6 +49,7 @@ const App = () => (
       <Route element={<PrivateRoute element={<ProfileRoutes />} />}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/post-history" element={<PostHistory />} />
+        <Route path="/admin" element={<Admin />} />
       </Route>
       <Route path="*" element={<Error />} />
     </Routes>
