@@ -16,13 +16,22 @@ const Sidebar = ({ children }: SidebarProps) => {
     <div>
       <div className="flex h-screen">
         <div
-          className={`fixed inset-0 z-30 transition-transform transform ${
+          className={`fixed inset-0 z-50 transition-transform transform ${
             isOpen ? "translate-x-0" : "-translate-x-full"
           } bg-gray-800 text-white w-64 h-full lg:translate-x-0 lg:static lg:w-64`}
         >
           <div className="p-4 mt-8 lg:mt-0">
             <nav className="mt-6">
               <ul>
+                <li>
+                  <Link
+                    to="/admin"
+                    className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                  >
+                    Admin Dashboard
+                  </Link>
+                </li>
+
                 <li>
                   <Link
                     to="/profile"
@@ -51,8 +60,8 @@ const Sidebar = ({ children }: SidebarProps) => {
             </nav>
           </div>
         </div>
-        <div className="flex-1 flex flex-col z-50">
-          <header className="flex items-center justify-between p-4 bg-gray-800 text-white lg:hidden">
+        <div className="flex-1 flex flex-col">
+          <header className="z-50 flex items-center justify-between p-4 bg-gray-800 text-white lg:hidden">
             <button onClick={toggleSidebar} className="focus:outline-none">
               <svg
                 className="w-6 h-6"

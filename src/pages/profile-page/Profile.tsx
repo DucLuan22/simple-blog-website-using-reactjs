@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 
 function Profile() {
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full z-10">
       <div className="flex flex-col lg:flex-row lg:h-full">
         <div className="lg:basis-1/3 lg:h-full lg:border-r-[2px]">
           <div className="flex mt-16 lg:mt-32 flex-col items-center gap-y-1">

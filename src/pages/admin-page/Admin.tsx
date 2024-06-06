@@ -1,7 +1,5 @@
-import React from "react";
-
 function Admin() {
-  return <div>Admin</div>;
+  return <div className="w-full h-full"></div>;
 }
 
 export default Admin;
