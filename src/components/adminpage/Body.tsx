@@ -10,10 +10,10 @@ function Body() {
       <div className="w-full lg:basis-2/3">
         <LineGraph />
         <div className="flex flex-col items-center lg:items-start lg:flex-row mt-10 w-full">
-          <div className="w-full md:h-[500px] lg:basis-1/2 mb-10 lg:mb-0 lg:mr-5">
+          <div className="h-[300px] lg:h-[500px] lg:basis-1/2 mb-10 lg:mb-0 lg:mr-5">
             <BarChart />
           </div>
-          <div className="w-full lg:basis-1/2 lg:ml-5">
+          <div className="lg:basis-1/2 lg:ml-5 h-[300px] lg:h-[500px] flex ">
             <PieChart />
           </div>
         </div>

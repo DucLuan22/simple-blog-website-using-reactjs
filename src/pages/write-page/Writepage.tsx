@@ -3,15 +3,29 @@ import ReactQuill from "react-quill";
 import "../../index.css";
 import "react-quill/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import useCategory from "@/hooks/useCategories";
+
 function Writepage() {
   const [text, setText] = useState("");
   const [value, setValue] = useState("");
   const reactQuillRef = useRef<ReactQuill>(null);
+  const { data, error, isLoading } = useCategory();
 
   const handleSetText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const data = e.target.value;
     setText(data);
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="h-full w-full space-y-5 mb-96">
@@ -26,6 +40,24 @@ function Writepage() {
           value={text}
           className="border-none p-[20px] md:p-[30px] lg:p-[40px] md:text-[40px] lg:text-[50px] outline-none w-full focus:text-foreground bg-primary-foreground"
         />
+      </div>
+
+      <div>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            {data?.map((category) => (
+              <SelectItem
+                value={category.category_id.toString()}
+                key={category.category_id}
+              >
+                {category.category_name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       {/* <div className="flex gap-4">
         <button className="" onClick={handleOpenFileUploader}>
