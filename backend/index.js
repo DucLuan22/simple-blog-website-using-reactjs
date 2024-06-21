@@ -6,6 +6,7 @@ const passport = require("passport");
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
 const categoryRoute = require("./routes/category");
+const postRoute = require("./routes/post");
 const app = express();
 const dotenv = require("dotenv");
 const path = require("path");
@@ -24,7 +25,7 @@ app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
 
 app.use(
   cors({
@@ -39,6 +40,8 @@ app.use("/auth", authRoute);
 app.use("/api/user", userRoute);
 
 app.use("/api/category", categoryRoute);
+
+app.use("/api/posts", postRoute);
 
 app.listen("5000", () => {
   console.log("Server is running on port " + process.env.PORT);

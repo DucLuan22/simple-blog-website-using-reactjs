@@ -11,16 +11,49 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useCategory from "@/hooks/useCategories";
+import { useCounterStore } from "@/store";
+import axios from "axios";
 
 function Writepage() {
-  const [text, setText] = useState("");
-  const [value, setValue] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
   const reactQuillRef = useRef<ReactQuill>(null);
   const { data, error, isLoading } = useCategory();
+  const user = useCounterStore((state) => state.user);
 
-  const handleSetText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const data = e.target.value;
-    setText(data);
+  const handleSetTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  console.log(category);
+  const handleUploadPost = async () => {
+    if (!title || !content || !category || !user) {
+      alert("Please fill all fields and ensure you are logged in.");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/posts/upload",
+        {
+          title,
+          content,
+          user_id: user?.id,
+          category_id: parseInt(category),
+          thumbnail: "thumbnail_placeholder",
+        }
+      );
+
+      if (response.data.success) {
+        alert("Post uploaded successfully");
+      } else {
+        alert("Failed to upload post");
+      }
+    } catch (error) {
+      console.error("Error uploading post:", error);
+      alert("An error occurred while uploading the post");
+    }
   };
 
   if (isLoading) {
@@ -30,20 +63,22 @@ function Writepage() {
   return (
     <div className="h-full w-full space-y-5 mb-96">
       <div className="w-full flex justify-end">
-        <Button variant={"default"}>Publish</Button>
+        <Button variant={"default"} onClick={handleUploadPost}>
+          Publish
+        </Button>
       </div>
       <div className="flex w-full">
         <input
           type="text"
           placeholder="Title"
-          onChange={handleSetText}
-          value={text}
+          onChange={handleSetTitle}
+          value={title}
           className="border-none p-[20px] md:p-[30px] lg:p-[40px] md:text-[40px] lg:text-[50px] outline-none w-full focus:text-foreground bg-primary-foreground"
         />
       </div>
 
       <div>
-        <Select>
+        <Select onValueChange={setCategory}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
@@ -59,29 +94,6 @@ function Writepage() {
           </SelectContent>
         </Select>
       </div>
-      {/* <div className="flex gap-4">
-        <button className="" onClick={handleOpenFileUploader}>
-          <PlusCircle className="w-7 h-7 text-foreground" />
-        </button>
-
-        {isOpen && (
-          <div className="flex gap-x-4">
-            <input type="file" id="file-input" style={{ display: "none" }} />
-            <button>
-              <Image
-                onClick={openFileSelector}
-                className="w-6 h-6 text-foreground"
-              />
-            </button>
-            <button>
-              <FileVideo className="w-6 h-6 text-foreground" />
-            </button>
-            <button>
-              <ExternalLink className="w-6 h-6 text-foreground" />
-            </button>
-          </div>
-        )}
-      </div> */}
 
       <ReactQuill
         theme="snow"
@@ -125,8 +137,8 @@ function Writepage() {
           "video",
           "code-block",
         ]}
-        value={value}
-        onChange={setValue}
+        value={content}
+        onChange={setContent}
         className="w-full text-foreground h-full"
       />
     </div>

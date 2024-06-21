@@ -7,6 +7,7 @@ const useAuthenticatedRequest = () => {
   const setNotAuthenticated = useCounterStore(
     (state) => state.setNotAuthenticated
   );
+  const setUsers = useCounterStore((state) => state.setUsers);
 
   return useQuery(
     "authenticatedData",
@@ -30,10 +31,10 @@ const useAuthenticatedRequest = () => {
 
         const userData = {
           google_id: response.data.user._json.sub,
-          familyName: response.data.user._json.family_name,
-          givenName: response.data.user._json.given_name,
           avatar_url: response.data.user._json.picture,
           locale: response.data.user._json.locale,
+          familyName: response.data.user._json.family_name,
+          givenName: response.data.user._json.given_name,
         };
 
         const userResponse = await axios.get(
@@ -50,6 +51,14 @@ const useAuthenticatedRequest = () => {
           });
         }
 
+        setUsers({
+          id: userResponse.data.data.id,
+          google_id: response.data.user._json.sub,
+          avatar_url: response.data.user._json.picture,
+          locale: response.data.user._json.locale,
+          familyName: response.data.user._json.family_name,
+          givenName: response.data.user._json.given_name,
+        });
         setAuthenticated();
         return { success: true };
       } catch (error) {
