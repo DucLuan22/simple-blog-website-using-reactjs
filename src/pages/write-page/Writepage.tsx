@@ -26,7 +26,6 @@ function Writepage() {
     setTitle(e.target.value);
   };
 
-  console.log(category);
   const handleUploadPost = async () => {
     if (!title || !content || !category || !user) {
       alert("Please fill all fields and ensure you are logged in.");
