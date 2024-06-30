@@ -1,6 +1,10 @@
 import { Button } from "../ui/button";
 
-function Post() {
+interface PostProps {
+  id: number;
+  title: string;
+}
+function Post({ id, title }: PostProps) {
   return (
     <div className="flex md:flex-row flex-col md:justify-start items-start md:items-center gap-5">
       <div className="w-full h-full overflow-hidden basic lg:basis-1/2">
@@ -15,9 +19,7 @@ function Post() {
         <div className="text-gray-400 text-sm">
           2023-08-01 - <span className="text-pink-800">CODING</span>
         </div>
-        <h2 className="text-xl font-semibold line ">
-          This is an example title for a blog post and is only used for testing
-        </h2>
+        <h2 className="text-xl font-semibold line ">{title}</h2>
         <p className="line-clamp-2">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quos
           quas sequi beatae fugit nesciunt aliquam, a eveniet aspernatur ducimus

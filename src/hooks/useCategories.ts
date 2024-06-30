@@ -1,15 +1,10 @@
 import { useQuery } from "react-query";
 import axios from "axios";
-
-interface Category {
-  category_id: number;
-  category_name: string;
-  // Add other fields if necessary
-}
+import { Category } from "@/interface/Category";
 
 interface CategoryResponse {
   success: boolean;
-  data: Category[];
+  data: Category[] | [];
 }
 
 const fetchCategories = async (): Promise<Category[]> => {

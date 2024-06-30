@@ -10,7 +10,6 @@ exports.getPosts = async (req, res, next) => {
 exports.uploadPost = async (req, res, next) => {
   const { title, thumbnail, content, user_id, category_id } = req.body;
 
-  console.log(title);
   const query =
     "INSERT INTO `posts` (`title`, `thumbnail`, `content`, `user_id`, `category_id`) VALUES (?, ?, ?, ?, ?)";
   const values = [title, thumbnail, content, user_id, category_id];
