@@ -13,11 +13,13 @@ import {
 import useCategory from "@/hooks/useCategories";
 import { useCounterStore } from "@/store";
 import axios from "axios";
+import { Input } from "@/components/ui/input";
 
 function Writepage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [thumbnail, setThumbnail] = useState<string | null>(null);
   const reactQuillRef = useRef<ReactQuill>(null);
   const { data, error, isLoading } = useCategory();
   const user = useCounterStore((state) => state.user);
@@ -26,12 +28,22 @@ function Writepage() {
     setTitle(e.target.value);
   };
 
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnail(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUploadPost = async () => {
     if (!title || !content || !category || !user) {
       alert("Please fill all fields and ensure you are logged in.");
       return;
     }
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/posts/upload",
@@ -40,7 +52,7 @@ function Writepage() {
           content,
           user_id: user?.id,
           category_id: parseInt(category),
-          thumbnail: "thumbnail_placeholder",
+          thumbnail: thumbnail || "thumbnail_placeholder",
         }
       );
 
@@ -50,7 +62,6 @@ function Writepage() {
         alert("Failed to upload post");
       }
     } catch (error) {
-      console.error("Error uploading post:", error);
       alert("An error occurred while uploading the post");
     }
   };
@@ -76,7 +87,7 @@ function Writepage() {
         />
       </div>
 
-      <div>
+      <div className="flex gap-3">
         <Select onValueChange={setCategory}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Category" />
@@ -92,6 +103,14 @@ function Writepage() {
             ))}
           </SelectContent>
         </Select>
+
+        <div className="w-[250px]">
+          <Input
+            type="file"
+            accept="image/jpeg, image/png"
+            onChange={handleThumbnailChange}
+          />
+        </div>
       </div>
 
       <ReactQuill

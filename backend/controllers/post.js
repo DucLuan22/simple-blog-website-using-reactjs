@@ -11,7 +11,7 @@ exports.uploadPost = async (req, res, next) => {
   const { title, thumbnail, content, user_id, category_id } = req.body;
 
   const query =
-    "INSERT INTO `posts` (`title`, `thumbnail`, `content`, `user_id`, `category_id`) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO `posts` (`post_id`,`title`, `thumbnail`, `content`, `user_id`, `category_id`) VALUES (SUBSTRING(UUID(), 1, 12),?, ?, ?, ?, ?)";
   const values = [title, thumbnail, content, user_id, category_id];
 
   connection.query(query, values, (err, results, fields) => {

@@ -17,7 +17,18 @@ function RecentPostList() {
       <h1 className="text-xl md:text-2xl font-bold">Recent Posts</h1>
       <div className="space-y-10">
         {data?.map((e) => (
-          <Post title={e.title} id={e.post_id} />
+          <Post
+            title={e.title}
+            post_id={e.post_id}
+            createDate={e.createDate}
+            category_id={e.category_id}
+            views={e.views}
+            content={e.content}
+            user_id={e.user_id}
+            key={e.post_id}
+            thumbnail={e.thumbnail}
+            updateDate={e.updateDate}
+          />
         ))}
       </div>
       <Pagination>

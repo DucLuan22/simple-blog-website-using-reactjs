@@ -1,10 +1,8 @@
+import type { Post } from "@/interface/Post";
 import { Button } from "../ui/button";
 
-interface PostProps {
-  id: number;
-  title: string;
-}
-function Post({ id, title }: PostProps) {
+function Post({ post_id, category_id, createDate, title }: Post) {
+  console.log(createDate);
   return (
     <div className="flex md:flex-row flex-col md:justify-start items-start md:items-center gap-5">
       <div className="w-full h-full overflow-hidden basic lg:basis-1/2">
