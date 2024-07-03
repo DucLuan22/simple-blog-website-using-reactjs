@@ -8,4 +8,5 @@ export interface Post {
   createDate: Date;
   updateDate: Date;
   views: number;
+  category_name: string;
 }

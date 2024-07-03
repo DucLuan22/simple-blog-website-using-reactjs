@@ -28,6 +28,7 @@ function RecentPostList() {
             key={e.post_id}
             thumbnail={e.thumbnail}
             updateDate={e.updateDate}
+            category_name={e.category_name}
           />
         ))}
       </div>

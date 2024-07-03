@@ -1,9 +1,17 @@
 const connection = require("../db");
 
 exports.getPosts = async (req, res, next) => {
-  connection.query("SELECT * FROM `posts`", (err, results, fields) => {
-    if (results) return res.status(200).json({ success: true, data: results });
-    res.status(400).json({ message: err });
+  const query = `
+    SELECT posts.*, categories.category_name 
+    FROM posts 
+    JOIN categories ON posts.category_id = categories.category_id
+  `;
+
+  connection.query(query, (err, results, fields) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    res.status(200).json({ success: true, data: results });
   });
 };
 
@@ -21,7 +29,7 @@ exports.uploadPost = async (req, res, next) => {
         error: err,
       });
     }
-
+    const categoryName = "SELECT category_name FROM categories";
     // Send success response
     return res.status(201).json({
       success: true,
