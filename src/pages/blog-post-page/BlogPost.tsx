@@ -3,45 +3,55 @@ import EditorPick from "@/components/homepage/EditorPick";
 import PopularPost from "@/components/homepage/PopularPost";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import usePostById from "@/hooks/useGetPostById";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 function BlogPost() {
   const [isLogin, setIsLogin] = useState(true);
+  const { post_id } = useParams<{ post_id: string }>();
+
+  const { data: post, isLoading, isError, error } = usePostById(post_id);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
-    <div className="space-y-7">
-      <div className="flex mx-4 md:mx-0">
-        <div className="md:basis-1/2 justify-center flex flex-col gap-y-5 md:gap-y-6 lg:gap-y-10">
-          <div className=" md:hidden visible">
+    <div className="space-y-7 w-full">
+      <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
+        <div className="flex flex-col gap-y-5 md:gap-y-6 lg:gap-y-10">
+          <div className="w-full">
             <img
-              src="https://th.bing.com/th/id/R.892bb645c09c766efcc5bc4d0c93094a?rik=slmcvUaa5yToAw&riu=http%3a%2f%2fwww.wallpapers13.com%2fwp-content%2fuploads%2f2015%2f12%2fNature-Lake-Bled.-Desktop-background-image.jpg&ehk=c2raFC95S12P3OL0%2fwdM60ro3oUxsSEajkuGEN%2fsjbo%3d&risl=1&pid=ImgRaw&r=0"
-              alt="test"
+              src={post?.thumbnail}
+              alt="Thumbnail"
+              className="w-full h-auto md:h-full object-cover"
             />
           </div>
           <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold">
             Easiest Way for React State Management
           </h1>
-          <span className="flex gap-x-3 items-center">
-            <div className="rounded-[100%] border-[1px] border-black w-[50px] overflow-hidden">
+          <div className="flex gap-x-3 items-center">
+            <div className="rounded-full border-[1px] border-black w-10 h-10 overflow-hidden">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
-                alt="Technology"
+                alt="Author"
+                className="w-full h-full object-cover"
               />
             </div>
             <div className="text-sm">
               <p>Martin Bread</p>
               <p className="text-gray-500">21.08.2023</p>
             </div>
-          </span>
-        </div>
-        <div className="basis-1/2 hidden md:inline-block">
-          <img
-            src="https://th.bing.com/th/id/R.892bb645c09c766efcc5bc4d0c93094a?rik=slmcvUaa5yToAw&riu=http%3a%2f%2fwww.wallpapers13.com%2fwp-content%2fuploads%2f2015%2f12%2fNature-Lake-Bled.-Desktop-background-image.jpg&ehk=c2raFC95S12P3OL0%2fwdM60ro3oUxsSEajkuGEN%2fsjbo%3d&risl=1&pid=ImgRaw&r=0"
-            alt="test"
-          />
+          </div>
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row md:gap-10 mx-4 md:mx-0 ">
-        <div className="space-y-10 basis-full lg:basis-4/5">
+      <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
+        <div className="space-y-10 basis-full ">
           <section className="space-y-10">
             <p className="text-justify">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
@@ -84,7 +94,7 @@ function BlogPost() {
               vitae excepturi. Iste, ullam.
             </p>
           </section>
-          <section>
+          <section className="lg:basis-[10%]">
             <div className="space-y-3">
               <h2 className="text-2xl">Comments</h2>
               {!isLogin && (

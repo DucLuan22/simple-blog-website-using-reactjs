@@ -19,7 +19,7 @@ const fetchPosts = async (): Promise<Post[]> => {
 };
 
 const useFetchPosts = () => {
-  return useQuery("posts", fetchPosts);
+  return useQuery<Post[], Error>("posts", fetchPosts);
 };
 
 export default useFetchPosts;

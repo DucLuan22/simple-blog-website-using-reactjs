@@ -15,6 +15,26 @@ exports.getPosts = async (req, res, next) => {
   });
 };
 
+exports.getPostById = async (req, res, next) => {
+  const { post_id } = req.params;
+  const query = `
+    SELECT posts.*, categories.category_name 
+    FROM posts 
+    JOIN categories ON posts.category_id = categories.category_id
+    WHERE posts.post_id = ?
+  `;
+
+  connection.query(query, [post_id], (err, results, fields) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    res.status(200).json({ success: true, data: results[0] });
+  });
+};
+
 exports.uploadPost = async (req, res, next) => {
   const { title, thumbnail, content, user_id, category_id } = req.body;
 
