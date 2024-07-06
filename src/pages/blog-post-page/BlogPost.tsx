@@ -4,6 +4,7 @@ import PopularPost from "@/components/homepage/PopularPost";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import usePostById from "@/hooks/useGetPostById";
+import { htmlStringToElements } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -21,6 +22,19 @@ function BlogPost() {
     return <div>Error: {error.message}</div>;
   }
 
+  function htmlStringToElements(htmlString: any) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, "text/html");
+    return Array.from(doc.body.children).map((element, index) => {
+      return (
+        <div
+          key={index}
+          dangerouslySetInnerHTML={{ __html: element.outerHTML }}
+        />
+      );
+    });
+  }
+
   return (
     <div className="space-y-7 w-full">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
@@ -33,7 +47,7 @@ function BlogPost() {
             />
           </div>
           <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold">
-            Easiest Way for React State Management
+            {post?.title}
           </h1>
           <div className="flex gap-x-3 items-center">
             <div className="rounded-full border-[1px] border-black w-10 h-10 overflow-hidden">
@@ -53,46 +67,7 @@ function BlogPost() {
       <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
         <div className="space-y-10 basis-full ">
           <section className="space-y-10">
-            <p className="text-justify">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
-              veniam illo, aut tempore blanditiis explicabo quam, exercitationem
-              qui rerum quia magnam vitae repudiandae minima quos iusto sunt
-              adipisci? Modi, laboriosam. Nostrum cum voluptate nobis deleniti
-              nulla, enim architecto consequuntur iure ipsa nesciunt quo. Illum
-              atque consequuntur tenetur maxime, unde numquam nisi, sit nobis
-              tempora autem libero laboriosam animi vero est. Laborum
-              cupiditate, eos tempore quia quo iusto asperiores rerum. Omnis
-              maxime necessitatibus enim odio suscipit voluptatem unde, numquam
-              voluptas eos deserunt ut eum! Libero voluptate facilis inventore,
-              accusantium necessitatibus possimus. Voluptate perspiciatis atque
-              quia nulla molestias quod, vitae quidem quibusdam ab ad
-              exercitationem culpa deleniti explicabo aut est ea, animi a
-              laboriosam dicta odio modi nihil? Perspiciatis nesciunt sunt
-              earum. Dolor enim minima doloribus, asperiores, quo voluptate
-              dicta at corrupti fugiat deleniti ab alias modi laboriosam est
-              facilis beatae ea eius id molestias laborum accusamus mollitia
-              vitae excepturi. Iste, ullam.
-            </p>
-            <p className="text-justify">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga
-              veniam illo, aut tempore blanditiis explicabo quam, exercitationem
-              qui rerum quia magnam vitae repudiandae minima quos iusto sunt
-              adipisci? Modi, laboriosam. Nostrum cum voluptate nobis deleniti
-              nulla, enim architecto consequuntur iure ipsa nesciunt quo. Illum
-              atque consequuntur tenetur maxime, unde numquam nisi, sit nobis
-              tempora autem libero laboriosam animi vero est. Laborum
-              cupiditate, eos tempore quia quo iusto asperiores rerum. Omnis
-              maxime necessitatibus enim odio suscipit voluptatem unde, numquam
-              voluptas eos deserunt ut eum! Libero voluptate facilis inventore,
-              accusantium necessitatibus possimus. Voluptate perspiciatis atque
-              quia nulla molestias quod, vitae quidem quibusdam ab ad
-              exercitationem culpa deleniti explicabo aut est ea, animi a
-              laboriosam dicta odio modi nihil? Perspiciatis nesciunt sunt
-              earum. Dolor enim minima doloribus, asperiores, quo voluptate
-              dicta at corrupti fugiat deleniti ab alias modi laboriosam est
-              facilis beatae ea eius id molestias laborum accusamus mollitia
-              vitae excepturi. Iste, ullam.
-            </p>
+            {htmlStringToElements(post?.content)}
           </section>
           <section className="lg:basis-[10%]">
             <div className="space-y-3">
