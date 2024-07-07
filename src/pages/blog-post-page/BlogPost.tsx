@@ -4,7 +4,9 @@ import PopularPost from "@/components/homepage/PopularPost";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import usePostById from "@/hooks/useGetPostById";
+import { useIncrementOnLoad } from "@/hooks/useUpdateViewCount";
 import { htmlStringToElements } from "@/lib/utils";
+import { BookMarked, Eye, View } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -12,14 +14,16 @@ function BlogPost() {
   const [isLogin, setIsLogin] = useState(true);
   const { post_id } = useParams<{ post_id: string }>();
 
-  const { data: post, isLoading, isError, error } = usePostById(post_id);
+  const { data: post, isLoading, isError, error } = usePostById(post_id || "");
+
+  const { count } = useIncrementOnLoad(post_id || null);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (isError) {
-    return <div>Error: {error.message}</div>;
+  if (isError || !post) {
+    return <div>Error: {error?.message || "Post not found"}</div>;
   }
 
   function htmlStringToElements(htmlString: any) {
@@ -46,26 +50,37 @@ function BlogPost() {
               className="w-full h-auto md:h-full object-cover"
             />
           </div>
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold">
-            {post?.title}
-          </h1>
-          <div className="flex gap-x-3 items-center">
-            <div className="rounded-full border-[1px] border-black w-10 h-10 overflow-hidden">
-              <img
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
-                alt="Author"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="text-sm">
-              <p>Martin Bread</p>
-              <p className="text-gray-500">21.08.2023</p>
-            </div>
-          </div>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
         <div className="space-y-10 basis-full ">
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold">
+            {post?.title}
+          </h1>
+          <div className="flex justify-between">
+            <div className="flex gap-x-3 items-center">
+              <div className="rounded-full border-[1px] border-black w-10 h-10 overflow-hidden">
+                <img
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
+                  alt="Author"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="text-sm">
+                <p>Martin Bread</p>
+                <p className="text-gray-500">21.08.2023</p>
+              </div>
+            </div>
+
+            <div className="flex gap-x-3 items-center">
+              <BookMarked className="w-6 h-6" />
+              <div className="flex items-center gap-x-3">
+                <Eye className="w-6 h-6" />
+                <span>{post?.views}</span>
+              </div>
+            </div>
+          </div>
+
           <section className="space-y-10">
             {htmlStringToElements(post?.content)}
           </section>

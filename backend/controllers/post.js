@@ -64,3 +64,62 @@ exports.uploadPost = async (req, res, next) => {
     });
   });
 };
+
+exports.getPostByIdAndUpdateViewCount = async (req, res, next) => {
+  const { post_id } = req.params;
+
+  console.log(post_id);
+  // Start a transaction to ensure the two queries are executed together
+  connection.beginTransaction((err) => {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+
+    const selectQuery = `
+      SELECT posts.*, categories.category_name 
+      FROM posts 
+      JOIN categories ON posts.category_id = categories.category_id
+      WHERE posts.post_id = ?
+    `;
+
+    connection.query(selectQuery, [post_id], (err, results, fields) => {
+      if (err) {
+        return connection.rollback(() => {
+          res.status(400).json({ message: err.message });
+        });
+      }
+      if (results.length === 0) {
+        return connection.rollback(() => {
+          res.status(404).json({ message: "Post not found" });
+        });
+      }
+
+      const incrementViewsQuery = `
+        UPDATE posts 
+        SET views = views + 1 
+        WHERE post_id = ?
+      `;
+
+      connection.query(
+        incrementViewsQuery,
+        [post_id],
+        (err, updateResults, fields) => {
+          if (err) {
+            return connection.rollback(() => {
+              res.status(400).json({ message: err.message });
+            });
+          }
+
+          connection.commit((err) => {
+            if (err) {
+              return connection.rollback(() => {
+                res.status(500).json({ message: err.message });
+              });
+            }
+            res.status(200).json({ success: true, data: results[0] });
+          });
+        }
+      );
+    });
+  });
+};
