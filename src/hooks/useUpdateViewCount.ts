@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useCookies } from "react-cookie";
 import { useMutation } from "react-query";
 import axios from "axios";
 
+interface Cookies {
+  [key: string]: any;
+}
+
 const incrementCount = async (postId: string): Promise<number> => {
-  const response = await axios.post<{ newCount: number }>(
+  const response = await axios.post(
     `http://localhost:5000/api/posts/updateViewCount/${postId}`
   );
   return response.data.newCount;
@@ -13,37 +17,40 @@ const incrementCount = async (postId: string): Promise<number> => {
 export const useIncrementOnLoad = (postId: string | null) => {
   const [count, setCount] = useState<number | null>(null);
   const [cookies, setCookie] = useCookies(["lastIncrement"]);
+  const hasRun = useRef<{ [key: string]: boolean }>({});
 
   const mutation = useMutation<number, unknown, string>(
     (postId) => incrementCount(postId),
     {
       onSuccess: (newCount) => {
         setCount(newCount);
+        const now = new Date();
+        const cookieKey = `lastIncrement_${postId}` as "lastIncrement";
+        setCookie(cookieKey, now.toISOString(), {
+          path: "/",
+          maxAge: 2 * 60 * 60,
+        });
       },
     }
   );
 
   useEffect(() => {
-    const lastIncrement = cookies.lastIncrement
-      ? new Date(cookies.lastIncrement)
+    if (!postId || hasRun.current[postId]) return;
+
+    const cookieKey = `lastIncrement_${postId}`;
+    const lastIncrement = (cookies as Cookies)[cookieKey]
+      ? new Date((cookies as Cookies)[cookieKey])
       : null;
     const now = new Date();
 
     if (
-      postId && // Ensure postId is not null
-      (!lastIncrement ||
-        now.getTime() - lastIncrement.getTime() > 2 * 60 * 60 * 1000)
+      !lastIncrement ||
+      now.getTime() - lastIncrement.getTime() > 2 * 60 * 60 * 1000
     ) {
-      mutation.mutate(postId, {
-        onSuccess: () => {
-          setCookie("lastIncrement", now.toISOString(), {
-            path: "/",
-            maxAge: 2 * 60 * 60,
-          });
-        },
-      });
+      hasRun.current[postId] = true;
+      mutation.mutate(postId);
     }
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, [postId, cookies, mutation]);
 
   return { count };
 };
