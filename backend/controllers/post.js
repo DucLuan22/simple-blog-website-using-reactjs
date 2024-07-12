@@ -123,3 +123,31 @@ exports.getPostByIdAndUpdateViewCount = async (req, res, next) => {
     });
   });
 };
+
+exports.submitComment = async (req, res, next) => {
+  const { user_id, post_id, content } = req.body;
+
+  const query =
+    "INSERT INTO `comments` (`user_id`, `post_id`, `content`) VALUES (?, ?, ?)";
+  const values = [user_id, post_id, content];
+
+  connection.query(query, values, (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err,
+      });
+    }
+
+    // Send success response
+    return res.status(201).json({
+      success: true,
+      message: "Comment submitted successfully",
+      data: {
+        user_id,
+        post_id,
+        content,
+      },
+    });
+  });
+};

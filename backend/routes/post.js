@@ -9,6 +9,7 @@ const {
   getPosts,
   getPostById,
   getPostByIdAndUpdateViewCount,
+  submitComment,
 } = require("../controllers/post");
 
 router.post("/upload", isAuthenticated, uploadPost);
@@ -18,4 +19,6 @@ router.get("/getPost", getPosts);
 router.get("/:post_id", getPostById);
 
 router.post("/updateViewCount/:post_id", getPostByIdAndUpdateViewCount);
+
+router.post("/postComment", submitComment);
 module.exports = router;

@@ -39,6 +39,7 @@ function BlogPost() {
     });
   }
 
+  const submitComment = () => {};
   return (
     <div className="space-y-7 w-full">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
@@ -98,10 +99,11 @@ function BlogPost() {
                   placeholder="Type your comment..."
                   className="h-full"
                 />
-                <Button type="submit">Subscribe</Button>
+                <Button type="submit">Submit</Button>
               </div>
             </div>
           </section>
+          <section className="w-full"></section>
         </div>
 
         <div className="space-y-10">
