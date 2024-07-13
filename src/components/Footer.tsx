@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <div className="items-center flex md:flex-row flex-col md:justify-between mt-32 gap-y-4 md:gap-y-0">
+    <div className="items-center flex md:flex-row flex-col md:justify-between gap-y-4 md:gap-y-0">
       <div className="md:basis-2/3 space-y-5">
         <div className="flex gap-x-3 items-center justify-center md:justify-start">
           <div className="rounded-[100%] border-[1px] border-black w-[50px] overflow-hidden">

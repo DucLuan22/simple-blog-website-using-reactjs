@@ -1,3 +1,4 @@
+import Comment from "@/components/blogpage/Comments";
 import Categories from "@/components/homepage/Categories";
 import EditorPick from "@/components/homepage/EditorPick";
 import PopularPost from "@/components/homepage/PopularPost";
@@ -5,17 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import usePostById from "@/hooks/useGetPostById";
 import { useIncrementOnLoad } from "@/hooks/useUpdateViewCount";
-import { htmlStringToElements } from "@/lib/utils";
-import { BookMarked, Eye, View } from "lucide-react";
-import { useEffect, useState } from "react";
+
+import { useCounterStore } from "@/store";
+import axios from "axios";
+import { BookMarked, Eye } from "lucide-react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 function BlogPost() {
-  const [isLogin, setIsLogin] = useState(true);
   const { post_id } = useParams<{ post_id: string }>();
-
+  const [comment, setComment] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { data: post, isLoading, isError, error } = usePostById(post_id || "");
-
+  const user = useCounterStore((state) => state.user);
+  const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
   const { count } = useIncrementOnLoad(post_id || null);
 
   if (isLoading) {
@@ -39,9 +44,40 @@ function BlogPost() {
     });
   }
 
-  const submitComment = () => {};
+  const submitComment = async () => {
+    if (!comment) return;
+
+    if (user?.id === null) {
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/posts/postComment",
+        {
+          user_id: user?.id,
+          post_id: post_id,
+          content: comment,
+        }
+      );
+
+      if (response.status === 201) {
+        setComment("");
+        alert(response.data.message);
+      } else {
+        alert(response.data.error || "An error occurred");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        alert(error.response.data.error || "An error occurred");
+      } else {
+        alert("An error occurred while submitting the comment");
+      }
+    }
+  };
+
   return (
-    <div className="space-y-7 w-full">
+    <div className="space-y-7 w-full mb-36">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
         <div className="flex flex-col gap-y-5 md:gap-y-6 lg:gap-y-10">
           <div className="w-full">
@@ -88,22 +124,34 @@ function BlogPost() {
           <section className="lg:basis-[10%]">
             <div className="space-y-3">
               <h2 className="text-2xl">Comments</h2>
-              {!isLogin && (
+              {isAuthenticate ? (
+                <div className="h-[80px] flex w-full items-center space-x-2">
+                  <Input
+                    type="text"
+                    placeholder="Type your comment..."
+                    className="h-full"
+                    onChange={(e) => setComment(e.target.value)}
+                    value={comment}
+                  />
+
+                  <Button type="submit" onClick={submitComment}>
+                    Submit
+                  </Button>
+                </div>
+              ) : (
                 <p className="underline hover:cursor-pointer">
                   Login to write a comment
                 </p>
               )}
-              <div className="h-[80px] flex w-full items-center space-x-2">
-                <Input
-                  type="text"
-                  placeholder="Type your comment..."
-                  className="h-full"
-                />
-                <Button type="submit">Submit</Button>
-              </div>
             </div>
           </section>
-          <section className="w-full"></section>
+          <section className="w-full h-[700px] space-y-12 overflow-y-scroll">
+            <hr className="border-t-[1px] border-gray-300" />
+            <Comment />
+            <Comment />
+            <Comment />
+            <Comment />
+          </section>
         </div>
 
         <div className="space-y-10">

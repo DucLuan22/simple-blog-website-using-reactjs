@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import axios from "axios";
+import { useEffect } from "react";
 import { useCounterStore } from "@/store";
 
 const useAuthenticatedRequest = () => {
@@ -9,7 +10,7 @@ const useAuthenticatedRequest = () => {
   );
   const setUsers = useCounterStore((state) => state.setUsers);
 
-  return useQuery(
+  const query = useQuery(
     "authenticatedData",
     async () => {
       try {
@@ -67,11 +68,18 @@ const useAuthenticatedRequest = () => {
       }
     },
     {
+      enabled: false, // Prevent automatic execution
       onError: () => {
         setNotAuthenticated();
       },
     }
   );
+
+  useEffect(() => {
+    query.refetch(); // Manually trigger the query
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  return query;
 };
 
 export default useAuthenticatedRequest;
