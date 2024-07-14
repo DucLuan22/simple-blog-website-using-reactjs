@@ -20,5 +20,4 @@ router.get("/:post_id", getPostById);
 
 router.post("/updateViewCount/:post_id", getPostByIdAndUpdateViewCount);
 
-router.post("/postComment", submitComment);
 module.exports = router;

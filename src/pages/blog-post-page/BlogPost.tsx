@@ -1,4 +1,5 @@
 import Comment from "@/components/blogpage/Comments";
+import CommentSection from "@/components/blogpage/CommentSection";
 import Categories from "@/components/homepage/Categories";
 import EditorPick from "@/components/homepage/EditorPick";
 import PopularPost from "@/components/homepage/PopularPost";
@@ -11,7 +12,7 @@ import { useCounterStore } from "@/store";
 import axios from "axios";
 import { BookMarked, Eye } from "lucide-react";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();
@@ -22,8 +23,8 @@ function BlogPost() {
   const user = useCounterStore((state) => state.user);
   const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
   const { count } = useIncrementOnLoad(post_id || null);
-
-  if (isLoading) {
+  const navigation = useNavigate();
+  if (isLoading || !post_id) {
     return <div>Loading...</div>;
   }
 
@@ -53,7 +54,7 @@ function BlogPost() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/posts/postComment",
+        "http://localhost:5000/api/comments/postComment",
         {
           user_id: user?.id,
           post_id: post_id,
@@ -139,19 +140,16 @@ function BlogPost() {
                   </Button>
                 </div>
               ) : (
-                <p className="underline hover:cursor-pointer">
+                <p
+                  className="underline hover:cursor-pointer"
+                  onClick={() => navigation("/login")}
+                >
                   Login to write a comment
                 </p>
               )}
             </div>
           </section>
-          <section className="w-full h-[700px] space-y-12 overflow-y-scroll">
-            <hr className="border-t-[1px] border-gray-300" />
-            <Comment />
-            <Comment />
-            <Comment />
-            <Comment />
-          </section>
+          <CommentSection post_id={post_id} />
         </div>
 
         <div className="space-y-10">

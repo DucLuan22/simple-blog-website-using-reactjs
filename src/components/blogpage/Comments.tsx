@@ -1,9 +1,10 @@
+import type { Comment } from "@/interface/Comment";
 import { ThumbsUp } from "lucide-react";
 import React from "react";
 
-function Comment() {
+function Comment({ content, id, post_id, user_id }: Comment) {
   return (
-    <div className="space-y-3 mx-5">
+    <div className="space-y-3">
       <div className="flex justify-between items-center">
         <span className="flex items-center gap-x-3">
           <span className="rounded-full border-[1px] border-black w-8 h-8 overflow-hidden">
@@ -18,12 +19,7 @@ function Comment() {
         <span className="text-gray-400 text-sm">11 minutes</span>
       </div>
 
-      <div className="text-sm tracking-wider leading-6">
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iure
-        laboriosam, possimus illo fuga deserunt vel, sint blanditiis id
-        temporibus nostrum similique vitae aperiam ipsam, perferendis laborum
-        fugiat atque molestias. Architecto!
-      </div>
+      <div className="text-sm tracking-wider leading-6">{content}</div>
 
       <div>
         <div className="flex gap-2 items">

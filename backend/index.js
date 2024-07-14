@@ -7,6 +7,8 @@ const userRoute = require("./routes/user");
 const authRoute = require("./routes/auth");
 const categoryRoute = require("./routes/category");
 const postRoute = require("./routes/post");
+const commentRoute = require("./routes/comment");
+
 const app = express();
 const dotenv = require("dotenv");
 const path = require("path");
@@ -42,6 +44,8 @@ app.use("/api/user", userRoute);
 app.use("/api/category", categoryRoute);
 
 app.use("/api/posts", postRoute);
+
+app.use("/api/comments", commentRoute);
 
 app.listen("5000", () => {
   console.log("Server is running on port " + process.env.PORT);
