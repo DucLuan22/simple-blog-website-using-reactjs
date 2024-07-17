@@ -27,6 +27,9 @@ function CommentSection({ post_id }: CommentSectionProps) {
       <div className="space-y-10 overflow-y-scroll h-[700px] pr-3">
         {data.map((comment) => (
           <Comment
+            familyName={comment.familyName}
+            givenName={comment.givenName}
+            createdAt={comment.createdAt}
             content={comment.content}
             id={comment.id}
             user_id={comment.user_id}

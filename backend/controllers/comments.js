@@ -31,7 +31,12 @@ exports.submitComment = async (req, res, next) => {
 exports.getCommentsByPostId = async (req, res, next) => {
   const { post_id } = req.params;
 
-  const query = "SELECT * FROM `comments` WHERE `post_id` = ?";
+  const query = `
+    SELECT comments.*, users.familyName, users.givenName 
+    FROM comments 
+    JOIN users ON comments.user_id = users.id 
+    WHERE comments.post_id = ?
+  `;
 
   connection.query(query, [post_id], (err, results, fields) => {
     if (err) {

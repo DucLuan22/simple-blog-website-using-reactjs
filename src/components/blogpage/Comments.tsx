@@ -1,10 +1,30 @@
 import type { Comment } from "@/interface/Comment";
 import { ThumbsUp } from "lucide-react";
 import React from "react";
+import { Button } from "../ui/button";
+import { formatDistanceToNow, format } from "date-fns";
 
-function Comment({ content, id, post_id, user_id }: Comment) {
+function timeDifference(createdAt: Date) {
+  const now = new Date();
+  const createdDate = new Date(createdAt);
+
+  return formatDistanceToNow(createdDate, { addSuffix: true });
+}
+
+function Comment({
+  content,
+  id,
+  post_id,
+  user_id,
+  createdAt,
+  familyName,
+  givenName,
+}: Comment) {
+  // Calculate the time difference
+  const timeAgo = timeDifference(createdAt);
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 border-[1px] px-2 py-3 rounded-lg">
       <div className="flex justify-between items-center">
         <span className="flex items-center gap-x-3">
           <span className="rounded-full border-[1px] border-black w-8 h-8 overflow-hidden">
@@ -14,16 +34,18 @@ function Comment({ content, id, post_id, user_id }: Comment) {
               className="w-full h-full"
             />
           </span>
-          <p className="font-semibold">Test</p>
+          <p className="font-semibold">{familyName + " " + givenName}</p>
         </span>
-        <span className="text-gray-400 text-sm">11 minutes</span>
+        <span className="text-gray-400 text-sm">{timeAgo}</span>
       </div>
 
       <div className="text-sm tracking-wider leading-6">{content}</div>
 
       <div>
-        <div className="flex gap-2 items">
-          <ThumbsUp className="w-5 h-5" />
+        <div className="flex gap-2 items-center cursor-pointer">
+          <Button size={"sm"} variant={"ghost"} className="p-1 h-7">
+            <ThumbsUp className="w-4 h-4 hover:text-black" />
+          </Button>
           <p className="">1</p>
         </div>
       </div>

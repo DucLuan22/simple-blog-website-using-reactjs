@@ -8,7 +8,7 @@ import RecentPostList from "@/components/homepage/RecentPostList";
 
 function Homepage() {
   return (
-    <div className="space-y-14">
+    <div className="space-y-14 mb-36">
       <h1 className="text-2xl md:text-3xl lg:text-5xl tracking-wide">
         <span className="font-bold"> Hey, Luan here!</span> This is my page,
         where I shared my stories and ideas.
@@ -16,7 +16,7 @@ function Homepage() {
 
       <RandomPost />
       <PopularCategories />
-      <div className="flex flex-col lg:flex-row md:gap-10 ">
+      <div className="flex flex-col lg:flex-row md:gap-10 lg:gap-28">
         <RecentPostList />
         <div className="space-y-10">
           <PopularPost />
