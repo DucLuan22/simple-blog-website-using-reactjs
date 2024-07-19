@@ -18,7 +18,7 @@ function CommentSection({ post_id }: CommentSectionProps) {
   }
 
   if (!data || data.length === 0) {
-    return <div>No comments found for this post.</div>;
+    return <div className="mb-36">No comments found for this post.</div>;
   }
 
   return (
@@ -28,6 +28,7 @@ function CommentSection({ post_id }: CommentSectionProps) {
         {data.map((comment) => (
           <Comment
             familyName={comment.familyName}
+            likes={comment.likes}
             givenName={comment.givenName}
             createdAt={comment.createdAt}
             content={comment.content}

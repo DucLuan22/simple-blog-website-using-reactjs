@@ -16,6 +16,7 @@ function Comment({
   id,
   post_id,
   user_id,
+  likes,
   createdAt,
   familyName,
   givenName,
@@ -42,11 +43,11 @@ function Comment({
       <div className="text-sm tracking-wider leading-6">{content}</div>
 
       <div>
-        <div className="flex gap-2 items-center cursor-pointer">
+        <div className="flex gap-1 items-center cursor-pointer">
           <Button size={"sm"} variant={"ghost"} className="p-1 h-7">
             <ThumbsUp className="w-4 h-4 hover:text-black" />
           </Button>
-          <p className="">1</p>
+          <p className="">{likes}</p>
         </div>
       </div>
     </div>

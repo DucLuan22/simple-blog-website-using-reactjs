@@ -47,9 +47,9 @@ exports.getCommentsByPostId = async (req, res, next) => {
     }
 
     if (results.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No comments found for this post",
+      return res.status(200).json({
+        success: true,
+        data: results,
       });
     }
 
@@ -57,6 +57,34 @@ exports.getCommentsByPostId = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       data: results,
+    });
+  });
+};
+
+exports.likeComment = async (req, res, next) => {
+  const { comment_id } = req.body;
+
+  const query = "UPDATE comments SET likes = likes + 1 WHERE comment_id = ?";
+
+  connection.query(query, [comment_id], (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err,
+      });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: "Comment liked successfully",
     });
   });
 };

@@ -6,7 +6,7 @@ function Contact() {
   return (
     <div className="w-full h-vh space-y-40 mb-64">
       <div className="flex flex-col items-center mx-[20%] gap-y-4">
-        <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl">
+        <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl mt-36">
           CONTACT US
         </h1>
         <p className="leading-10 text-center">

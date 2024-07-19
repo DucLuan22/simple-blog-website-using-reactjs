@@ -6,4 +6,5 @@ export interface Comment {
   createdAt: Date;
   givenName: string;
   familyName: string;
+  likes: number;
 }
