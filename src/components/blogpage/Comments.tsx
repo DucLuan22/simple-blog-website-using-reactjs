@@ -1,28 +1,55 @@
-import type { Comment } from "@/interface/Comment";
+// Comment.tsx
+import type { Comment as CommentType } from "@/interface/Comment";
 import { ThumbsUp } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+import { useMutation, useQueryClient } from "react-query";
 
 function timeDifference(createdAt: Date) {
   const now = new Date();
   const createdDate = new Date(createdAt);
-
   return formatDistanceToNow(createdDate, { addSuffix: true });
 }
 
 function Comment({
   content,
-  id,
-  post_id,
+  comment_id,
   user_id,
   likes,
   createdAt,
   familyName,
   givenName,
-}: Comment) {
-  // Calculate the time difference
-  const timeAgo = timeDifference(createdAt);
+}: CommentType) {
+  const queryClient = useQueryClient();
+  const [currentLike, setCurrentLike] = useState(likes);
+
+  const mutation = useMutation(
+    async () => {
+      const response = await axios.post(
+        "http://localhost:5000/api/comments/like",
+        { user_id: user_id, comment_id: comment_id }
+      );
+      return response.data;
+    },
+    {
+      onSuccess: (data) => {
+        if (data.success) {
+          setCurrentLike(data.likes);
+          queryClient.invalidateQueries(["comments", comment_id]);
+        }
+      },
+    }
+  );
+
+  const handleLikeButton = async () => {
+    try {
+      await mutation.mutateAsync();
+    } catch (error) {
+      console.error("Error liking/unliking comment:", error);
+    }
+  };
 
   return (
     <div className="space-y-3 border-[1px] px-2 py-3 rounded-lg">
@@ -37,17 +64,22 @@ function Comment({
           </span>
           <p className="font-semibold">{familyName + " " + givenName}</p>
         </span>
-        <span className="text-gray-400 text-sm">{timeAgo}</span>
+        <span className="text-gray-400 text-sm">
+          {timeDifference(createdAt)}
+        </span>
       </div>
-
       <div className="text-sm tracking-wider leading-6">{content}</div>
-
       <div>
         <div className="flex gap-1 items-center cursor-pointer">
-          <Button size={"sm"} variant={"ghost"} className="p-1 h-7">
+          <Button
+            size={"sm"}
+            variant={"ghost"}
+            className="p-1 h-7"
+            onClick={handleLikeButton}
+          >
             <ThumbsUp className="w-4 h-4 hover:text-black" />
           </Button>
-          <p className="">{likes}</p>
+          <p className="">{currentLike}</p>
         </div>
       </div>
     </div>

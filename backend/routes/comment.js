@@ -4,13 +4,14 @@ const {
   submitComment,
   getCommentsByPostId,
   likeComment,
+  toggleLikeComment,
 } = require("../controllers/comments");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
-router.post("/postComment/:post_id", isAuthenticated, submitComment);
+router.post("/postComment", isAuthenticated, submitComment);
 
 router.get("/getPostComments/:post_id", getCommentsByPostId);
 
-router.get("/likeComment", isAuthenticated, likeComment);
+router.post("/like", isAuthenticated, toggleLikeComment);
 
 module.exports = router;

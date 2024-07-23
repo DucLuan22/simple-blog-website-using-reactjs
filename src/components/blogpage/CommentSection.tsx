@@ -21,6 +21,7 @@ function CommentSection({ post_id }: CommentSectionProps) {
     return <div className="mb-36">No comments found for this post.</div>;
   }
 
+  console.log(data);
   return (
     <section className="w-full space-y-10 ">
       <hr className="border-t-[1px] border-gray-300" />
@@ -32,7 +33,7 @@ function CommentSection({ post_id }: CommentSectionProps) {
             givenName={comment.givenName}
             createdAt={comment.createdAt}
             content={comment.content}
-            id={comment.id}
+            comment_id={comment.comment_id}
             user_id={comment.user_id}
             post_id={comment.post_id}
           />

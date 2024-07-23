@@ -88,3 +88,93 @@ exports.likeComment = async (req, res, next) => {
     });
   });
 };
+
+exports.toggleLikeComment = async (req, res, next) => {
+  const { user_id, comment_id } = req.body;
+
+  const checkLikeQuery =
+    "SELECT * FROM comment_likes WHERE user_id = ? AND comment_id = ?";
+  const insertLikeQuery =
+    "INSERT INTO comment_likes (user_id, comment_id) VALUES (?, ?)";
+  const deleteLikeQuery =
+    "DELETE FROM comment_likes WHERE user_id = ? AND comment_id = ?";
+  const incrementLikesQuery =
+    "UPDATE comments SET likes = likes + 1 WHERE comment_id = ?";
+  const decrementLikesQuery =
+    "UPDATE comments SET likes = likes - 1 WHERE comment_id = ?";
+
+  connection.query(checkLikeQuery, [user_id, comment_id], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+
+    if (results.length === 0) {
+      // User has not liked the comment yet, so like it
+      connection.query(
+        insertLikeQuery,
+        [user_id, comment_id],
+        (err, results) => {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              error: err.message,
+            });
+          }
+
+          connection.query(
+            incrementLikesQuery,
+            [comment_id],
+            (err, results) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  error: err.message,
+                });
+              }
+
+              return res.status(200).json({
+                success: true,
+                message: "Comment liked successfully",
+              });
+            }
+          );
+        }
+      );
+    } else {
+      // User has already liked the comment, so unlike it
+      connection.query(
+        deleteLikeQuery,
+        [user_id, comment_id],
+        (err, results) => {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              error: err.message,
+            });
+          }
+
+          connection.query(
+            decrementLikesQuery,
+            [comment_id],
+            (err, results) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  error: err.message,
+                });
+              }
+
+              return res.status(200).json({
+                success: true,
+                message: "Comment unliked successfully",
+              });
+            }
+          );
+        }
+      );
+    }
+  });
+};

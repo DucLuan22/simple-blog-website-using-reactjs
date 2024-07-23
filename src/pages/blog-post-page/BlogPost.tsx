@@ -64,7 +64,6 @@ function BlogPost() {
 
       if (response.status === 201) {
         setComment("");
-        alert(response.data.message);
       } else {
         alert(response.data.error || "An error occurred");
       }

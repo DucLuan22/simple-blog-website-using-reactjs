@@ -51,6 +51,14 @@ const Sidebar = ({ children }: SidebarProps) => {
                   to="/"
                   className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                 >
+                  Bookmark
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/"
+                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                >
                   Return Home
                 </Link>
               </li>

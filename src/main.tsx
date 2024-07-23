@@ -19,6 +19,7 @@ import Root from "./routes/root.tsx";
 import ProfileRoutes from "./routes/ProfileRoutes.tsx";
 import PostHistory from "./pages/post-history-page/PostHistory.tsx";
 import Admin from "./pages/admin-page/Admin.tsx";
+import BookMark from "./pages/bookmark-page/BookMark.tsx";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
@@ -50,6 +51,7 @@ const App = () => (
         <Route path="/profile" element={<Profile />} />
         <Route path="/post-history" element={<PostHistory />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/bookmark" element={<BookMark />}></Route>
       </Route>
       <Route path="*" element={<Error />} />
     </Routes>
