@@ -6,6 +6,8 @@ import { Button } from "../ui/button";
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
+import { useCounterStore } from "@/store";
+import { useNavigate } from "react-router-dom";
 
 function timeDifference(createdAt: Date) {
   const now = new Date();
@@ -24,9 +26,14 @@ function Comment({
 }: CommentType) {
   const queryClient = useQueryClient();
   const [currentLike, setCurrentLike] = useState(likes);
-
+  const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
+  const navigate = useNavigate();
   const mutation = useMutation(
     async () => {
+      if (!isAuthenticated) {
+        navigate("/login");
+        return;
+      }
       const response = await axios.post(
         "http://localhost:5000/api/comments/like",
         { user_id: user_id, comment_id: comment_id }
@@ -36,7 +43,10 @@ function Comment({
     {
       onSuccess: (data) => {
         if (data.success) {
-          setCurrentLike(data.likes);
+          // Update the currentLike state with the correct likes count
+          setCurrentLike((prev) =>
+            data.message.includes("liked") ? prev + 1 : prev - 1
+          );
           queryClient.invalidateQueries(["comments", comment_id]);
         }
       },
