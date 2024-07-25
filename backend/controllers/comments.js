@@ -110,7 +110,6 @@ exports.toggleLikeComment = async (req, res, next) => {
               return res.status(200).json({
                 success: true,
                 message: "Comment liked successfully",
-                isLiked: true,
               });
             }
           );
@@ -143,7 +142,6 @@ exports.toggleLikeComment = async (req, res, next) => {
               return res.status(200).json({
                 success: true,
                 message: "Removed like",
-                isLiked: false,
               });
             }
           );

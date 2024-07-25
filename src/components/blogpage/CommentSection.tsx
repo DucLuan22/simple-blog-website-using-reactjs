@@ -21,7 +21,6 @@ function CommentSection({ post_id }: CommentSectionProps) {
     return <div className="mb-36">No comments found for this post.</div>;
   }
 
-  console.log(data);
   return (
     <section className="w-full space-y-10 ">
       <hr className="border-t-[1px] border-gray-300" />
