@@ -26,7 +26,7 @@ function RecentPostList() {
           ?.slice(startIndex, endIndex)
           .map((e) =>
             isLoading ? (
-              <Skeleton className="flex md:flex-row flex-col md:justify-start items-start md:items-center gap-5"></Skeleton>
+              <Skeleton className="flex md:flex-row flex-col md:justify-start items-start md:items-center gap-5" />
             ) : (
               <Post
                 title={e.title}

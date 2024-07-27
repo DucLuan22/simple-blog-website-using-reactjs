@@ -60,6 +60,7 @@ const useAuthenticatedRequest = () => {
           familyName: response.data.user._json.family_name,
           givenName: response.data.user._json.given_name,
         });
+
         setAuthenticated();
         return { success: true };
       } catch (error) {

@@ -1,6 +1,6 @@
 // Comment.tsx
 import type { Comment as CommentType } from "@/interface/Comment";
-import { ThumbsUp } from "lucide-react";
+import { EllipsisVertical, Menu, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { formatDistanceToNow } from "date-fns";
@@ -8,6 +8,13 @@ import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
 import { useCounterStore } from "@/store";
 import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 function timeDifference(createdAt: Date) {
   const now = new Date();
@@ -27,6 +34,8 @@ function Comment({
   const queryClient = useQueryClient();
   const [currentLike, setCurrentLike] = useState(likes);
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
+  const user = useCounterStore((state) => state.user);
+
   const navigate = useNavigate();
   const mutation = useMutation(
     async () => {
@@ -74,8 +83,26 @@ function Comment({
           </span>
           <p className="font-semibold">{familyName + " " + givenName}</p>
         </span>
-        <span className="text-gray-400 text-sm">
-          {timeDifference(createdAt)}
+        <span className="gap-2 flex items-center">
+          <span className="text-gray-400 text-sm">
+            {timeDifference(createdAt)}
+          </span>
+
+          {user?.id === user_id ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <EllipsisVertical className="w-4 h-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuItem>
+                  Remove
+                  <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <hr />
+          )}
         </span>
       </div>
       <div className="text-sm tracking-wider leading-6">{content}</div>

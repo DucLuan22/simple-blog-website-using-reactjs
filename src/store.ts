@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface User {
-  id: string;
+  id: number;
   google_id: string;
   avatar_url: string;
   locale: string;
