@@ -1,29 +1,27 @@
-import Comment from "@/components/blogpage/Comments";
+import { useState } from "react";
+import axios from "axios";
 import CommentSection from "@/components/blogpage/CommentSection";
-import Categories from "@/components/homepage/Categories";
-import EditorPick from "@/components/homepage/EditorPick";
-import PopularPost from "@/components/homepage/PopularPost";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import usePostById from "@/hooks/useGetPostById";
 import { useIncrementOnLoad } from "@/hooks/useUpdateViewCount";
-
 import { useCounterStore } from "@/store";
-import axios from "axios";
 import { BookMarked, Eye } from "lucide-react";
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import PopularPost from "@/components/homepage/PopularPost";
+import Categories from "@/components/homepage/Categories";
+import EditorPick from "@/components/homepage/EditorPick";
 
 function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();
   const [comment, setComment] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [newComment, setNewComment] = useState(null);
   const { data: post, isLoading, isError, error } = usePostById(post_id || "");
   const user = useCounterStore((state) => state.user);
   const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
   const { count } = useIncrementOnLoad(post_id || null);
   const navigation = useNavigate();
+
   if (isLoading || !post_id) {
     return <div>Loading...</div>;
   }
@@ -64,6 +62,7 @@ function BlogPost() {
 
       if (response.status === 201) {
         setComment("");
+        setNewComment(response.data.data);
       } else {
         alert(response.data.error || "An error occurred");
       }
@@ -148,7 +147,7 @@ function BlogPost() {
               )}
             </div>
           </section>
-          <CommentSection post_id={post_id} />
+          <CommentSection post_id={post_id} newComment={newComment} />
         </div>
 
         <div className="space-y-10">

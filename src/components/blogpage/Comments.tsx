@@ -37,6 +37,7 @@ function Comment({
   const user = useCounterStore((state) => state.user);
 
   const navigate = useNavigate();
+
   const mutation = useMutation(
     async () => {
       if (!isAuthenticated) {

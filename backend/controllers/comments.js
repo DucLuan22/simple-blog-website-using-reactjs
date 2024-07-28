@@ -3,11 +3,11 @@ const connection = require("../db");
 exports.submitComment = async (req, res, next) => {
   const { user_id, post_id, content } = req.body;
 
-  const query =
+  const insertQuery =
     "INSERT INTO `comments` (`user_id`, `post_id`, `content`) VALUES (?, ?, ?)";
-  const values = [user_id, post_id, content];
+  const insertValues = [user_id, post_id, content];
 
-  connection.query(query, values, (err, results, fields) => {
+  connection.query(insertQuery, insertValues, (err, results, fields) => {
     if (err) {
       return res.status(500).json({
         success: false,
@@ -15,15 +15,31 @@ exports.submitComment = async (req, res, next) => {
       });
     }
 
-    // Send success response
-    return res.status(201).json({
-      success: true,
-      message: "Comment submitted successfully",
-      data: {
-        user_id,
-        post_id,
-        content,
-      },
+    const commentId = results.insertId;
+
+    const selectQuery =
+      "SELECT `comment_id`, `user_id`, `post_id`, `content`, `createdAt`, `likes` FROM `comments` WHERE `comment_id` = ?";
+    connection.query(selectQuery, [commentId], (err, results, fields) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          error: err,
+        });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Comment not found",
+        });
+      }
+
+      // Send success response with the new comment data
+      return res.status(201).json({
+        success: true,
+        message: "Comment submitted successfully",
+        data: results[0],
+      });
     });
   });
 };

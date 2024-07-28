@@ -1,13 +1,23 @@
-import React from "react";
-import Comment from "./Comments";
+import React, { useEffect } from "react";
+
 import useComments from "@/hooks/useLoadComments";
+import { useQueryClient } from "react-query";
+import Comment from "./Comments";
 
 interface CommentSectionProps {
   post_id: string;
+  newComment: any;
 }
 
-function CommentSection({ post_id }: CommentSectionProps) {
+function CommentSection({ post_id, newComment }: CommentSectionProps) {
   const { data, error, isLoading } = useComments(post_id);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (newComment) {
+      queryClient.invalidateQueries(["comments", post_id]);
+    }
+  }, [newComment, queryClient, post_id]);
 
   if (isLoading) {
     return <div>Loading comments...</div>;
@@ -27,6 +37,7 @@ function CommentSection({ post_id }: CommentSectionProps) {
       <div className="space-y-10 overflow-y-scroll h-[700px] pr-3">
         {data.map((comment) => (
           <Comment
+            key={comment.comment_id}
             familyName={comment.familyName}
             likes={comment.likes}
             givenName={comment.givenName}
