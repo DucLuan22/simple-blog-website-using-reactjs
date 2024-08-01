@@ -166,3 +166,69 @@ exports.toggleLikeComment = async (req, res, next) => {
     }
   });
 };
+
+exports.deleteComment = async (req, res, next) => {
+  const { comment_id, user_id } = req.body;
+
+  const deleteLikesQuery =
+    "DELETE FROM comment_likes WHERE comment_id = ? AND user_id = ?";
+  const deleteCommentQuery =
+    "DELETE FROM comments WHERE comment_id = ? AND user_id = ?";
+
+  connection.beginTransaction((err) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+
+    // First, delete all likes associated with the comment
+    connection.query(
+      deleteLikesQuery,
+      [comment_id, user_id],
+      (err, results) => {
+        if (err) {
+          return connection.rollback(() => {
+            return res.status(500).json({
+              success: false,
+              error: err.message,
+            });
+          });
+        }
+
+        // Then, delete the comment itself
+        connection.query(
+          deleteCommentQuery,
+          [comment_id, user_id],
+          (err, results) => {
+            if (err) {
+              return connection.rollback(() => {
+                return res.status(500).json({
+                  success: false,
+                  error: err.message,
+                });
+              });
+            }
+
+            connection.commit((err) => {
+              if (err) {
+                return connection.rollback(() => {
+                  return res.status(500).json({
+                    success: false,
+                    error: err.message,
+                  });
+                });
+              }
+
+              return res.status(200).json({
+                success: true,
+                message: "Comment deleted successfully",
+              });
+            });
+          }
+        );
+      }
+    );
+  });
+};

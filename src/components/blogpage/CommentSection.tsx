@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-
 import useComments from "@/hooks/useLoadComments";
 import { useQueryClient } from "react-query";
 import Comment from "./Comments";

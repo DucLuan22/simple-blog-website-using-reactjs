@@ -1,6 +1,5 @@
-// Comment.tsx
 import type { Comment as CommentType } from "@/interface/Comment";
-import { EllipsisVertical, Menu, ThumbsUp } from "lucide-react";
+import { EllipsisVertical, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { formatDistanceToNow } from "date-fns";
@@ -30,6 +29,7 @@ function Comment({
   createdAt,
   familyName,
   givenName,
+  post_id,
 }: CommentType) {
   const queryClient = useQueryClient();
   const [currentLike, setCurrentLike] = useState(likes);
@@ -38,7 +38,7 @@ function Comment({
 
   const navigate = useNavigate();
 
-  const mutation = useMutation(
+  const likeMutation = useMutation(
     async () => {
       if (!isAuthenticated) {
         navigate("/login");
@@ -46,18 +46,36 @@ function Comment({
       }
       const response = await axios.post(
         "http://localhost:5000/api/comments/like",
-        { user_id: user_id, comment_id: comment_id }
+        { user_id: user?.id, comment_id: comment_id }
       );
       return response.data;
     },
     {
       onSuccess: (data) => {
         if (data.success) {
-          // Update the currentLike state with the correct likes count
           setCurrentLike((prev) =>
             data.message.includes("liked") ? prev + 1 : prev - 1
           );
-          queryClient.invalidateQueries(["comments", comment_id]);
+          queryClient.invalidateQueries(["comments", post_id]);
+        }
+      },
+    }
+  );
+
+  const deleteMutation = useMutation(
+    async () => {
+      const response = await axios.delete(
+        "http://localhost:5000/api/comments/deleteComment",
+        {
+          data: { user_id: user?.id, comment_id: comment_id },
+        }
+      );
+      return response.data;
+    },
+    {
+      onSuccess: (data) => {
+        if (data.success) {
+          queryClient.invalidateQueries(["comments", post_id]);
         }
       },
     }
@@ -65,9 +83,17 @@ function Comment({
 
   const handleLikeButton = async () => {
     try {
-      await mutation.mutateAsync();
+      await likeMutation.mutateAsync();
     } catch (error) {
       console.error("Error liking/unliking comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async () => {
+    try {
+      await deleteMutation.mutateAsync();
+    } catch (error) {
+      console.error("Error deleting comment:", error);
     }
   };
 
@@ -88,21 +114,18 @@ function Comment({
           <span className="text-gray-400 text-sm">
             {timeDifference(createdAt)}
           </span>
-
-          {user?.id === user_id ? (
+          {user?.id === user_id && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <EllipsisVertical className="w-4 h-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56">
-                <DropdownMenuItem>
+                <DropdownMenuItem onSelect={handleDeleteComment}>
                   Remove
                   <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <hr />
           )}
         </span>
       </div>
