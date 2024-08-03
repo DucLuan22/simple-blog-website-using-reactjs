@@ -7,4 +7,5 @@ export interface Comment {
   givenName: string;
   familyName: string;
   likes: number;
+  dislikes: number;
 }

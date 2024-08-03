@@ -1,5 +1,5 @@
 import type { Comment as CommentType } from "@/interface/Comment";
-import { EllipsisVertical, ThumbsUp } from "lucide-react";
+import { EllipsisVertical, ThumbsDown, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { formatDistanceToNow } from "date-fns";
@@ -30,9 +30,11 @@ function Comment({
   familyName,
   givenName,
   post_id,
+  dislikes,
 }: CommentType) {
   const queryClient = useQueryClient();
   const [currentLike, setCurrentLike] = useState(likes);
+  const [currentDislike, setCurrentDislike] = useState(dislikes);
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
   const user = useCounterStore((state) => state.user);
 
@@ -55,6 +57,30 @@ function Comment({
         if (data.success) {
           setCurrentLike((prev) =>
             data.message.includes("liked") ? prev + 1 : prev - 1
+          );
+          queryClient.invalidateQueries(["comments", post_id]);
+        }
+      },
+    }
+  );
+
+  const dislikeMutation = useMutation(
+    async () => {
+      if (!isAuthenticated) {
+        navigate("/login");
+        return;
+      }
+      const response = await axios.post(
+        "http://localhost:5000/api/comments/dislike",
+        { user_id: user?.id, comment_id: comment_id }
+      );
+      return response.data;
+    },
+    {
+      onSuccess: (data) => {
+        if (data.success) {
+          setCurrentDislike((prev) =>
+            data.message.includes("disliked") ? prev + 1 : prev - 1
           );
           queryClient.invalidateQueries(["comments", post_id]);
         }
@@ -86,6 +112,14 @@ function Comment({
       await likeMutation.mutateAsync();
     } catch (error) {
       console.error("Error liking/unliking comment:", error);
+    }
+  };
+
+  const handleDislikeButton = async () => {
+    try {
+      await dislikeMutation.mutateAsync();
+    } catch (error) {
+      console.error("Error disliking/undisliking comment:", error);
     }
   };
 
@@ -130,7 +164,7 @@ function Comment({
         </span>
       </div>
       <div className="text-sm tracking-wider leading-6">{content}</div>
-      <div>
+      <div className="flex gap-3">
         <div className="flex gap-1 items-center cursor-pointer">
           <Button
             size={"sm"}
@@ -141,6 +175,18 @@ function Comment({
             <ThumbsUp className="w-4 h-4 hover:text-black" />
           </Button>
           <p className="">{currentLike}</p>
+        </div>
+
+        <div className="flex gap-1 items-center cursor-pointer">
+          <Button
+            size={"sm"}
+            variant={"ghost"}
+            className="p-1 h-7"
+            onClick={handleDislikeButton}
+          >
+            <ThumbsDown className="w-4 h-4 hover:text-black" />
+          </Button>
+          <p className="">{currentDislike}</p>
         </div>
       </div>
     </div>

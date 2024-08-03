@@ -11,6 +11,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PopularPost from "@/components/homepage/PopularPost";
 import Categories from "@/components/homepage/Categories";
 import EditorPick from "@/components/homepage/EditorPick";
+import useFetchPosts from "@/hooks/useGetPosts";
 
 function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();

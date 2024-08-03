@@ -167,6 +167,96 @@ exports.toggleLikeComment = async (req, res, next) => {
   });
 };
 
+exports.toggleDislikeComment = async (req, res, next) => {
+  const { user_id, comment_id } = req.body;
+
+  const checkDislikeQuery =
+    "SELECT * FROM comment_dislikes WHERE user_id = ? AND comment_id = ?";
+  const insertDislikeQuery =
+    "INSERT INTO comment_dislikes (user_id, comment_id) VALUES (?, ?)";
+  const deleteDislikeQuery =
+    "DELETE FROM comment_dislikes WHERE user_id = ? AND comment_id = ?";
+  const incrementDislikesQuery =
+    "UPDATE comments SET dislikes = dislikes + 1 WHERE comment_id = ?";
+  const decrementDislikesQuery =
+    "UPDATE comments SET dislikes = dislikes - 1 WHERE comment_id = ?";
+
+  connection.query(checkDislikeQuery, [user_id, comment_id], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+
+    if (results.length === 0) {
+      // User has not disliked the comment yet, so dislike it
+      connection.query(
+        insertDislikeQuery,
+        [user_id, comment_id],
+        (err, results) => {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              error: err.message,
+            });
+          }
+
+          connection.query(
+            incrementDislikesQuery,
+            [comment_id],
+            (err, results) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  error: err.message,
+                });
+              }
+
+              return res.status(200).json({
+                success: true,
+                message: "Comment disliked successfully",
+              });
+            }
+          );
+        }
+      );
+    } else {
+      // User has already disliked the comment, so remove dislike
+      connection.query(
+        deleteDislikeQuery,
+        [user_id, comment_id],
+        (err, results) => {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              error: err.message,
+            });
+          }
+
+          connection.query(
+            decrementDislikesQuery,
+            [comment_id],
+            (err, results) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  error: err.message,
+                });
+              }
+
+              return res.status(200).json({
+                success: true,
+                message: "Removed dislike",
+              });
+            }
+          );
+        }
+      );
+    }
+  });
+};
+
 exports.deleteComment = async (req, res, next) => {
   const { comment_id, user_id } = req.body;
 

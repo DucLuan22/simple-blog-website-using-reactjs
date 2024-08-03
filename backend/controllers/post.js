@@ -151,3 +151,20 @@ exports.submitComment = async (req, res, next) => {
     });
   });
 };
+
+exports.getPostsByCategoryId = async (req, res, next) => {
+  const { category_id } = req.params;
+  const query = `
+    SELECT posts.*, categories.category_name 
+    FROM posts 
+    JOIN categories ON posts.category_id = categories.category_id
+    WHERE posts.category_id = ?
+  `;
+
+  connection.query(query, [category_id], (err, results, fields) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    res.status(200).json({ success: true, data: results });
+  });
+};

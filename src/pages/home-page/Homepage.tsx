@@ -5,8 +5,10 @@ import PopularPost from "@/components/homepage/PopularPost";
 
 import RandomPost from "@/components/homepage/RandomPost";
 import RecentPostList from "@/components/homepage/RecentPostList";
+import useFetchPosts from "@/hooks/useGetPosts";
 
 function Homepage() {
+  const { isLoading, data, error } = useFetchPosts();
   return (
     <div className="space-y-14 mb-36">
       <h1 className="text-2xl md:text-3xl lg:text-5xl tracking-wide">
@@ -17,7 +19,7 @@ function Homepage() {
       <RandomPost />
       <PopularCategories />
       <div className="flex flex-col lg:flex-row md:gap-10 lg:gap-28">
-        <RecentPostList />
+        <RecentPostList data={data} error={error} isLoading={isLoading} />
         <div className="space-y-10">
           <PopularPost />
           <Categories />

@@ -45,6 +45,7 @@ function CommentSection({ post_id, newComment }: CommentSectionProps) {
             comment_id={comment.comment_id}
             user_id={comment.user_id}
             post_id={comment.post_id}
+            dislikes={comment.dislikes}
           />
         ))}
       </div>

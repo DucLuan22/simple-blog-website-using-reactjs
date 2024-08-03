@@ -13,7 +13,7 @@ function Category() {
       </h1>
 
       <div className="flex flex-col lg:flex-row md:gap-10 ">
-        <RecentPostList />
+        {/* <RecentPostList /> */}
         <div className="space-y-10">
           <PopularPost />
           <Categories />
