@@ -10,6 +10,7 @@ const {
   getPostById,
   getPostByIdAndUpdateViewCount,
   submitComment,
+  getPostsByCategoryId,
 } = require("../controllers/post");
 
 router.post("/upload", isAuthenticated, uploadPost);
@@ -19,5 +20,7 @@ router.get("/getPost", getPosts);
 router.get("/:post_id", getPostById);
 
 router.post("/updateViewCount/:post_id", getPostByIdAndUpdateViewCount);
+
+router.get("/category/:category_id", getPostsByCategoryId);
 
 module.exports = router;

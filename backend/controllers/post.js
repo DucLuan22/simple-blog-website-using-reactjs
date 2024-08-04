@@ -154,6 +154,7 @@ exports.submitComment = async (req, res, next) => {
 
 exports.getPostsByCategoryId = async (req, res, next) => {
   const { category_id } = req.params;
+
   const query = `
     SELECT posts.*, categories.category_name 
     FROM posts 
