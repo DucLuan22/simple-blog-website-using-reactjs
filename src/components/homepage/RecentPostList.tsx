@@ -1,4 +1,3 @@
-import useFetchPosts from "@/hooks/useGetPosts";
 import {
   Pagination,
   PaginationContent,

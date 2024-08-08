@@ -1,23 +1,16 @@
-import { cn } from "@/lib/utils";
+import { Category } from "@/interface/Category";
+import { cn, getRandomBgColor } from "@/lib/utils";
 
-interface CategoryCardProps {
-  backgroundColor: string;
-}
-function CategoryCard({ backgroundColor }: CategoryCardProps) {
+function CategoryCard({ category_id, category_name }: Category) {
   return (
     <span
+      key={category_id}
       className={cn(
         "flex items-center gap-2 p-4 bg-opacity-90 rounded-xl flex-grow min-w-[100px] max-w-[200px] justify-center",
-        backgroundColor
+        getRandomBgColor()
       )}
     >
-      <div className="rounded-[100%] border-[1px] border-black w-[40px] overflow-hidden">
-        <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
-          alt="Technology"
-        />
-      </div>
-      <p className="font-semibold">Technology</p>
+      <p className="font-semibold text-white">{category_name}</p>
     </span>
   );
 }
