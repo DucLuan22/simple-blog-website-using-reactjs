@@ -24,6 +24,7 @@ const Sidebar = ({ children }: SidebarProps) => {
             <ul>
               <li>
                 <Link
+                  onClick={toggleSidebar}
                   to="/admin"
                   className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                 >
@@ -33,6 +34,7 @@ const Sidebar = ({ children }: SidebarProps) => {
               <li>
                 <Link
                   to="/profile"
+                  onClick={toggleSidebar}
                   className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                 >
                   Profile
@@ -41,6 +43,7 @@ const Sidebar = ({ children }: SidebarProps) => {
               <li>
                 <Link
                   to="/post-history"
+                  onClick={toggleSidebar}
                   className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                 >
                   Post History
@@ -48,7 +51,8 @@ const Sidebar = ({ children }: SidebarProps) => {
               </li>
               <li>
                 <Link
-                  to="/"
+                  to="/bookmark"
+                  onClick={toggleSidebar}
                   className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                 >
                   Bookmark
@@ -57,6 +61,7 @@ const Sidebar = ({ children }: SidebarProps) => {
               <li>
                 <Link
                   to="/"
+                  onClick={toggleSidebar}
                   className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
                 >
                   Return Home

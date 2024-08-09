@@ -1,12 +1,12 @@
 const connection = require("../db");
 
-exports.addBookmark = async (req, res, next) => {
+exports.toggleBookmark = async (req, res, next) => {
   const { user_id, post_id } = req.body;
 
-  const query = "INSERT INTO `bookmarks` (`user_id`, `post_id`) VALUES (?, ?)";
-  const values = [user_id, post_id];
-
-  connection.query(query, values, (err, results, fields) => {
+  // Check if the bookmark exists
+  const checkQuery =
+    "SELECT * FROM bookmarks WHERE user_id = ? AND post_id = ?";
+  connection.query(checkQuery, [user_id, post_id], (err, results, fields) => {
     if (err) {
       return res.status(500).json({
         success: false,
@@ -14,15 +14,48 @@ exports.addBookmark = async (req, res, next) => {
       });
     }
 
-    // Send success response
-    return res.status(201).json({
-      success: true,
-      message: "Bookmark added successfully",
-      data: {
-        user_id,
-        post_id,
-      },
-    });
+    if (results.length > 0) {
+      // If bookmark exists, delete it
+      const deleteQuery =
+        "DELETE FROM bookmarks WHERE user_id = ? AND post_id = ?";
+      connection.query(
+        deleteQuery,
+        [user_id, post_id],
+        (err, results, fields) => {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              error: err,
+            });
+          }
+
+          return res.status(200).json({
+            success: true,
+            message: "Bookmark removed successfully",
+          });
+        }
+      );
+    } else {
+      // If bookmark doesn't exist, add it
+      const addQuery = "INSERT INTO bookmarks (user_id, post_id) VALUES (?, ?)";
+      connection.query(addQuery, [user_id, post_id], (err, results, fields) => {
+        if (err) {
+          return res.status(500).json({
+            success: false,
+            error: err,
+          });
+        }
+
+        return res.status(201).json({
+          success: true,
+          message: "Bookmark added successfully",
+          data: {
+            user_id,
+            post_id,
+          },
+        });
+      });
+    }
   });
 };
 

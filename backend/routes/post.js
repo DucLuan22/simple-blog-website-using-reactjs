@@ -12,6 +12,7 @@ const {
   submitComment,
   getPostsByCategoryId,
 } = require("../controllers/post");
+const { toggleBookmark } = require("../controllers/bookmark");
 
 router.post("/upload", isAuthenticated, uploadPost);
 
@@ -22,5 +23,7 @@ router.get("/:post_id", getPostById);
 router.post("/updateViewCount/:post_id", getPostByIdAndUpdateViewCount);
 
 router.get("/category/:category_id", getPostsByCategoryId);
+
+router.post("/bookmark", isAuthenticated, toggleBookmark);
 
 module.exports = router;

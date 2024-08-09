@@ -17,6 +17,7 @@ function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();
   const [comment, setComment] = useState("");
   const [newComment, setNewComment] = useState(null);
+  const [isBookmarked, setIsBookmarked] = useState(false); // New state for bookmark
   const { data: post, isLoading, isError, error } = usePostById(post_id || "");
   const user = useCounterStore((state) => state.user);
   const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
@@ -76,6 +77,36 @@ function BlogPost() {
     }
   };
 
+  const handleBookmark = async () => {
+    if (!isAuthenticate) {
+      navigation("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/posts/bookmark",
+        {
+          user_id: user?.id,
+          post_id: post_id,
+        }
+      );
+
+      if (response.data.success) {
+        setIsBookmarked((prev) => !prev);
+        alert(response.data.message);
+      } else {
+        alert(response.data.error || "An error occurred");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        alert(error.response.data.error || "An error occurred");
+      } else {
+        alert("An error occurred while handling the bookmark");
+      }
+    }
+  };
+
   return (
     <div className="space-y-7 w-full mb-36">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
@@ -110,7 +141,10 @@ function BlogPost() {
             </div>
 
             <div className="flex gap-x-3 items-center">
-              <BookMarked className="w-6 h-6" />
+              <BookMarked
+                className={`w-6 h-6 ${isBookmarked ? "text-yellow-500" : ""}`}
+                onClick={handleBookmark}
+              />
               <div className="flex items-center gap-x-3">
                 <Eye className="w-6 h-6" />
                 <span>{post?.views}</span>
