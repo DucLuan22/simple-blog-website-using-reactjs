@@ -6,7 +6,6 @@ import { useEffect } from "react";
 
 function Root() {
   useAuthenticatedRequest();
-
   return (
     <div className="w-screen h-screen px-3 md:px-[5%] lg:px-[10%] ">
       <Navbar />
