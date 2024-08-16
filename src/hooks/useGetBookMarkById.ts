@@ -8,6 +8,8 @@ const fetchBookmarkById = async (
   const { data } = await axios.get<{ success: boolean; data: Post }>(
     `http://localhost:5000/api/posts/bookmark/${user_id}`
   );
+
+  console.log(data);
   return data.data;
 };
 

@@ -20,7 +20,6 @@ import ProfileRoutes from "./routes/ProfileRoutes.tsx";
 import PostHistory from "./pages/post-history-page/PostHistory.tsx";
 import Admin from "./pages/admin-page/Admin.tsx";
 import BookMark from "./pages/bookmark-page/BookMark.tsx";
-import useAuthenticatedRequest from "./hooks/useAuthenticate.ts";
 
 const PrivateRoute = ({ element }: { element: JSX.Element }) => {
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
@@ -29,7 +28,6 @@ const PrivateRoute = ({ element }: { element: JSX.Element }) => {
     return <Navigate to="/login" replace />;
   }
 
-  console.log(isAuthenticated);
   return element;
 };
 
