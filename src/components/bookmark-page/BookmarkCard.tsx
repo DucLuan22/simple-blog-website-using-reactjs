@@ -1,7 +1,8 @@
 import { Post } from "@/interface/Post";
-import { Eye } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import React from "react";
-
+import { Button } from "../ui/button";
+import { useDeleteBookmark } from "@/hooks/useDeleteBookmark";
 function BookmarkCard({
   thumbnail,
   post_id,
@@ -13,19 +14,37 @@ function BookmarkCard({
   createDate,
   updateDate,
   user_id,
+  givenName,
+  familyName,
 }: Post) {
+  const deleteBookmark = useDeleteBookmark();
+
+  const handleDelete = () => {
+    if (user_id && post_id) {
+      deleteBookmark.mutate({ user_id, post_id });
+    }
+  };
+
   return (
     <div
-      className="w-[350px] h-[250px] border rounded-lg overflow-hidden shadow-lg flex flex-col"
+      className="w-[350px] h-[250px] border rounded-lg overflow-hidden shadow-lg flex flex-col relative"
       key={post_id}
     >
-      <div className="h-2/3">
+      <div className="h-2/3 relative">
         <img
           src={thumbnail}
           alt={title}
           className="w-full h-full object-cover"
         />
+        <Button
+          className="absolute top-2 right-2"
+          variant={"destructive"}
+          onClick={handleDelete}
+        >
+          <Trash className="w-4 h-4" />
+        </Button>
       </div>
+
       <div className="p-4 flex flex-col justify-between flex-1 bg-white">
         <div>
           <h3 className="text-lg font-bold">{title}</h3>
@@ -36,7 +55,7 @@ function BookmarkCard({
             <Eye className="w-4 h-4" />
           </div>
           <div>
-            <span>by Me</span>
+            <span>by {familyName + " " + givenName}</span>
           </div>
         </div>
       </div>

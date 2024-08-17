@@ -8,6 +8,7 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 const { addCategory, getCategories } = require("../controllers/categories");
 
 router.post("/addCategory", isAuthenticated, addCategory);
+
 router.get("/getCategories", getCategories);
 
 module.exports = router;

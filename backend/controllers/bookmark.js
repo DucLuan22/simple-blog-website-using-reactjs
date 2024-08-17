@@ -63,9 +63,10 @@ exports.getBookmarksByUserId = async (req, res, next) => {
   const { user_id } = req.params;
 
   const query = `
-      SELECT bookmarks.*, posts.title, posts.content, posts.thumbnail, posts.views 
+      SELECT bookmarks.*, posts.title, posts.content, posts.thumbnail, posts.views, users.familyName, users.givenName 
       FROM bookmarks 
-      JOIN posts ON bookmarks.post_id = posts.post_id 
+      JOIN posts ON bookmarks.post_id = posts.post_id
+      JOIN users ON bookmarks.user_id = users.id
       WHERE bookmarks.user_id = ?
     `;
 

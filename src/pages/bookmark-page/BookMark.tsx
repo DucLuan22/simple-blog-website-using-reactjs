@@ -28,6 +28,8 @@ function BookMark() {
             createDate={post.createDate}
             updateDate={post.updateDate}
             user_id={post.user_id}
+            familyName={post.familyName}
+            givenName={post.givenName}
           />
         ))}
       </div>

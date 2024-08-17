@@ -9,7 +9,6 @@ const fetchBookmarkById = async (
     `http://localhost:5000/api/posts/bookmark/${user_id}`
   );
 
-  console.log(data);
   return data.data;
 };
 

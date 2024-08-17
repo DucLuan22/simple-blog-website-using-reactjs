@@ -9,4 +9,6 @@ export interface Post {
   updateDate: Date;
   views: number;
   category_name: string;
+  givenName: string;
+  familyName: string;
 }
