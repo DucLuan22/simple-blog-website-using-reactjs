@@ -169,3 +169,174 @@ exports.getPostsByCategoryId = async (req, res, next) => {
     res.status(200).json({ success: true, data: results });
   });
 };
+
+exports.getMostViewedPostLastDay = async (req, res, next) => {
+  const query = `
+    SELECT 
+        p.post_id, 
+        p.title, 
+        p.thumbnail, 
+        p.content, 
+        p.user_id, 
+        p.category_id, 
+        p.createDate, 
+        p.updateDate, 
+        p.views,
+        u.givenName,
+        u.familyName,
+        u.avatar_url
+    FROM 
+        simple_blog.posts p
+    JOIN
+        simple_blog.users u
+    ON
+        p.user_id = u.id
+    WHERE 
+        p.createDate >= NOW() - INTERVAL 1 DAY 
+        OR p.updateDate >= NOW() - INTERVAL 1 DAY
+    ORDER BY 
+        p.views DESC
+    LIMIT 1;
+  `;
+
+  connection.query(query, (err, results, fields) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No posts found in the last 24 hours" });
+    }
+    res.status(200).json({ success: true, data: results[0] });
+  });
+};
+
+exports.deletePost = async (req, res, next) => {
+  const { post_id } = req.params;
+
+  // Start a transaction to handle all related deletions
+  connection.beginTransaction((err) => {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+
+    const deleteCommentLikes = `
+      DELETE cl FROM comment_likes cl 
+      JOIN comments c ON cl.comment_id = c.comment_id 
+      WHERE c.post_id = ?
+    `;
+
+    const deleteCommentDislikes = `
+      DELETE cd FROM comment_dislikes cd 
+      JOIN comments c ON cd.comment_id = c.comment_id 
+      WHERE c.post_id = ?
+    `;
+
+    const deleteComments = "DELETE FROM comments WHERE post_id = ?";
+    const deleteBookmarks = "DELETE FROM bookmarks WHERE post_id = ?";
+    const deletePost = "DELETE FROM posts WHERE post_id = ?";
+
+    connection.query(deleteCommentLikes, [post_id], (err, results) => {
+      if (err) {
+        return connection.rollback(() => {
+          res.status(500).json({ message: err.message });
+        });
+      }
+
+      connection.query(deleteCommentDislikes, [post_id], (err, results) => {
+        if (err) {
+          return connection.rollback(() => {
+            res.status(500).json({ message: err.message });
+          });
+        }
+
+        connection.query(deleteComments, [post_id], (err, results) => {
+          if (err) {
+            return connection.rollback(() => {
+              res.status(500).json({ message: err.message });
+            });
+          }
+
+          connection.query(deleteBookmarks, [post_id], (err, results) => {
+            if (err) {
+              return connection.rollback(() => {
+                res.status(500).json({ message: err.message });
+              });
+            }
+
+            connection.query(deletePost, [post_id], (err, results) => {
+              if (err) {
+                return connection.rollback(() => {
+                  res.status(500).json({ message: err.message });
+                });
+              }
+              if (results.affectedRows === 0) {
+                return connection.rollback(() => {
+                  res.status(404).json({ message: "Post not found" });
+                });
+              }
+
+              connection.commit((err) => {
+                if (err) {
+                  return connection.rollback(() => {
+                    res.status(500).json({ message: err.message });
+                  });
+                }
+                res
+                  .status(200)
+                  .json({
+                    success: true,
+                    message: "Post deleted successfully",
+                  });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+};
+
+exports.updatePost = async (req, res, next) => {
+  const { post_id } = req.params;
+  const { title, thumbnail, content, category_id } = req.body;
+
+  const query = `
+    UPDATE posts 
+    SET 
+      title = ?, 
+      thumbnail = ?, 
+      content = ?, 
+      category_id = ?, 
+      updateDate = NOW()
+    WHERE 
+      post_id = ?
+  `;
+  const values = [title, thumbnail, content, category_id, post_id];
+
+  connection.query(query, values, (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err,
+      });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: "Post updated successfully",
+      data: {
+        post_id,
+        title,
+        thumbnail,
+        content,
+        category_id,
+      },
+    });
+  });
+};

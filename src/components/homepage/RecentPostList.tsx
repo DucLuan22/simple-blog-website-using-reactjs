@@ -51,6 +51,8 @@ function RecentPostList({ data, error, isLoading }: PostListProps) {
               ?.slice(startIndex, endIndex)
               .map((e) => (
                 <Post
+                  familyName={e.familyName}
+                  givenName={e.givenName}
                   title={e.title}
                   post_id={e.post_id}
                   createDate={e.createDate}

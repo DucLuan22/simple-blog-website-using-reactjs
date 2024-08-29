@@ -11,6 +11,8 @@ const {
   getPostByIdAndUpdateViewCount,
   submitComment,
   getPostsByCategoryId,
+  deletePost,
+  updatePost,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -33,5 +35,9 @@ router.post("/bookmark", isAuthenticated, toggleBookmark);
 router.get("/bookmark/:user_id", isAuthenticated, getBookmarksByUserId);
 
 router.post("/bookmark/delete", isAuthenticated, deleteBookmark);
+
+router.delete("/delete", isAuthenticated, deletePost);
+
+router.post("/update", isAuthenticated, updatePost);
 
 module.exports = router;
