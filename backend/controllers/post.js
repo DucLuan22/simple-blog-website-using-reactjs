@@ -5,6 +5,7 @@ exports.getPosts = async (req, res, next) => {
     SELECT posts.*, categories.category_name 
     FROM posts 
     JOIN categories ON posts.category_id = categories.category_id
+    ORDER BY posts.createDate DESC
   `;
 
   connection.query(query, (err, results, fields) => {
@@ -283,12 +284,10 @@ exports.deletePost = async (req, res, next) => {
                     res.status(500).json({ message: err.message });
                   });
                 }
-                res
-                  .status(200)
-                  .json({
-                    success: true,
-                    message: "Post deleted successfully",
-                  });
+                res.status(200).json({
+                  success: true,
+                  message: "Post deleted successfully",
+                });
               });
             });
           });
@@ -338,5 +337,27 @@ exports.updatePost = async (req, res, next) => {
         category_id,
       },
     });
+  });
+};
+
+exports.getPostByUserId = async (req, res, next) => {
+  const { user_id } = req.params;
+
+  const query = `
+    SELECT posts.*, categories.category_name 
+    FROM posts 
+    JOIN categories ON posts.category_id = categories.category_id
+    WHERE posts.user_id = ?
+    ORDER BY posts.createDate DESC
+  `;
+
+  connection.query(query, [user_id], (err, results, fields) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No posts found for this user" });
+    }
+    res.status(200).json({ success: true, data: results });
   });
 };

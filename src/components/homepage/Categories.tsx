@@ -1,7 +1,9 @@
 import useCategory from "@/hooks/useCategories";
 import CategorySideCard from "./CategorySideCard";
+import { useNavigate } from "react-router-dom";
 
 function Categories() {
+  const navigate = useNavigate();
   const { data, isLoading, isError } = useCategory();
 
   if (isLoading) return null;
