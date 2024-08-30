@@ -69,3 +69,94 @@ exports.addUser = async (req, res, next) => {
     });
   });
 };
+
+exports.deleteUser = async (req, res, next) => {
+  const { google_id } = req.params;
+
+  if (!google_id) {
+    return res.status(400).json({
+      success: false,
+      message: "Google ID is required",
+    });
+  }
+
+  // Delete user from the database
+  const query = "DELETE FROM `users` WHERE `google_id` = ?";
+
+  connection.query(query, [google_id], (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  });
+};
+
+exports.updateUser = async (req, res, next) => {
+  const { google_id } = req.params;
+  const { familyName, givenName, avatar_url, locale } = req.body;
+
+  if (!google_id) {
+    return res.status(400).json({
+      success: false,
+      message: "Google ID is required",
+    });
+  }
+
+  // Update user information in the database
+  const query = `
+    UPDATE \`users\` 
+    SET 
+      familyName = ?, 
+      givenName = ?, 
+      avatar_url = ?, 
+      locale = ?, 
+      updated_at = NOW()
+    WHERE 
+      google_id = ?
+  `;
+  const values = [familyName, givenName, avatar_url || null, locale, google_id];
+
+  connection.query(query, values, (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Send success response
+    return res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: {
+        google_id,
+        familyName,
+        givenName,
+        avatar_url,
+        locale,
+      },
+    });
+  });
+};
