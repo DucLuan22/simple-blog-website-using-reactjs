@@ -13,6 +13,7 @@ const {
   getPostsByCategoryId,
   deletePost,
   updatePost,
+  getPostByUserId,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -39,5 +40,7 @@ router.post("/bookmark/delete", isAuthenticated, deleteBookmark);
 router.delete("/delete", isAuthenticated, deletePost);
 
 router.post("/update", isAuthenticated, updatePost);
+
+router.get("/users/:user_id", isAuthenticated, getPostByUserId);
 
 module.exports = router;
