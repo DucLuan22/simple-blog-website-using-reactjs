@@ -214,79 +214,107 @@ exports.getMostViewedPostLastDay = async (req, res, next) => {
 };
 
 exports.deletePost = async (req, res, next) => {
-  const { post_id } = req.params;
+  const { post_id, user_id } = req.body;
 
-  // Start a transaction to handle all related deletions
+  if (!post_id || !user_id) {
+    return res
+      .status(400)
+      .json({ message: "Post ID and User ID are required" });
+  }
+
   connection.beginTransaction((err) => {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
 
-    const deleteCommentLikes = `
-      DELETE cl FROM comment_likes cl 
-      JOIN comments c ON cl.comment_id = c.comment_id 
-      WHERE c.post_id = ?
+    // Check if the post belongs to the user
+    const checkPostOwner = `
+      SELECT * FROM posts 
+      WHERE post_id = ? AND user_id = ?
     `;
 
-    const deleteCommentDislikes = `
-      DELETE cd FROM comment_dislikes cd 
-      JOIN comments c ON cd.comment_id = c.comment_id 
-      WHERE c.post_id = ?
-    `;
-
-    const deleteComments = "DELETE FROM comments WHERE post_id = ?";
-    const deleteBookmarks = "DELETE FROM bookmarks WHERE post_id = ?";
-    const deletePost = "DELETE FROM posts WHERE post_id = ?";
-
-    connection.query(deleteCommentLikes, [post_id], (err, results) => {
+    connection.query(checkPostOwner, [post_id, user_id], (err, results) => {
       if (err) {
         return connection.rollback(() => {
           res.status(500).json({ message: err.message });
         });
       }
 
-      connection.query(deleteCommentDislikes, [post_id], (err, results) => {
+      if (results.length === 0) {
+        return connection.rollback(() => {
+          res.status(403).json({
+            message:
+              "Unauthorized: You do not have permission to delete this post",
+          });
+        });
+      }
+
+      const deleteCommentLikes = `
+        DELETE cl FROM comment_likes cl 
+        JOIN comments c ON cl.comment_id = c.comment_id 
+        WHERE c.post_id = ?
+      `;
+
+      const deleteCommentDislikes = `
+        DELETE cd FROM comment_dislikes cd 
+        JOIN comments c ON cd.comment_id = c.comment_id 
+        WHERE c.post_id = ?
+      `;
+
+      const deleteComments = "DELETE FROM comments WHERE post_id = ?";
+      const deleteBookmarks = "DELETE FROM bookmarks WHERE post_id = ?";
+      const deletePost = "DELETE FROM posts WHERE post_id = ?";
+
+      connection.query(deleteCommentLikes, [post_id], (err, results) => {
         if (err) {
           return connection.rollback(() => {
             res.status(500).json({ message: err.message });
           });
         }
 
-        connection.query(deleteComments, [post_id], (err, results) => {
+        connection.query(deleteCommentDislikes, [post_id], (err, results) => {
           if (err) {
             return connection.rollback(() => {
               res.status(500).json({ message: err.message });
             });
           }
 
-          connection.query(deleteBookmarks, [post_id], (err, results) => {
+          connection.query(deleteComments, [post_id], (err, results) => {
             if (err) {
               return connection.rollback(() => {
                 res.status(500).json({ message: err.message });
               });
             }
 
-            connection.query(deletePost, [post_id], (err, results) => {
+            connection.query(deleteBookmarks, [post_id], (err, results) => {
               if (err) {
                 return connection.rollback(() => {
                   res.status(500).json({ message: err.message });
                 });
               }
-              if (results.affectedRows === 0) {
-                return connection.rollback(() => {
-                  res.status(404).json({ message: "Post not found" });
-                });
-              }
 
-              connection.commit((err) => {
+              connection.query(deletePost, [post_id], (err, results) => {
                 if (err) {
                   return connection.rollback(() => {
                     res.status(500).json({ message: err.message });
                   });
                 }
-                res.status(200).json({
-                  success: true,
-                  message: "Post deleted successfully",
+                if (results.affectedRows === 0) {
+                  return connection.rollback(() => {
+                    res.status(404).json({ message: "Post not found" });
+                  });
+                }
+
+                connection.commit((err) => {
+                  if (err) {
+                    return connection.rollback(() => {
+                      res.status(500).json({ message: err.message });
+                    });
+                  }
+                  res.status(200).json({
+                    success: true,
+                    message: "Post deleted successfully",
+                  });
                 });
               });
             });

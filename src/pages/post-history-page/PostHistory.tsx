@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import usePostsByUserId from "@/hooks/getPostByUserId";
+import { useDeletePosts } from "@/hooks/useDeletePosts";
 import { useCounterStore } from "@/store";
 import { format } from "date-fns";
 import { Edit, Trash } from "lucide-react";
@@ -16,6 +17,14 @@ function PostHistory() {
   const user = useCounterStore((state) => state.user);
 
   const { isLoading, error, data } = usePostsByUserId(user?.id);
+
+  const deletePost = useDeletePosts();
+
+  const handleDeletePost = (user_id: number, post_id: string) => {
+    if (user_id && post_id) {
+      deletePost.mutate({ user_id, post_id });
+    }
+  };
 
   if (isLoading) return <div></div>;
 
@@ -35,7 +44,9 @@ function PostHistory() {
         </TableHeader>
         <TableBody>
           {data?.map((item) => (
-            <TableRow>
+            <TableRow
+              onClick={() => handleDeletePost(item.user_id, item.post_id)}
+            >
               <TableCell className="w-[100px] font-medium">
                 {item.post_id}
               </TableCell>
