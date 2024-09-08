@@ -9,7 +9,7 @@ import useFetchPosts from "@/hooks/useGetPosts";
 
 function Homepage() {
   const { isLoading, data, error } = useFetchPosts();
-
+  console.log(import.meta.env.BACKEND_URL);
   return (
     <div className="space-y-14 mb-36">
       <h1 className="text-2xl md:text-3xl lg:text-5xl tracking-wide">

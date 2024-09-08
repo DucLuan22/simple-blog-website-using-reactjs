@@ -263,6 +263,7 @@ exports.deletePost = async (req, res, next) => {
 
       const deleteComments = "DELETE FROM comments WHERE post_id = ?";
       const deleteBookmarks = "DELETE FROM bookmarks WHERE post_id = ?";
+      const deletePostViews = "DELETE FROM post_views WHERE post_id = ?";
       const deletePost = "DELETE FROM posts WHERE post_id = ?";
 
       connection.query(deleteCommentLikes, [post_id], (err, results) => {
@@ -293,27 +294,37 @@ exports.deletePost = async (req, res, next) => {
                 });
               }
 
-              connection.query(deletePost, [post_id], (err, results) => {
+              // Delete post views
+              connection.query(deletePostViews, [post_id], (err, results) => {
                 if (err) {
                   return connection.rollback(() => {
                     res.status(500).json({ message: err.message });
                   });
                 }
-                if (results.affectedRows === 0) {
-                  return connection.rollback(() => {
-                    res.status(404).json({ message: "Post not found" });
-                  });
-                }
 
-                connection.commit((err) => {
+                // Delete the post itself
+                connection.query(deletePost, [post_id], (err, results) => {
                   if (err) {
                     return connection.rollback(() => {
                       res.status(500).json({ message: err.message });
                     });
                   }
-                  res.status(200).json({
-                    success: true,
-                    message: "Post deleted successfully",
+                  if (results.affectedRows === 0) {
+                    return connection.rollback(() => {
+                      res.status(404).json({ message: "Post not found" });
+                    });
+                  }
+
+                  connection.commit((err) => {
+                    if (err) {
+                      return connection.rollback(() => {
+                        res.status(500).json({ message: err.message });
+                      });
+                    }
+                    res.status(200).json({
+                      success: true,
+                      message: "Post deleted successfully",
+                    });
                   });
                 });
               });
@@ -387,5 +398,60 @@ exports.getPostByUserId = async (req, res, next) => {
       return res.status(404).json({ message: "No posts found for this user" });
     }
     res.status(200).json({ success: true, data: results });
+  });
+};
+
+exports.updatePostViewsForCurrentDate = async (post_id) => {
+  const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+
+  const findViewCountQuery = `
+    SELECT * FROM post_views 
+    WHERE post_id = ? AND view_date = ?
+  `;
+
+  const insertViewCountQuery = `
+    INSERT INTO post_views (post_id, view_date, view_count)
+    VALUES (?, ?, 1)
+  `;
+
+  const updateViewCountQuery = `
+    UPDATE post_views 
+    SET view_count = view_count + 1 
+    WHERE post_id = ? AND view_date = ?
+  `;
+
+  connection.query(findViewCountQuery, [post_id, today], (err, results) => {
+    if (err) {
+      console.error("Error fetching view count:", err.message);
+      return;
+    }
+
+    if (results.length > 0) {
+      // Update the view count if the record exists
+      connection.query(
+        updateViewCountQuery,
+        [post_id, today],
+        (err, results) => {
+          if (err) {
+            console.error("Error updating view count:", err.message);
+            return;
+          }
+          console.log("View count updated for post:", post_id);
+        }
+      );
+    } else {
+      // Insert a new record if no record for today exists
+      connection.query(
+        insertViewCountQuery,
+        [post_id, today],
+        (err, results) => {
+          if (err) {
+            console.error("Error inserting new view count:", err.message);
+            return;
+          }
+          console.log("New view count record created for post:", post_id);
+        }
+      );
+    }
   });
 };
