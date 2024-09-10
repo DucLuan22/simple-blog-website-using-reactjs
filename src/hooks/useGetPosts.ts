@@ -8,7 +8,7 @@ interface PostResponse {
 }
 const fetchPosts = async (): Promise<Post[]> => {
   const { data } = await axios.get<PostResponse>(
-    "http://localhost:5000/api/posts/getPost"
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/getPost`
   );
 
   if (data.success) {

@@ -15,7 +15,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useCounterStore } from "@/store";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const setNotAuthenticated = useCounterStore(
+    (state) => state.setNotAuthenticated
+  );
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
   useEffect(() => {
     const handleResize = () => {
@@ -53,7 +55,13 @@ function Navbar() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <a href="http://localhost:5000/auth/logout">Logout</a>
+                <a
+                  href={`${import.meta.env.VITE_BACKEND_URL}/auth/logout`}
+                  onClick={() => setNotAuthenticated()}
+                  className="w-full h-full"
+                >
+                  Logout
+                </a>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

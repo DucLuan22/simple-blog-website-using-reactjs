@@ -9,7 +9,7 @@ interface Cookies {
 
 const incrementCount = async (postId: string): Promise<number> => {
   const response = await axios.post(
-    `http://localhost:5000/api/posts/updateViewCount/${postId}`
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/updateViewCount/${postId}`
   );
   return response.data.newCount;
 };

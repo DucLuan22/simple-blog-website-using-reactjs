@@ -4,7 +4,7 @@ import { UseQueryResult, useQuery } from "react-query";
 
 const fetchPostById = async (post_id: string | undefined): Promise<Post> => {
   const { data } = await axios.get<{ success: boolean; data: Post }>(
-    `http://localhost:5000/api/posts/${post_id}`
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/${post_id}`
   );
   return data.data;
 };

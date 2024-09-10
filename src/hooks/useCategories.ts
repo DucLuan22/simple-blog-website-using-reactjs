@@ -9,7 +9,7 @@ interface CategoryResponse {
 
 const fetchCategories = async (): Promise<Category[]> => {
   const { data } = await axios.get<CategoryResponse>(
-    "http://localhost:5000/api/category/getCategories"
+    `${import.meta.env.VITE_BACKEND_URL}/api/category/getCategories`
   );
 
   if (data.success) {

@@ -6,7 +6,7 @@ const fetchPostsByCategoryId = async (
   category_id: string | undefined
 ): Promise<Post[]> => {
   const { data } = await axios.get<{ success: boolean; data: Post[] }>(
-    `http://localhost:5000/api/posts/category/${category_id}`
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/category/${category_id}`
   );
 
   return data.data;

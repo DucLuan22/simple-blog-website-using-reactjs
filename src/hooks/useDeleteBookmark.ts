@@ -10,7 +10,7 @@ const deleteBookmark = async ({
   post_id: string;
 }) => {
   const { data } = await axios.post(
-    "http://localhost:5000/api/posts/bookmark/delete",
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/bookmark/delete`,
     {
       user_id,
       post_id,

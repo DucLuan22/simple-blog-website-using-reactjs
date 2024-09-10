@@ -46,7 +46,7 @@ function Writepage() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/posts/upload",
+        `${import.meta.env.VITE_BACKEND_URL}/api/posts/upload`,
         {
           title,
           content,

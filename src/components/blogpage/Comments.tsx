@@ -46,8 +46,9 @@ function Comment({
         navigate("/login");
         return;
       }
+
       const response = await axios.post(
-        "http://localhost:5000/api/comments/like",
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/like`,
         { user_id: user?.id, comment_id: comment_id }
       );
       return response.data;
@@ -71,7 +72,7 @@ function Comment({
         return;
       }
       const response = await axios.post(
-        "http://localhost:5000/api/comments/dislike",
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/dislike`,
         { user_id: user?.id, comment_id: comment_id }
       );
       return response.data;
@@ -91,7 +92,7 @@ function Comment({
   const deleteMutation = useMutation(
     async () => {
       const response = await axios.delete(
-        "http://localhost:5000/api/comments/deleteComment",
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/deleteComment`,
         {
           data: { user_id: user?.id, comment_id: comment_id },
         }

@@ -6,7 +6,7 @@ const fetchBookmarkById = async (
   user_id: number | undefined
 ): Promise<Post> => {
   const { data } = await axios.get<{ success: boolean; data: Post }>(
-    `http://localhost:5000/api/posts/bookmark/${user_id}`
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/bookmark/${user_id}`
   );
 
   return data.data;

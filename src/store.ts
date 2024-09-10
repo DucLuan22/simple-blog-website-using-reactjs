@@ -17,6 +17,16 @@ interface AuthState {
   setUsers: (user: User) => void;
 }
 
+// Define an empty default user object
+const emptyUser: User = {
+  id: 0,
+  google_id: "",
+  avatar_url: "",
+  locale: "",
+  familyName: "",
+  givenName: "",
+};
+
 export const useCounterStore = create<AuthState>((set) => ({
   isAuthenticated: JSON.parse(
     localStorage.getItem("isAuthenticated") || "false"
@@ -28,7 +38,7 @@ export const useCounterStore = create<AuthState>((set) => ({
   },
   setNotAuthenticated: () => {
     localStorage.setItem("isAuthenticated", "false");
-    set({ isAuthenticated: false });
+    set({ isAuthenticated: false, user: emptyUser }); // Reset user to empty object
   },
   setUsers: (user: User) => {
     set({ user });

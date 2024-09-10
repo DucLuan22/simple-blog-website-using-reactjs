@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 function Login() {
   const handleGoogleAuth = () => {
-    window.open("http://localhost:5000/auth/google", "_self");
+    window.open(`${import.meta.env.VITE_BACKEND_URL}/auth/google`, "_self");
   };
   return (
     <div className="h-screen flex justify-center items-center">

@@ -53,7 +53,7 @@ function BlogPost() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/comments/postComment",
+        `${import.meta.env.VITE_BACKEND_URL}/api/comments/postComment`,
         {
           user_id: user?.id,
           post_id: post_id,
@@ -84,7 +84,7 @@ function BlogPost() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/posts/bookmark",
+        `${import.meta.env.VITE_BACKEND_URL}/api/posts/bookmark`,
         {
           user_id: user?.id,
           post_id: post_id,
