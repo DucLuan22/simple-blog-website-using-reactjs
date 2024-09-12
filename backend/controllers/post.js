@@ -68,14 +68,17 @@ exports.uploadPost = async (req, res, next) => {
 
 exports.getPostByIdAndUpdateViewCount = async (req, res, next) => {
   const { post_id } = req.params;
+  const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
 
-  console.log(post_id);
-  // Start a transaction to ensure the two queries are executed together
+  let results; // Declare the results variable outside for global scope
+
+  // Start a transaction to ensure all queries are executed together
   connection.beginTransaction((err) => {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
 
+    // Step 1: Retrieve the post and category details
     const selectQuery = `
       SELECT posts.*, categories.category_name 
       FROM posts 
@@ -83,45 +86,113 @@ exports.getPostByIdAndUpdateViewCount = async (req, res, next) => {
       WHERE posts.post_id = ?
     `;
 
-    connection.query(selectQuery, [post_id], (err, results, fields) => {
+    connection.query(selectQuery, [post_id], (err, queryResults) => {
       if (err) {
         return connection.rollback(() => {
           res.status(400).json({ message: err.message });
         });
       }
-      if (results.length === 0) {
+      if (queryResults.length === 0) {
         return connection.rollback(() => {
           res.status(404).json({ message: "Post not found" });
         });
       }
 
+      // Store the query results for later use
+      results = queryResults;
+
+      // Step 2: Increment the views in the `posts` table
       const incrementViewsQuery = `
         UPDATE posts 
         SET views = views + 1 
         WHERE post_id = ?
       `;
 
-      connection.query(
-        incrementViewsQuery,
-        [post_id],
-        (err, updateResults, fields) => {
-          if (err) {
-            return connection.rollback(() => {
-              res.status(400).json({ message: err.message });
-            });
-          }
+      connection.query(incrementViewsQuery, [post_id], (err) => {
+        if (err) {
+          return connection.rollback(() => {
+            res.status(400).json({ message: err.message });
+          });
+        }
 
-          connection.commit((err) => {
+        // Step 3: Check and update views in the `post_views` table for the current date
+        const findViewCountQuery = `
+          SELECT * FROM post_views 
+          WHERE post_id = ? AND view_date = ?
+        `;
+
+        const insertViewCountQuery = `
+          INSERT INTO post_views (post_id, view_date, view_count)
+          VALUES (?, ?, 1)
+        `;
+
+        const updateViewCountQuery = `
+          UPDATE post_views 
+          SET view_count = view_count + 1 
+          WHERE post_id = ? AND view_date = ?
+        `;
+
+        connection.query(
+          findViewCountQuery,
+          [post_id, today],
+          (err, viewResults) => {
             if (err) {
               return connection.rollback(() => {
                 res.status(500).json({ message: err.message });
               });
             }
-            res.status(200).json({ success: true, data: results[0] });
+
+            if (viewResults.length > 0) {
+              // Update the view count if the record exists
+
+              console.log(1);
+              connection.query(
+                updateViewCountQuery,
+                [post_id, today],
+                (err) => {
+                  if (err) {
+                    return connection.rollback(() => {
+                      res.status(500).json({ message: err.message });
+                    });
+                  }
+                  commitTransactionAndRespond();
+                }
+              );
+            } else {
+              // Insert a new record if no record for today exists
+              connection.query(
+                insertViewCountQuery,
+                [post_id, today],
+                (err) => {
+                  if (err) {
+                    return connection.rollback(() => {
+                      res.status(500).json({ message: err.message });
+                    });
+                  }
+                  commitTransactionAndRespond();
+                }
+              );
+            }
+          }
+        );
+      });
+    });
+
+    // Commit the transaction and send the response
+    const commitTransactionAndRespond = () => {
+      connection.commit((err) => {
+        if (err) {
+          return connection.rollback(() => {
+            res.status(500).json({ message: err.message });
           });
         }
-      );
-    });
+        res.status(200).json({
+          success: true,
+          message: "Post retrieved and view count updated successfully",
+          data: results[0], // Return the post data
+        });
+      });
+    };
   });
 };
 

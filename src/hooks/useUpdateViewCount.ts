@@ -8,10 +8,15 @@ interface Cookies {
 }
 
 const incrementCount = async (postId: string): Promise<number> => {
-  const response = await axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/api/posts/updateViewCount/${postId}`
-  );
-  return response.data.newCount;
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/posts/updateViewCount/${postId}`
+    );
+    return response.data.newCount;
+  } catch (error) {
+    console.log(error);
+    return 0;
+  }
 };
 
 export const useIncrementOnLoad = (postId: string | null) => {
