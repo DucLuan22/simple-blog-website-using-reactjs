@@ -526,3 +526,93 @@ exports.updatePostViewsForCurrentDate = async (post_id) => {
     }
   });
 };
+
+exports.getViewsCountWithin12Months = async (req, res, next) => {
+  const query = `
+    SELECT
+      DATE_FORMAT(months.month, '%Y-%m') AS month,
+      COALESCE(SUM(pv.view_count), 0) AS total_views
+    FROM
+      (SELECT 
+          DATE_FORMAT(NOW() - INTERVAL (a.a + (10 * b.a)) MONTH, '%Y-%m-01') AS month
+       FROM 
+          (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+       CROSS JOIN 
+          (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+       ORDER BY month DESC
+       LIMIT 12) AS months
+    LEFT JOIN 
+      post_views pv
+    ON 
+      DATE_FORMAT(pv.view_date, '%Y-%m') = DATE_FORMAT(months.month, '%Y-%m')
+    GROUP BY 
+      months.month
+    ORDER BY 
+      months.month DESC;
+  `;
+
+  connection.query(query, (err, results, fields) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: results,
+    });
+  });
+};
+
+exports.getViewsCountByDay = async (req, res, next) => {
+  const { year, month } = req.params;
+
+  // Construct the first day of the month for use in the query
+  const firstDayOfMonth = `${year}-${month.padStart(2, "0")}-01`;
+
+  // Construct the query string
+  const query = `
+    WITH RECURSIVE days AS (
+        SELECT 1 AS day
+        UNION ALL
+        SELECT day + 1
+        FROM days
+        WHERE day < DAY(LAST_DAY(CONCAT(?, '-01')))
+    )
+    SELECT 
+        d.day,
+        COALESCE(SUM(pv.view_count), 0) AS total_views
+    FROM 
+        days d
+    LEFT JOIN 
+        post_views pv
+    ON 
+        DAY(pv.view_date) = d.day
+        AND YEAR(pv.view_date) = ?
+        AND MONTH(pv.view_date) = ?
+    GROUP BY 
+        d.day
+    ORDER BY 
+        d.day ASC;
+  `;
+
+  connection.query(
+    query,
+    [firstDayOfMonth, year, month],
+    (err, results, fields) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          error: err.message,
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: results,
+      });
+    }
+  );
+};
