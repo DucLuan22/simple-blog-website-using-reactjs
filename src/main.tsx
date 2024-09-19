@@ -46,12 +46,14 @@ const App = () => (
           element={<PrivateRoute element={<Writepage />} />}
         />
       </Route>
+
       <Route element={<PrivateRoute element={<ProfileRoutes />} />}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/post-history" element={<PostHistory />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/bookmark" element={<BookMark />}></Route>
       </Route>
+
       <Route path="*" element={<Error />} />
     </Routes>
   </BrowserRouter>

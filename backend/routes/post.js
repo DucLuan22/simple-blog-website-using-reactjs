@@ -14,6 +14,8 @@ const {
   deletePost,
   updatePost,
   getPostByUserId,
+  getMonthlyViews,
+  getYearlyViews,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -42,5 +44,9 @@ router.post("/delete", isAuthenticated, deletePost);
 router.post("/update", isAuthenticated, updatePost);
 
 router.get("/users/:user_id", isAuthenticated, getPostByUserId);
+
+router.get("/stats/monthly-view/:user_id", getMonthlyViews);
+
+router.get("/stats/yearly-view/:user_id", getYearlyViews);
 
 module.exports = router;

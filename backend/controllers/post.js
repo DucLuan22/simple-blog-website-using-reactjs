@@ -527,35 +527,48 @@ exports.updatePostViewsForCurrentDate = async (post_id) => {
   });
 };
 
-exports.getViewsCountWithin12Months = async (req, res, next) => {
+exports.getYearlyViews = async (req, res, next) => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const { user_id } = req.params;
+
+  // Construct the query string
   const query = `
     SELECT
-      DATE_FORMAT(months.month, '%Y-%m') AS month,
-      COALESCE(SUM(pv.view_count), 0) AS total_views
+        COALESCE(SUM(pv.view_count), 0) AS total_views,
+        DATE_FORMAT(months.view_date, '%Y-%m') AS month
     FROM
-      (SELECT 
-          DATE_FORMAT(NOW() - INTERVAL (a.a + (10 * b.a)) MONTH, '%Y-%m-01') AS month
-       FROM 
-          (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
-       CROSS JOIN 
-          (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
-       ORDER BY month DESC
-       LIMIT 12) AS months
-    LEFT JOIN 
-      post_views pv
-    ON 
-      DATE_FORMAT(pv.view_date, '%Y-%m') = DATE_FORMAT(months.month, '%Y-%m')
-    GROUP BY 
-      months.month
-    ORDER BY 
-      months.month DESC;
+        (SELECT
+            DATE_SUB(CURDATE(), INTERVAL n MONTH) AS view_date
+         FROM
+            (SELECT @row := @row + 1 AS n
+             FROM (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) t1,
+                  (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) t2,
+                  (SELECT @row := -1) t3) d
+         WHERE
+            DATE_SUB(CURDATE(), INTERVAL n MONTH) >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        ) AS months
+    LEFT JOIN
+        simple_blog.post_views pv
+    ON
+        DATE_FORMAT(pv.view_date, '%Y-%m') = DATE_FORMAT(months.view_date, '%Y-%m')
+        AND pv.post_id IN (
+            SELECT post_id
+            FROM simple_blog.posts
+            WHERE user_id = ?
+        )
+    GROUP BY
+        months.view_date
+    ORDER BY
+        months.view_date;
   `;
 
-  connection.query(query, (err, results, fields) => {
+  connection.query(query, [user_id], (err, results) => {
     if (err) {
+      console.error("Database query error:", err);
       return res.status(500).json({
         success: false,
-        error: err.message,
+        error: "Internal server error",
       });
     }
 
@@ -566,11 +579,15 @@ exports.getViewsCountWithin12Months = async (req, res, next) => {
   });
 };
 
-exports.getViewsCountByDay = async (req, res, next) => {
-  const { year, month } = req.params;
+exports.getMonthlyViews = async (req, res, next) => {
+  // Get the current date
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based
+  const { user_id } = req.params;
 
   // Construct the first day of the month for use in the query
-  const firstDayOfMonth = `${year}-${month.padStart(2, "0")}-01`;
+  const firstDayOfMonth = `${year}-${month}-01`;
 
   // Construct the query string
   const query = `
@@ -580,32 +597,42 @@ exports.getViewsCountByDay = async (req, res, next) => {
         SELECT day + 1
         FROM days
         WHERE day < DAY(LAST_DAY(CONCAT(?, '-01')))
+    ),
+    views_per_day AS (
+        SELECT 
+            DAY(pv.view_date) AS view_day,
+            COALESCE(SUM(pv.view_count), 0) AS total_views
+        FROM 
+            post_views pv
+        JOIN 
+            posts p ON pv.post_id = p.post_id
+        WHERE 
+            YEAR(pv.view_date) = ?
+            AND MONTH(pv.view_date) = ?
+            AND p.user_id = ?
+        GROUP BY 
+            DAY(pv.view_date)
     )
     SELECT 
-        d.day,
-        COALESCE(SUM(pv.view_count), 0) AS total_views
+        CONCAT(LPAD(d.day, 2, '0'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%m'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%Y')) AS day_with_month_year,
+        COALESCE(vpd.total_views, 0) AS total_views
     FROM 
         days d
     LEFT JOIN 
-        post_views pv
-    ON 
-        DAY(pv.view_date) = d.day
-        AND YEAR(pv.view_date) = ?
-        AND MONTH(pv.view_date) = ?
-    GROUP BY 
-        d.day
+        views_per_day vpd ON d.day = vpd.view_day
     ORDER BY 
         d.day ASC;
   `;
 
   connection.query(
     query,
-    [firstDayOfMonth, year, month],
-    (err, results, fields) => {
+    [firstDayOfMonth, year, month, user_id, firstDayOfMonth, firstDayOfMonth],
+    (err, results) => {
       if (err) {
+        console.error("Database query error:", err);
         return res.status(500).json({
           success: false,
-          error: err.message,
+          error: "Internal server error",
         });
       }
 

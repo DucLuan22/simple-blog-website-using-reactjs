@@ -28,7 +28,6 @@ function PostHistory() {
 
   if (isLoading) return <div></div>;
 
-  console.log(data);
   return (
     <div className="h-full w-full">
       <Table className="hidden md:table w-full">
