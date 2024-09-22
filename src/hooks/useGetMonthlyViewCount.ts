@@ -8,7 +8,7 @@ interface ViewCountData {
 }
 
 // Custom hook to get monthly view count
-const useGetMonthlyViewCount = (user_id: number) => {
+const useGetMonthlyViewCount = (user_id: number | undefined) => {
   return useQuery<ViewCountData[], Error>(
     ["monthlyViewCount", user_id],
     async () => {

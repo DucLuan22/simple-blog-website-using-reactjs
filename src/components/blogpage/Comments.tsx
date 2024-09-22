@@ -21,6 +21,19 @@ function timeDifference(createdAt: Date) {
   return formatDistanceToNow(createdDate, { addSuffix: true });
 }
 
+interface CommentProps {
+  comment_id: number;
+  user_id: number;
+  post_id: string;
+  content: string;
+  createdAt: Date;
+  givenName: string;
+  familyName: string;
+  likes: number;
+  dislikes: number;
+  post_user_id: number;
+}
+
 function Comment({
   content,
   comment_id,
@@ -31,7 +44,8 @@ function Comment({
   givenName,
   post_id,
   dislikes,
-}: CommentType) {
+  post_user_id,
+}: CommentProps) {
   const queryClient = useQueryClient();
   const [currentLike, setCurrentLike] = useState(likes);
   const [currentDislike, setCurrentDislike] = useState(dislikes);
@@ -144,7 +158,14 @@ function Comment({
             />
           </span>
           <p className="font-semibold">{familyName + " " + givenName}</p>
+
+          {post_user_id === user_id && (
+            <span className="bg-secondary p-1 text-sm font-semibold rounded-lg">
+              Author
+            </span>
+          )}
         </span>
+
         <span className="gap-2 flex items-center">
           <span className="text-gray-400 text-sm">
             {timeDifference(createdAt)}
@@ -165,31 +186,33 @@ function Comment({
         </span>
       </div>
       <div className="text-sm tracking-wider leading-6">{content}</div>
-      <div className="flex gap-3">
-        <div className="flex gap-1 items-center cursor-pointer">
-          <Button
-            size={"sm"}
-            variant={"ghost"}
-            className="p-1 h-7"
-            onClick={handleLikeButton}
-          >
-            <ThumbsUp className="w-4 h-4 hover:text-black" />
-          </Button>
-          <p className="">{currentLike}</p>
-        </div>
+      {user?.id !== user_id && (
+        <div className="flex gap-3">
+          <div className="flex gap-1 items-center cursor-pointer">
+            <Button
+              size={"sm"}
+              variant={"ghost"}
+              className="p-1 h-7"
+              onClick={handleLikeButton}
+            >
+              <ThumbsUp className="w-4 h-4 hover:text-black" />
+            </Button>
+            <p className="">{currentLike}</p>
+          </div>
 
-        <div className="flex gap-1 items-center cursor-pointer">
-          <Button
-            size={"sm"}
-            variant={"ghost"}
-            className="p-1 h-7"
-            onClick={handleDislikeButton}
-          >
-            <ThumbsDown className="w-4 h-4 hover:text-black" />
-          </Button>
-          <p className="">{currentDislike}</p>
+          <div className="flex gap-1 items-center cursor-pointer">
+            <Button
+              size={"sm"}
+              variant={"ghost"}
+              className="p-1 h-7"
+              onClick={handleDislikeButton}
+            >
+              <ThumbsDown className="w-4 h-4 hover:text-black" />
+            </Button>
+            <p className="">{currentDislike}</p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

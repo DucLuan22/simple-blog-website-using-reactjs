@@ -643,3 +643,41 @@ exports.getMonthlyViews = async (req, res, next) => {
     }
   );
 };
+
+exports.getTodayStatsByUserId = async (req, res, next) => {
+  const { user_id } = req.params;
+
+  const query = `
+    SELECT 
+    p.post_id,
+    p.title,
+    p.thumbnail,
+    COALESCE(COUNT(DISTINCT c.comment_id), 0) AS total_comments,
+    COALESCE(COUNT(DISTINCT b.post_id), 0) AS total_bookmarks,
+    COALESCE(SUM(v.view_count), 0) AS total_views
+FROM simple_blog.posts p
+LEFT JOIN simple_blog.comments c 
+    ON p.post_id = c.post_id 
+    AND DATE(c.createdAt) = CURDATE() 
+LEFT JOIN simple_blog.bookmarks b 
+    ON p.post_id = b.post_id 
+    AND DATE(b.createdAt) = CURDATE()  
+LEFT JOIN simple_blog.post_views v 
+    ON p.post_id = v.post_id 
+    AND DATE(v.view_date) = CURDATE() 
+WHERE p.user_id = ? 
+GROUP BY p.post_id;
+  `;
+
+  connection.query(query, [user_id], (err, results, fields) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No posts found for this user today" });
+    }
+    res.status(200).json({ success: true, data: results });
+  });
+};

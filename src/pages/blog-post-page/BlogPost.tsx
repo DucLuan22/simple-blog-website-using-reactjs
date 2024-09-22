@@ -181,7 +181,11 @@ function BlogPost() {
               )}
             </div>
           </section>
-          <CommentSection post_id={post_id} newComment={newComment} />
+          <CommentSection
+            post_id={post_id}
+            newComment={newComment}
+            post_user_id={post.user_id}
+          />
         </div>
 
         <div className="space-y-10">

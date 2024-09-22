@@ -6,9 +6,14 @@ import Comment from "./Comments";
 interface CommentSectionProps {
   post_id: string;
   newComment: any;
+  post_user_id: number;
 }
 
-function CommentSection({ post_id, newComment }: CommentSectionProps) {
+function CommentSection({
+  post_id,
+  newComment,
+  post_user_id,
+}: CommentSectionProps) {
   const { data, error, isLoading } = useComments(post_id);
   const queryClient = useQueryClient();
 
@@ -46,6 +51,7 @@ function CommentSection({ post_id, newComment }: CommentSectionProps) {
             user_id={comment.user_id}
             post_id={comment.post_id}
             dislikes={comment.dislikes}
+            post_user_id={post_user_id}
           />
         ))}
       </div>
