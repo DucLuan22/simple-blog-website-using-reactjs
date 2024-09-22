@@ -16,6 +16,7 @@ const {
   getPostByUserId,
   getMonthlyViews,
   getYearlyViews,
+  getTodayStatsByUserId,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -45,8 +46,10 @@ router.post("/update", isAuthenticated, updatePost);
 
 router.get("/users/:user_id", isAuthenticated, getPostByUserId);
 
-router.get("/stats/monthly-view/:user_id", getMonthlyViews);
+router.get("/stats/monthly-view/:user_id", isAuthenticated, getMonthlyViews);
 
-router.get("/stats/yearly-view/:user_id", getYearlyViews);
+router.get("/stats/yearly-view/:user_id", isAuthenticated, getYearlyViews);
+
+router.get("/stats/daily-notification/:user_id", getTodayStatsByUserId);
 
 module.exports = router;
