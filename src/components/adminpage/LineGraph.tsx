@@ -11,6 +11,13 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 ChartJS.register(
   CategoryScale,
@@ -65,7 +72,22 @@ function LineGraph({ chart_data, isLoading }: LineChartProps) {
   if (isLoading) {
     return <div></div>;
   }
-  return <Line options={options} data={data} />;
+  return (
+    <div>
+      <div>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sorting" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="light">Monthly</SelectItem>
+            <SelectItem value="dark">Annually</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Line options={options} data={data} />
+    </div>
+  );
 }
 
 export default LineGraph;
