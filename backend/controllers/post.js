@@ -692,8 +692,8 @@ exports.getViews = async (req, res, next) => {
   // Query for yearly views
   const yearlyQuery = `
     SELECT
+        DATE_FORMAT(months.view_date, '%Y-%m') AS date
         COALESCE(SUM(pv.view_count), 0) AS total_views,
-        DATE_FORMAT(months.view_date, '%Y-%m') AS month
     FROM
         (SELECT
             DATE_SUB(CURDATE(), INTERVAL n MONTH) AS view_date
@@ -745,7 +745,7 @@ exports.getViews = async (req, res, next) => {
             DAY(pv.view_date)
     )
     SELECT 
-        CONCAT(LPAD(d.day, 2, '0'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%m'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%Y')) AS day_with_month_year,
+        CONCAT(LPAD(d.day, 2, '0'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%m'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%Y')) AS date,
         COALESCE(vpd.total_views, 0) AS total_views
     FROM 
         days d
