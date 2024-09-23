@@ -681,3 +681,121 @@ GROUP BY p.post_id;
     res.status(200).json({ success: true, data: results });
   });
 };
+
+exports.getViews = async (req, res, next) => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based
+  const firstDayOfMonth = `${year}-${month}-01`;
+  const { user_id } = req.params;
+
+  // Query for yearly views
+  const yearlyQuery = `
+    SELECT
+        COALESCE(SUM(pv.view_count), 0) AS total_views,
+        DATE_FORMAT(months.view_date, '%Y-%m') AS month
+    FROM
+        (SELECT
+            DATE_SUB(CURDATE(), INTERVAL n MONTH) AS view_date
+         FROM
+            (SELECT @row := @row + 1 AS n
+             FROM (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) t1,
+                  (SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) t2,
+                  (SELECT @row := -1) t3) d
+         WHERE
+            DATE_SUB(CURDATE(), INTERVAL n MONTH) >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+        ) AS months
+    LEFT JOIN
+        simple_blog.post_views pv
+    ON
+        DATE_FORMAT(pv.view_date, '%Y-%m') = DATE_FORMAT(months.view_date, '%Y-%m')
+        AND pv.post_id IN (
+            SELECT post_id
+            FROM simple_blog.posts
+            WHERE user_id = ?
+        )
+    GROUP BY
+        months.view_date
+    ORDER BY
+        months.view_date;
+  `;
+
+  // Query for monthly views
+  const monthlyQuery = `
+    WITH RECURSIVE days AS (
+        SELECT 1 AS day
+        UNION ALL
+        SELECT day + 1
+        FROM days
+        WHERE day < DAY(LAST_DAY(CONCAT(?, '-01')))
+    ),
+    views_per_day AS (
+        SELECT 
+            DAY(pv.view_date) AS view_day,
+            COALESCE(SUM(pv.view_count), 0) AS total_views
+        FROM 
+            post_views pv
+        JOIN 
+            posts p ON pv.post_id = p.post_id
+        WHERE 
+            YEAR(pv.view_date) = ?
+            AND MONTH(pv.view_date) = ?
+            AND p.user_id = ?
+        GROUP BY 
+            DAY(pv.view_date)
+    )
+    SELECT 
+        CONCAT(LPAD(d.day, 2, '0'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%m'), '-', DATE_FORMAT(CONCAT(?, '-01'), '%Y')) AS day_with_month_year,
+        COALESCE(vpd.total_views, 0) AS total_views
+    FROM 
+        days d
+    LEFT JOIN 
+        views_per_day vpd ON d.day = vpd.view_day
+    ORDER BY 
+        d.day ASC;
+  `;
+
+  try {
+    // Execute both queries in parallel
+    const [yearlyResults, monthlyResults] = await Promise.all([
+      new Promise((resolve, reject) => {
+        connection.query(yearlyQuery, [user_id], (err, results) => {
+          if (err) reject(err);
+          else resolve(results);
+        });
+      }),
+      new Promise((resolve, reject) => {
+        connection.query(
+          monthlyQuery,
+          [
+            firstDayOfMonth,
+            year,
+            month,
+            user_id,
+            firstDayOfMonth,
+            firstDayOfMonth,
+          ],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results);
+          }
+        );
+      }),
+    ]);
+
+    // Respond with both results
+    res.status(200).json({
+      success: true,
+      data: {
+        yearlyViews: yearlyResults,
+        monthlyViews: monthlyResults,
+      },
+    });
+  } catch (err) {
+    console.error("Database query error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
+};

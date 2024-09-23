@@ -6,9 +6,11 @@ import BarChart from "./BarChart";
 import useGetMonthlyViewCount from "@/hooks/useGetMonthlyViewCount";
 import { useCounterStore } from "@/store";
 
-function Body() {
-  const user = useCounterStore((state) => state.user);
-  const stat = useGetMonthlyViewCount(user?.id);
+interface BodyProps {
+  user_id: number | undefined;
+}
+function Body({ user_id }: BodyProps) {
+  const stat = useGetMonthlyViewCount(user_id);
 
   return (
     <div className="flex gap-10 flex-col lg:flex-row">

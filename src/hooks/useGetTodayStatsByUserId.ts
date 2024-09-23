@@ -11,7 +11,7 @@ interface PostStats {
 }
 
 const fetchTodayStatsByUserId = async (
-  user_id: string
+  user_id: number | undefined
 ): Promise<PostStats[]> => {
   const response = await axios.get(
     `http://localhost:5000/api/posts/stats/daily-notification/${user_id}`
@@ -19,7 +19,7 @@ const fetchTodayStatsByUserId = async (
   return response.data.data; // Adjust this if your API response structure differs
 };
 
-export const useTodayStatsByUserId = (user_id: string) => {
+export const useGetTodayStatsByUserId = (user_id: number | undefined) => {
   return useQuery<PostStats[], Error>(
     ["todayStats", user_id],
     () => fetchTodayStatsByUserId(user_id),

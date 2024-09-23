@@ -77,7 +77,7 @@ function LineGraph({ chart_data, isLoading }: LineChartProps) {
       <div>
         <Select>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sorting" />
+            <SelectValue placeholder="Sortinggit " />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="light">Monthly</SelectItem>
