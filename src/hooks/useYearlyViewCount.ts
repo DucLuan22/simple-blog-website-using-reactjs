@@ -20,10 +20,10 @@ const useGetYearlyViewCount = (user_id: number) => {
       return response.data.data;
     },
     {
-      // Optionally, you can specify configuration options here
       staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
       cacheTime: 1000 * 60 * 10, // Cache data for 10 minutes
-      refetchOnWindowFocus: true, // Refetch data when the window regains focus
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
       onError: (error: Error) => {
         console.error("Error fetching yearly view count:", error.message);
       },
