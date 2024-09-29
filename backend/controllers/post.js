@@ -799,3 +799,53 @@ exports.getViews = async (req, res, next) => {
     });
   }
 };
+
+exports.getTopDailyViewedPosts = async (req, res, next) => {
+  const query = `
+    SELECT 
+    posts.post_id,
+    posts.title,
+    posts.thumbnail,
+    posts.content,
+    posts.user_id,
+    categories.category_name,
+    posts.createDate,
+    posts.updateDate,
+    posts.views,
+    SUM(post_views.view_count) AS daily_views,
+    post_views.view_date,
+    users.givenName,
+    users.familyName
+FROM 
+    simple_blog.posts
+JOIN 
+    simple_blog.post_views ON posts.post_id = post_views.post_id
+JOIN 
+    simple_blog.categories ON posts.category_id = categories.category_id
+JOIN 
+    simple_blog.users ON posts.user_id = users.id  -- Join to get user details
+WHERE 
+    post_views.view_date = CURDATE()
+GROUP BY 
+    posts.post_id, post_views.view_date, users.givenName, users.familyName  -- Include new fields in GROUP BY
+ORDER BY 
+    daily_views DESC
+LIMIT 5;
+
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Database query error:", err);
+      return res.status(500).json({
+        success: false,
+        error: "Internal server error",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: results,
+    });
+  });
+};

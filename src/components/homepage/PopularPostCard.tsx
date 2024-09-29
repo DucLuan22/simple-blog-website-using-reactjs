@@ -1,13 +1,35 @@
-function PopularPostCard() {
-  return (
-    <div className="space-y-3">
-      <span className="bg-orange-400 p-y-3 px-4 rounded-3xl">Travel</span>
+import { format } from "date-fns";
 
-      <h2 className="font-semibold text-lg">
-        A Journey Through Bohemian Beauty: Exploring the Streets of Prague
-      </h2>
+interface PopularPropsProps {
+  post_id: string;
+  title: string;
+  thumbnail: string;
+  category_name: string;
+  createDate: Date;
+  familyName: string;
+  givenName: string;
+}
+function PopularPostCard({
+  category_name,
+  createDate,
+  post_id,
+  thumbnail,
+  title,
+  familyName,
+  givenName,
+}: PopularPropsProps) {
+  return (
+    <div className="space-y-3" key={post_id}>
+      <span className="bg-orange-400 p-y-3 px-4 rounded-3xl">
+        {category_name}
+      </span>
+
+      <h2 className="font-semibold text-lg">{title}</h2>
       <span className="text-xs">
-        Kate Woods - <span className="text-gray-300">05.01.2023</span>
+        {familyName + " " + givenName} -{" "}
+        <span className="text-gray-500">
+          {format(createDate, "dd.MM.yyyy")}
+        </span>
       </span>
     </div>
   );
