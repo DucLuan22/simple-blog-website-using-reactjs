@@ -1,3 +1,4 @@
+import PostEditorModal from "@/components/adminpage/PostEditorModal";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -43,9 +44,7 @@ function PostHistory() {
         </TableHeader>
         <TableBody>
           {data?.map((item) => (
-            <TableRow
-              onClick={() => handleDeletePost(item.user_id, item.post_id)}
-            >
+            <TableRow>
               <TableCell className="w-[100px] font-medium">
                 {item.post_id}
               </TableCell>
@@ -59,10 +58,11 @@ function PostHistory() {
                 {item.familyName + " " + item.givenName}
               </TableCell>
               <TableCell className="space-x-3">
-                <Button className="bg-blue-500">
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button variant="destructive">
+                <PostEditorModal />
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDeletePost(item.user_id, item.post_id)}
+                >
                   <Trash className="w-4 h-4" />
                 </Button>
               </TableCell>
@@ -95,9 +95,7 @@ function PostHistory() {
               <strong>Author:</strong> {item.familyName + " " + item.givenName}
             </div>
             <div className="flex justify-center space-x-3">
-              <Button className="bg-blue-500">
-                <Edit className="w-4 h-4" />
-              </Button>
+              <PostEditorModal />
               <Button variant="destructive">
                 <Trash className="w-4 h-4" />
               </Button>
