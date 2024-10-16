@@ -27,6 +27,17 @@ function htmlStringToElements(htmlString: any) {
 function PostEditorModal() {
   const reactQuillRef = useRef<ReactQuill>(null);
   const [content, setContent] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+
+  // Function to handle image upload
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl); // Preview the uploaded image
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -34,15 +45,15 @@ function PostEditorModal() {
           <Edit className="w-4 h-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full max-w-[95%] lg:max-w-[80%] p-4">
+      <DialogContent className="max-w-[95%] lg:max-w-[80%] p-4">
         <DialogHeader>
           <DialogTitle>Post Editor</DialogTitle>
         </DialogHeader>
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-4 lg:gap-6">
-          {/* Left Side - Editor with full width on mobile, 2/3 on larger screens */}
-          <div className="flex flex-col">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr] md:gap-4 lg:gap-6">
+          {/* Left Side - Editor with full width on mobile, 50/50 on medium screens, and 2/3 on larger screens */}
+          <div className="flex flex-col w-full">
             <Input className="mb-4" placeholder="Post title..." />
-            <div>
+            <div className="w-full">
               <ReactQuill
                 theme="snow"
                 ref={reactQuillRef}
@@ -87,16 +98,44 @@ function PostEditorModal() {
                 ]}
                 value={content}
                 onChange={setContent}
-                className="text-foreground h-[300px] lg:h-[500px] lg:w-[1000px] mb-4"
+                className="text-foreground h-[300px] md:h-[500px] w-full mb-4"
               />
             </div>
-            <Button className="self-end mt-16 md:mt-12">Save</Button>
+
+            {/* Fix the Save button alignment */}
+            <div className="flex justify-end mt-24 mb-5 md:mt-12 md:mb-0">
+              <Button>Save</Button>
+            </div>
           </div>
 
-          {/* Right Side - Preview with overflow handling */}
-          <div className="h-auto overflow-y-auto break-words overflow-clip">
-            <div className="h-[250px] w-full border"></div>
-            <div className=" ">
+          {/* Right Side - Image Upload as Button and Preview */}
+          <div className="flex flex-col items-center">
+            {/* Image Input (Hidden) */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+
+            {/* Label acts as the button to trigger file input */}
+            <label htmlFor="image-upload" className="cursor-pointer w-full">
+              {image ? (
+                <img
+                  src={image}
+                  alt="Preview"
+                  className="h-[200px] w-full md:h-[250px] border object-cover mb-4"
+                />
+              ) : (
+                <div className="h-[200px] w-full md:h-[250px] border mb-4 flex items-center justify-center text-gray-500">
+                  Click to select an image
+                </div>
+              )}
+            </label>
+
+            {/* Content Preview */}
+            <div className=" self-start space-y-4 overflow-y-auto break-words pr-3 max-h-[200px] md:max-h-[300px] lg:max-h-[600px]">
               {content ? (
                 htmlStringToElements(content)
               ) : (
