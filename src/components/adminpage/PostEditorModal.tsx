@@ -53,7 +53,7 @@ function PostEditorModal() {
           {/* Left Side - Editor with full width on mobile, 50/50 on medium screens, and 2/3 on larger screens */}
           <div className="flex flex-col w-full">
             <Input className="mb-4" placeholder="Post title..." />
-            <div className="w-full">
+            <div className="max-w-[1000px]">
               <ReactQuill
                 theme="snow"
                 ref={reactQuillRef}
@@ -98,7 +98,7 @@ function PostEditorModal() {
                 ]}
                 value={content}
                 onChange={setContent}
-                className="text-foreground h-[300px] md:h-[500px] w-full mb-4"
+                className="text-foreground h-[300px] md:h-[500px] w-full mb-4 lg:max-w-[600px] 2xl:max-w-[980px]"
               />
             </div>
 
@@ -109,7 +109,7 @@ function PostEditorModal() {
           </div>
 
           {/* Right Side - Image Upload as Button and Preview */}
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center break-words">
             {/* Image Input (Hidden) */}
             <input
               type="file"
@@ -135,7 +135,7 @@ function PostEditorModal() {
             </label>
 
             {/* Content Preview */}
-            <div className=" self-start space-y-4 overflow-y-auto break-words pr-3 max-h-[200px] md:max-h-[300px] lg:max-h-[600px]">
+            <div className=" self-start pr-3 overflow-y-auto break-words  max-h-[200px] max-w-full lg:max-w-[300px] xl:max-h-[400px]  2xl:max-w-[480px]">
               {content ? (
                 htmlStringToElements(content)
               ) : (
