@@ -864,16 +864,13 @@ exports.updatePostById = async (req, res, next) => {
   const { post_id } = req.params;
   const { title, thumbnail, content } = req.body;
 
-  // Check if there's something to update
   if (!(title || thumbnail || content)) {
     return res.status(400).json({ message: "No fields to update" });
   }
 
-  // Object to map the fields that need updating
   const fieldsToUpdate = [];
   const queryParams = [];
 
-  // Dynamically add fields if they exist in request body
   if (title) {
     fieldsToUpdate.push("title = ?");
     queryParams.push(title);
@@ -887,7 +884,6 @@ exports.updatePostById = async (req, res, next) => {
     queryParams.push(content);
   }
 
-  // Add `post_id` at the end of `queryParams`
   queryParams.push(post_id);
 
   const query = `
@@ -896,7 +892,6 @@ exports.updatePostById = async (req, res, next) => {
     WHERE post_id = ?
   `;
 
-  // Run query and respond to the client
   connection.query(query, queryParams, (err, results) => {
     if (err) {
       return res
