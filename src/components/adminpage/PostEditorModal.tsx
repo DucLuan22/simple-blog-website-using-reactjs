@@ -24,11 +24,21 @@ function htmlStringToElements(htmlString: any) {
   });
 }
 
-function PostEditorModal() {
-  const reactQuillRef = useRef<ReactQuill>(null);
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+interface PostEditorModelProps {
+  title: string;
+  post_content: string;
+  thumbnail: string;
+}
 
+function PostEditorModal({
+  post_content,
+  thumbnail,
+  title,
+}: PostEditorModelProps) {
+  const reactQuillRef = useRef<ReactQuill>(null);
+  const [content, setContent] = useState<string>(post_content);
+  const [image, setImage] = useState<string | null>(thumbnail);
+  const [post_title, setTitle] = useState<string>(title);
   // Function to handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,9 +60,13 @@ function PostEditorModal() {
           <DialogTitle>Post Editor</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr] md:gap-4 lg:gap-6">
-          {/* Left Side - Editor with full width on mobile, 50/50 on medium screens, and 2/3 on larger screens */}
           <div className="flex flex-col w-full">
-            <Input className="mb-4" placeholder="Post title..." />
+            <Input
+              className="mb-4"
+              placeholder="Post title..."
+              value={post_title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
             <div className="max-w-[1000px]">
               <ReactQuill
                 theme="snow"
@@ -102,13 +116,11 @@ function PostEditorModal() {
               />
             </div>
 
-            {/* Fix the Save button alignment */}
             <div className="flex justify-end mt-24 mb-5 md:mt-12 md:mb-0">
               <Button>Save</Button>
             </div>
           </div>
 
-          {/* Right Side - Image Upload as Button and Preview */}
           <div className="flex flex-col items-center break-words">
             {/* Image Input (Hidden) */}
             <input
@@ -119,7 +131,6 @@ function PostEditorModal() {
               id="image-upload"
             />
 
-            {/* Label acts as the button to trigger file input */}
             <label htmlFor="image-upload" className="cursor-pointer w-full">
               {image ? (
                 <img

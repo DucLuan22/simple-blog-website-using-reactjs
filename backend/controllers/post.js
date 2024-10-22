@@ -454,11 +454,21 @@ exports.getPostByUserId = async (req, res, next) => {
   const { user_id } = req.params;
 
   const query = `
-    SELECT posts.*, categories.category_name 
-    FROM posts 
-    JOIN categories ON posts.category_id = categories.category_id
-    WHERE posts.user_id = ?
-    ORDER BY posts.createDate DESC
+    SELECT 
+    posts.*, 
+    categories.category_name, 
+    users.familyName, 
+    users.givenName
+FROM 
+    posts 
+JOIN 
+    categories ON posts.category_id = categories.category_id
+JOIN 
+    users ON posts.user_id = users.id
+WHERE 
+    posts.user_id = 6
+ORDER BY 
+    posts.createDate DESC;
   `;
 
   connection.query(query, [user_id], (err, results, fields) => {
@@ -847,5 +857,57 @@ LIMIT 5;
       success: true,
       data: results,
     });
+  });
+};
+
+exports.updatePostById = async (req, res, next) => {
+  const { post_id } = req.params;
+  const { title, thumbnail, content } = req.body;
+
+  // Check if there's something to update
+  if (!(title || thumbnail || content)) {
+    return res.status(400).json({ message: "No fields to update" });
+  }
+
+  // Object to map the fields that need updating
+  const fieldsToUpdate = [];
+  const queryParams = [];
+
+  // Dynamically add fields if they exist in request body
+  if (title) {
+    fieldsToUpdate.push("title = ?");
+    queryParams.push(title);
+  }
+  if (thumbnail) {
+    fieldsToUpdate.push("thumbnail = ?");
+    queryParams.push(thumbnail);
+  }
+  if (content) {
+    fieldsToUpdate.push("content = ?");
+    queryParams.push(content);
+  }
+
+  // Add `post_id` at the end of `queryParams`
+  queryParams.push(post_id);
+
+  const query = `
+    UPDATE posts
+    SET ${fieldsToUpdate.join(", ")}, updateDate = NOW()
+    WHERE post_id = ?
+  `;
+
+  // Run query and respond to the client
+  connection.query(query, queryParams, (err, results) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "Internal server error", error: err.message });
+    }
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    res
+      .status(200)
+      .json({ success: true, message: "Post updated successfully" });
   });
 };

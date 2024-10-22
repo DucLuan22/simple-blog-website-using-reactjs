@@ -54,11 +54,14 @@ function PostHistory() {
                 {format(item.updateDate, "dd-MM-yyyy")}
               </TableCell>
               <TableCell className="">
-                <strong>Author:</strong>{" "}
                 {item.familyName + " " + item.givenName}
               </TableCell>
               <TableCell className="space-x-3">
-                <PostEditorModal />
+                <PostEditorModal
+                  title={item.title}
+                  thumbnail={item.thumbnail}
+                  post_content={item.content}
+                />
                 <Button
                   variant="destructive"
                   onClick={() => handleDeletePost(item.user_id, item.post_id)}
@@ -95,7 +98,11 @@ function PostHistory() {
               <strong>Author:</strong> {item.familyName + " " + item.givenName}
             </div>
             <div className="flex justify-center space-x-3">
-              <PostEditorModal />
+              <PostEditorModal
+                title={item.title}
+                thumbnail={item.thumbnail}
+                post_content={item.content}
+              />
               <Button variant="destructive">
                 <Trash className="w-4 h-4" />
               </Button>

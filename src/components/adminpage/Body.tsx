@@ -11,7 +11,6 @@ interface BodyProps {
   user_id: number | undefined;
 }
 function Body({ user_id }: BodyProps) {
-  const stat = useGetMonthlyViewCount(user_id);
   const lineData = useGetViewStats(user_id);
 
   return (
