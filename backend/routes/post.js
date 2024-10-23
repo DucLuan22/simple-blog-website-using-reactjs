@@ -19,6 +19,8 @@ const {
   getTodayStatsByUserId,
   getViews,
   getTopDailyViewedPosts,
+
+  editPostById,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -61,5 +63,7 @@ router.get(
 router.get("/stats/get-views/:user_id", isAuthenticated, getViews);
 
 router.get("/stats/top-daily-posts", getTopDailyViewedPosts);
+
+router.put("/edit-post/:post_id", isAuthenticated, editPostById);
 
 module.exports = router;

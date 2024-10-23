@@ -58,6 +58,7 @@ function PostHistory() {
               </TableCell>
               <TableCell className="space-x-3">
                 <PostEditorModal
+                  post_id={item.post_id}
                   title={item.title}
                   thumbnail={item.thumbnail}
                   post_content={item.content}
@@ -99,6 +100,7 @@ function PostHistory() {
             </div>
             <div className="flex justify-center space-x-3">
               <PostEditorModal
+                post_id={item.post_id}
                 title={item.title}
                 thumbnail={item.thumbnail}
                 post_content={item.content}

@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Edit } from "lucide-react";
 import ReactQuill from "react-quill";
 import { Input } from "../ui/input";
+import { useEditPost } from "@/hooks/useEditPost";
 
 function htmlStringToElements(htmlString: any) {
   const parser = new DOMParser();
@@ -25,12 +26,14 @@ function htmlStringToElements(htmlString: any) {
 }
 
 interface PostEditorModelProps {
+  post_id: string;
   title: string;
   post_content: string;
   thumbnail: string;
 }
 
 function PostEditorModal({
+  post_id,
   post_content,
   thumbnail,
   title,
@@ -39,6 +42,10 @@ function PostEditorModal({
   const [content, setContent] = useState<string>(post_content);
   const [image, setImage] = useState<string | null>(thumbnail);
   const [post_title, setTitle] = useState<string>(title);
+  const [modelOpen, setModelOpen] = useState(false);
+
+  const mutation = useEditPost();
+
   // Function to handle image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,8 +55,18 @@ function PostEditorModal({
     }
   };
 
+  const handleSave = () => {
+    mutation.mutate({
+      post_id,
+      title: post_title,
+      thumbnail: image || "",
+      content,
+    });
+    setModelOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={() => setModelOpen(!modelOpen)} open={modelOpen}>
       <DialogTrigger>
         <Button className="bg-blue-500">
           <Edit className="w-4 h-4" />
@@ -117,12 +134,13 @@ function PostEditorModal({
             </div>
 
             <div className="flex justify-end mt-24 mb-5 md:mt-12 md:mb-0">
-              <Button>Save</Button>
+              <Button onClick={handleSave} disabled={mutation.isLoading}>
+                {mutation.isLoading ? "Saving..." : "Save"}
+              </Button>
             </div>
           </div>
 
           <div className="flex flex-col items-center break-words">
-            {/* Image Input (Hidden) */}
             <input
               type="file"
               accept="image/*"
@@ -145,8 +163,7 @@ function PostEditorModal({
               )}
             </label>
 
-            {/* Content Preview */}
-            <div className=" self-start pr-3 overflow-y-auto break-words  max-h-[200px] max-w-full lg:max-w-[300px] xl:max-h-[400px]  2xl:max-w-[480px]">
+            <div className="self-start pr-3 overflow-y-auto break-words max-h-[200px] max-w-full lg:max-w-[300px] xl:max-h-[400px] 2xl:max-w-[480px]">
               {content ? (
                 htmlStringToElements(content)
               ) : (

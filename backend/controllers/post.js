@@ -860,8 +860,9 @@ LIMIT 5;
   });
 };
 
-exports.updatePostById = async (req, res, next) => {
+exports.editPostById = async (req, res, next) => {
   const { post_id } = req.params;
+
   const { title, thumbnail, content } = req.body;
 
   if (!(title || thumbnail || content)) {
