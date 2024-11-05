@@ -151,7 +151,7 @@ function BlogPost() {
             </div>
           </div>
 
-          <section className="space-y-10">
+          <section className="space-y-3">
             {htmlStringToElements(post?.content)}
           </section>
           <section className="lg:basis-[10%]">

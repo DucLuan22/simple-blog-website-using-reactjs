@@ -18,6 +18,9 @@ function PopularPost() {
             <PopularPostSkeleton />
             <PopularPostSkeleton />
             <PopularPostSkeleton />
+            <PopularPostSkeleton />
+            <PopularPostSkeleton />
+            <PopularPostSkeleton />
           </>
         ) : (
           // Render actual data once loaded

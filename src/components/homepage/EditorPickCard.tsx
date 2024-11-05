@@ -14,7 +14,7 @@ function EditorPickCard() {
           Travel
         </span>
 
-        <h2 className="font-semibold text-lg">
+        <h2 className="font-semibold text-lg ">
           A Journey Through Bohemian Beauty: Exploring the Streets of Prague
         </h2>
         <span className="text-xs sm:text-sm">

@@ -833,11 +833,11 @@ JOIN
 JOIN 
     simple_blog.categories ON posts.category_id = categories.category_id
 JOIN 
-    simple_blog.users ON posts.user_id = users.id  -- Join to get user details
+    simple_blog.users ON posts.user_id = users.id
 WHERE 
     post_views.view_date = CURDATE()
 GROUP BY 
-    posts.post_id, post_views.view_date, users.givenName, users.familyName  -- Include new fields in GROUP BY
+    posts.post_id, post_views.view_date, users.givenName, users.familyName
 ORDER BY 
     daily_views DESC
 LIMIT 5;

@@ -84,3 +84,11 @@ body {
   color: var(--accent-foreground);
   opacity: 70%;
 }
+
+h1 {
+  @apply text-2xl font-bold mb-4;
+}
+
+h2 {
+  @apply text-2xl font-semibold mb-3;
+}

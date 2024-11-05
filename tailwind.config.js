@@ -17,6 +17,10 @@ module.exports = {
       },
     },
     extend: {
+      fontSize: {
+        h1: ["2.5rem", { lineHeight: "1.2" }],
+        h2: ["2rem", { lineHeight: "1.3" }],
+      },
       colors: {
         bkg: "hsl(0, 0%, 4%)",
         content: "hsl(var(--content-background))",
