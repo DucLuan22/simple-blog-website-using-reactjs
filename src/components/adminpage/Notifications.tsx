@@ -43,9 +43,9 @@ export default function Notifications({ user_id }: NotificationProps) {
             <Eye className="w-28 h-28 text-white " />
             <p className=" text-8xl font-bold text-white">{totalViews}</p>
           </div>
-          <h2 className="mt-3 text-end text-white text-lg font-semibold spacing tracking-wider">
+          <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
             Today Views
-          </h2>
+          </p>
         </div>
         <div className="mx-1 px-5 bg-white h-[62px] rounded-lg flex items-center justify-between">
           <p className="text-green-500">View Details</p>
@@ -59,9 +59,9 @@ export default function Notifications({ user_id }: NotificationProps) {
             <Mails className="w-28 h-28 text-white " />
             <p className=" text-8xl font-bold text-white">{totalBookmarks}</p>
           </div>
-          <h2 className="mt-3 text-end text-white text-lg font-semibold spacing tracking-wider">
+          <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
             Today Bookmarks
-          </h2>
+          </p>
         </div>
         <div className="mx-1 px-5 bg-white h-[62px] rounded-lg flex items-center justify-between">
           <p className="text-blue-500">View Details</p>
@@ -75,9 +75,9 @@ export default function Notifications({ user_id }: NotificationProps) {
             <MessageSquareText className="w-28 h-28 text-white " />
             <p className=" text-8xl font-bold text-white">{totalComments}</p>
           </div>
-          <h2 className="mt-3 text-end text-white text-lg font-semibold spacing tracking-wider">
+          <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
             New Comments
-          </h2>
+          </p>
         </div>
         <div className="mx-1 px-5 bg-white h-[62px] rounded-lg flex items-center justify-between">
           <p className="text-red-500">View Details</p>
@@ -91,9 +91,9 @@ export default function Notifications({ user_id }: NotificationProps) {
             <User className="w-28 h-28 text-white " />
             <p className=" text-8xl font-bold text-white">30</p>
           </div>
-          <h2 className="mt-3 text-end text-white text-lg font-semibold spacing tracking-wider">
+          <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
             New Users
-          </h2>
+          </p>
         </div>
         <div className="mx-1 px-5 bg-white h-[62px] rounded-lg flex items-center justify-between">
           <p className="text-yellow-500">View Details</p>

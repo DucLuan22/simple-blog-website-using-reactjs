@@ -32,13 +32,43 @@ ChartJS.register(
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
-      position: "top" as const,
+      display: false, // Hide legend to match the clean look
     },
     title: {
       display: true,
-      text: "Chart.js Line Chart",
+      text: "View Statistics",
+      font: {
+        size: 16,
+        weight: "bold" as const, // Ensure the type aligns with expectations
+      },
+      color: "#334155", // Dark blue-gray color
+    },
+    tooltip: {
+      backgroundColor: "#1E3A8A", // Dark blue background for tooltip
+      titleColor: "#fff",
+      bodyColor: "#fff",
+      padding: 10,
+      cornerRadius: 5,
+    },
+  },
+  scales: {
+    x: {
+      ticks: {
+        color: "#64748B",
+        display: false,
+      },
+    },
+    y: {
+      grid: {
+        color: "#E5E7EB",
+      },
+      ticks: {
+        color: "#64748B", // Gray color for Y-axis labels
+        stepSize: 1, // Adjust step size based on data range
+      },
     },
   },
 };
@@ -59,14 +89,12 @@ interface LineChartProps {
 }
 
 function LineGraph({ chart_data, isLoading }: LineChartProps) {
-  const [viewType, setViewType] = useState<"monthly" | "yearly">("monthly"); // State to toggle views
+  const [viewType, setViewType] = useState<"monthly" | "yearly">("monthly");
 
-  // Toggle function to handle view changes
   const handleViewChange = (value: "monthly" | "yearly") => {
     setViewType(value);
   };
 
-  // Set labels and data based on the selected view (monthly or yearly)
   const labels =
     viewType === "monthly"
       ? chart_data?.monthlyViews.map((item) => item.date)
@@ -82,36 +110,43 @@ function LineGraph({ chart_data, isLoading }: LineChartProps) {
             ? chart_data?.monthlyViews.map((item) => item.total_views)
             : chart_data?.yearlyViews.map((item) => item.total_views),
         fill: true,
-        backgroundColor: "rgba(53, 162, 235, 0.2)", // RGBA color with alpha for transparency
-        borderColor: "rgba(53, 162, 235, 0.5)",
+        backgroundColor: "rgba(59, 130, 246, 0.2)",
+        borderColor: "#3B82F6",
+        borderWidth: 2,
+        tension: 0.3,
+        pointBackgroundColor: "#3B82F6",
+        pointHoverBackgroundColor: "#1E3A8A",
+        pointRadius: 3,
+        pointHoverRadius: 5,
       },
     ],
   };
 
   if (isLoading) {
-    return <div>Loading...</div>; // Show loading state while fetching data
+    return <div className="text-gray-500 text-center">Loading...</div>;
   }
 
   return (
-    <div>
-      <div>
-        {/* Select component to toggle between Monthly and Yearly views */}
+    <div className="p-4 bg-white shadow rounded-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-800">View Statistics</h2>
         <Select
           onValueChange={(value) =>
             handleViewChange(value as "monthly" | "yearly")
           }
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] border border-gray-300 rounded-md shadow-sm text-gray-600">
             <SelectValue placeholder="Select View" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-white shadow-lg rounded-md">
             <SelectItem value="monthly">Monthly</SelectItem>
             <SelectItem value="yearly">Yearly</SelectItem>
           </SelectContent>
         </Select>
       </div>
-      {/* Line chart based on selected view */}
-      <Line options={options} data={data} />
+      <div className="h-[500px]">
+        <Line options={options} data={data} />
+      </div>
     </div>
   );
 }

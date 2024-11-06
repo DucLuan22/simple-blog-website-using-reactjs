@@ -9,9 +9,9 @@ function Category() {
 
   return (
     <div className="space-y-14 mb-36">
-      <h1 className="text-2xl p-2 capitalize md:text-3xl lg:text-5xl tracking-wide w-full text-center bg-foreground text-primary-foreground font-semibold">
+      <p className="text-2xl p-2 capitalize md:text-3xl lg:text-5xl tracking-wide w-full text-center bg-foreground text-primary-foreground font-semibold">
         {!isLoading && data && data[0]?.category_name}
-      </h1>
+      </p>
       <RecentPostList data={data} isLoading={isLoading} error={error} />
     </div>
   );

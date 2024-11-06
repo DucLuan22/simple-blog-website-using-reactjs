@@ -6,9 +6,9 @@ function Contact() {
   return (
     <div className="w-full h-vh space-y-40 mb-64">
       <div className="flex flex-col items-center mx-[20%] gap-y-4">
-        <h1 className="font-bold text-3xl md:text-4xl lg:text-5xl mt-36">
+        <p className="font-bold text-3xl md:text-4xl lg:text-5xl mt-36">
           CONTACT US
-        </h1>
+        </p>
         <p className="leading-10 text-center">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero animi
           possimus incidunt ipsam voluptas sunt ut, accusantium tempore ratione

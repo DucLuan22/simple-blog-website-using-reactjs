@@ -13,7 +13,7 @@ function BookMark() {
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold">Bookmark</h1>
+      <p className="text-3xl font-bold">Bookmark</p>
       <hr className="border-[1px] my-2" />
       <div className="flex gap-6">
         {data?.map((post) => (

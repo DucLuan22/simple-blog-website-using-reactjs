@@ -109,7 +109,7 @@ function Navbar() {
         <NavSocialIcon />
       </ul>
 
-      <h1 className="font-bold text-2xl mx-auto inline-block">luanblog</h1>
+      <p className="font-bold text-2xl mx-auto inline-block">luanblog</p>
 
       <div className="flex gap-x-4 items-center">
         <ThemeToggle />

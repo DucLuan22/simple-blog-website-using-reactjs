@@ -121,9 +121,9 @@ function BlogPost() {
       </div>
       <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
         <div className="space-y-10 basis-full ">
-          <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold">
+          <p className="text-2xl md:text-3xl lg:text-5xl font-bold">
             {post?.title}
-          </h1>
+          </p>
           <div className="flex justify-between">
             <div className="flex gap-x-3 items-center">
               <div className="rounded-full border-[1px] border-black w-10 h-10 overflow-hidden">

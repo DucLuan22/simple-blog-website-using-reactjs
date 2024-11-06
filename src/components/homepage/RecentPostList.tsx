@@ -36,7 +36,7 @@ function RecentPostList({ data, error, isLoading }: PostListProps) {
 
   return (
     <div className="space-y-10 basis-full lg:basis-4/5">
-      <h1 className="text-xl md:text-2xl font-bold">Recent Posts</h1>
+      <p className="text-xl md:text-2xl font-bold">Recent Posts</p>
       <div className="space-y-10">
         {isLoading
           ? Array.from({ length: rowsPerPage }).map((_, index) => (

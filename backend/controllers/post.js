@@ -811,40 +811,39 @@ exports.getViews = async (req, res, next) => {
 };
 
 exports.getTopDailyViewedPosts = async (req, res, next) => {
-  const query = `
+  const queryTopViewedPosts = `
     SELECT 
-    posts.post_id,
-    posts.title,
-    posts.thumbnail,
-    posts.content,
-    posts.user_id,
-    categories.category_name,
-    posts.createDate,
-    posts.updateDate,
-    posts.views,
-    SUM(post_views.view_count) AS daily_views,
-    post_views.view_date,
-    users.givenName,
-    users.familyName
-FROM 
-    simple_blog.posts
-JOIN 
-    simple_blog.post_views ON posts.post_id = post_views.post_id
-JOIN 
-    simple_blog.categories ON posts.category_id = categories.category_id
-JOIN 
-    simple_blog.users ON posts.user_id = users.id
-WHERE 
-    post_views.view_date = CURDATE()
-GROUP BY 
-    posts.post_id, post_views.view_date, users.givenName, users.familyName
-ORDER BY 
-    daily_views DESC
-LIMIT 5;
-
+      posts.post_id,
+      posts.title,
+      posts.thumbnail,
+      posts.content,
+      posts.user_id,
+      categories.category_name,
+      posts.createDate,
+      posts.updateDate,
+      posts.views,
+      SUM(post_views.view_count) AS daily_views,
+      post_views.view_date,
+      users.givenName,
+      users.familyName
+    FROM 
+      posts
+    JOIN 
+      post_views ON posts.post_id = post_views.post_id
+    JOIN 
+      categories ON posts.category_id = categories.category_id
+    JOIN 
+      users ON posts.user_id = users.id
+    WHERE 
+      post_views.view_date = CURDATE()
+    GROUP BY 
+      posts.post_id, post_views.view_date, users.givenName, users.familyName
+    ORDER BY 
+      daily_views DESC
+    LIMIT 5;
   `;
 
-  connection.query(query, (err, results) => {
+  connection.query(queryTopViewedPosts, (err, results) => {
     if (err) {
       console.error("Database query error:", err);
       return res.status(500).json({
@@ -853,10 +852,53 @@ LIMIT 5;
       });
     }
 
-    res.status(200).json({
-      success: true,
-      data: results,
-    });
+    if (results.length > 0) {
+      // Return the top 5 posts with views today
+      return res.status(200).json({
+        success: true,
+        data: results,
+      });
+    } else {
+      // If no views today, fetch 5 random posts
+      const queryRandomPosts = `
+        SELECT 
+          posts.post_id,
+          posts.title,
+          posts.thumbnail,
+          posts.content,
+          posts.user_id,
+          categories.category_name,
+          posts.createDate,
+          posts.updateDate,
+          posts.views,
+          users.givenName,
+          users.familyName
+        FROM 
+          posts
+        JOIN 
+          categories ON posts.category_id = categories.category_id
+        JOIN 
+          users ON posts.user_id = users.id
+        ORDER BY 
+          RAND()
+        LIMIT 5;
+      `;
+
+      connection.query(queryRandomPosts, (err, randomResults) => {
+        if (err) {
+          console.error("Database query error:", err);
+          return res.status(500).json({
+            success: false,
+            error: "Internal server error",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          data: randomResults,
+        });
+      });
+    }
   });
 };
 

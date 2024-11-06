@@ -23,7 +23,7 @@ function Profile() {
           </div>
         </div>
         <div className="pl-3 pt-12 lg:pl-8 lg:pt-14 w-full space-y-5">
-          <h1 className="text-xl font-bold">Edit your profile</h1>
+          <p className="text-xl font-bold">Edit your profile</p>
           <div className="grid grid-cols-2 gap-4 ">
             <div>
               <Label htmlFor="name">Family Name</Label>

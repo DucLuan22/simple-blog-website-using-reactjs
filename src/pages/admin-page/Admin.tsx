@@ -6,7 +6,7 @@ function Admin() {
   const user = useCounterStore((state) => state.user);
   return (
     <div className="w-full h-full space-y-16">
-      <h1 className="text-4xl font-bold">Dashboard</h1>
+      <p className="text-4xl font-bold">Dashboard</p>
       <Notifications user_id={user?.id} />
       <Body user_id={user?.id} />
     </div>

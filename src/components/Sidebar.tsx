@@ -89,7 +89,7 @@ const Sidebar = ({ children }: SidebarProps) => {
               ></path>
             </svg>
           </button>
-          <h1 className="text-xl font-bold">luanblog</h1>
+          <p className="text-xl font-bold">luanblog</p>
         </header>
         <main className="flex-1 p-4 overflow-y-auto">{children}</main>
       </div>

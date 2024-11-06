@@ -13,7 +13,7 @@ function Categories() {
       <div className="space-y-10">
         <div>
           <p>Discover by topic</p>
-          <h1 className="text-lg md:text-xl font-bold">Categories</h1>
+          <p className="text-lg md:text-xl font-bold">Categories</p>
           <div className="mt-8 flex flex-wrap gap-4">
             {data?.map((e) => (
               <CategorySideCard

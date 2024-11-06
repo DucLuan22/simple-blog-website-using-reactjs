@@ -6,10 +6,10 @@ function PopularPost() {
   const { data: posts, isLoading } = useTopDailyViewedPosts();
   return (
     <div className="mt-14 lg:mt-0">
-      <div className="space-y-10">
+      <div className="space-y-5">
         <div>
           <p>What's hot</p>
-          <h1 className="text-lg md:text-xl font-bold">Most popular</h1>
+          <p className="text-lg md:text-xl font-bold">Most popular</p>
         </div>
         {isLoading ? (
           <>

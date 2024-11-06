@@ -1,7 +1,7 @@
 function About() {
   return (
     <div className="w-full h-full">
-      <h1 className="text-center text-3xl font-bold mt-10">About luanblog</h1>
+      <p className="text-center text-3xl font-bold mt-10">About luanblog</p>
       <div className="flex flex-col items-center mx-[10%] text-lg gap-y-4 md:gap-y-6 lg:gap-y-8 mt-8">
         <p>
           Welcome to our global community blog, where individuals from all
