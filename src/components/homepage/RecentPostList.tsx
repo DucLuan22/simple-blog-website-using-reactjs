@@ -9,14 +9,11 @@ import Post from "./Post";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "../ui/skeleton";
+import useFetchPosts from "@/hooks/useGetPosts";
 
-interface PostListProps {
-  isLoading: boolean;
-  error: Error | null;
-  data: Post[] | undefined;
-}
+function RecentPostList() {
+  const { isLoading, data, error } = useFetchPosts();
 
-function RecentPostList({ data, error, isLoading }: PostListProps) {
   const rowsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(0);
 

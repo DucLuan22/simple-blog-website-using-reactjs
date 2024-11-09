@@ -6,6 +6,7 @@ interface PostResponse {
   success: boolean;
   data: Post[] | [];
 }
+
 const fetchPosts = async (): Promise<Post[]> => {
   const { data } = await axios.get<PostResponse>(
     `${import.meta.env.VITE_BACKEND_URL}/api/posts/getPost`
@@ -14,12 +15,17 @@ const fetchPosts = async (): Promise<Post[]> => {
   if (data.success) {
     return data.data;
   } else {
-    throw new Error("Failed to fetch categories");
+    throw new Error("Failed to fetch posts");
   }
 };
 
 const useFetchPosts = () => {
-  return useQuery<Post[], Error>("posts", fetchPosts);
+  return useQuery<Post[], Error>("posts", fetchPosts, {
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 };
 
 export default useFetchPosts;

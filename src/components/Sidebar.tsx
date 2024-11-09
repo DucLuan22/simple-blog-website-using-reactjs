@@ -1,3 +1,11 @@
+import {
+  Bookmark,
+  CircleGauge,
+  FileText,
+  Home,
+  Notebook,
+  User,
+} from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -14,65 +22,87 @@ const Sidebar = ({ children }: SidebarProps) => {
 
   return (
     <div className="flex min-h-screen">
+      {/* Sidebar */}
       <div
         className={`fixed inset-y-0 z-50 transition-transform transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } bg-gray-800 text-white w-64 lg:translate-x-0 lg:static lg:w-64`}
+        } bg-white shadow-lg w-64 lg:translate-x-0 lg:static lg:w-64`}
       >
-        <div className="p-4 mt-8 lg:mt-0">
+        <div className="p-6 mt-8 lg:mt-0">
+          {/* Placeholder for user profile */}
+          <div className="mb-6 text-center">
+            <div className="h-16 w-16 bg-gray-800 rounded-full mx-auto"></div>
+            <p className="mt-4 text-gray-800 font-semibold">User Name</p>
+          </div>
+
+          {/* Navigation links */}
           <nav className="mt-6">
-            <ul>
-              <li>
+            <ul className="space-y-2 text-gray-600 font-sans font-semibold">
+              <li className="">
                 <Link
                   onClick={toggleSidebar}
                   to="/admin"
-                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                  className="flex items-center space-x-3 py-2 px-4 rounded-md transition duration-200 hover:bg-blue-100 hover:text-blue-700"
                 >
-                  Admin Dashboard
+                  <CircleGauge className="w-6 h-6" />
+
+                  {/* Replace with appropriate icon */}
+                  <span className=""> Dashboard</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/profile"
                   onClick={toggleSidebar}
-                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                  className="flex items-center space-x-3 py-2 px-4 rounded-md transition duration-200 hover:bg-blue-100 hover:text-blue-700"
                 >
-                  Profile
+                  <User className="w-6 h-6" />
+                  {/* Replace with appropriate icon */}
+                  <span>Profile</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/post-history"
                   onClick={toggleSidebar}
-                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                  className="flex items-center space-x-3 py-2 px-4 rounded-md transition duration-200 hover:bg-blue-100 hover:text-blue-700"
                 >
-                  Post History
+                  <FileText className="w-6 h-6" />
+                  {/* Replace with appropriate icon */}
+                  <span>Posts</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/bookmark"
                   onClick={toggleSidebar}
-                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                  className="flex items-center space-x-3 py-2 px-4 rounded-md transition duration-200 hover:bg-blue-100 hover:text-blue-700"
                 >
-                  Bookmark
+                  <Bookmark className="w-6 h-6" />
+                  {/* Replace with appropriate icon */}
+                  <span>Bookmarks</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/"
                   onClick={toggleSidebar}
-                  className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700"
+                  className="flex items-center space-x-3 py-2 px-4 rounded-md transition duration-200 hover:bg-blue-100 hover:text-blue-700"
                 >
-                  Return Home
+                  <Home className="w-6 h-6" />
+                  {/* Replace with appropriate icon */}
+                  <span>Homepage</span>
                 </Link>
               </li>
             </ul>
           </nav>
         </div>
       </div>
+
+      {/* Content Area */}
       <div className="flex-1 flex flex-col">
-        <header className="z-50 flex items-center justify-between p-4 bg-gray-800 text-white lg:hidden">
+        {/* Header for mobile */}
+        <header className="z-50 flex items-center justify-between p-4 text-gray-600 lg:hidden">
           <button onClick={toggleSidebar} className="focus:outline-none">
             <svg
               className="w-6 h-6"
@@ -91,6 +121,8 @@ const Sidebar = ({ children }: SidebarProps) => {
           </button>
           <p className="text-xl font-bold">luanblog</p>
         </header>
+
+        {/* Main content */}
         <main className="flex-1 p-4 overflow-y-auto">{children}</main>
       </div>
     </div>

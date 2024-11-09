@@ -1,6 +1,5 @@
 import { useQuery } from "react-query";
 import axios from "axios";
-import { useEffect } from "react";
 import { useCounterStore } from "@/store";
 
 interface UserData {
@@ -31,7 +30,6 @@ interface UserFetchResponse {
   };
 }
 
-// Define the type for the API response when adding a user
 interface AddUserResponse {
   success: boolean;
 }
@@ -43,7 +41,6 @@ const useAuthenticatedRequest = () => {
   );
   const setUsers = useCounterStore((state) => state.setUsers);
 
-  // Define the fetchAuthenticatedData function
   const fetchAuthenticatedData = async () => {
     try {
       const response = await axios.get<AuthResponse>(
@@ -59,7 +56,7 @@ const useAuthenticatedRequest = () => {
 
       if (response.status !== 200 || !response.data.user) {
         setNotAuthenticated();
-        throw new Error("Authentication has failed!");
+        throw new Error("Authentication failed!");
       }
 
       const userData: UserData = {
@@ -70,7 +67,6 @@ const useAuthenticatedRequest = () => {
         givenName: response.data.user._json.given_name,
       };
 
-      // Fetch user from the database
       const userResponse = await axios.get<UserFetchResponse>(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/getUser`,
         {
@@ -102,12 +98,14 @@ const useAuthenticatedRequest = () => {
     }
   };
 
-  // Use the query with the fetchAuthenticatedData function
-  const { refetch, isLoading, error, data } = useQuery(
+  const { isLoading, error, data } = useQuery(
     "authenticatedData",
     fetchAuthenticatedData,
     {
-      enabled: false, // Prevent automatic execution
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: false,
+
       onSuccess: (data) => {
         if (data.success) {
           setAuthenticated();
@@ -119,15 +117,10 @@ const useAuthenticatedRequest = () => {
     }
   );
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
   return {
     isLoading,
     error,
     data,
-    refetch,
   };
 };
 

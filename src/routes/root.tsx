@@ -2,14 +2,21 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import useAuthenticatedRequest from "../hooks/useAuthenticate";
+import React from "react";
+
+// Optimize rendering of Navbar and Footer components
+const MemoizedNavbar = React.memo(Navbar);
+const MemoizedFooter = React.memo(Footer);
 
 function Root() {
+  // Run the authentication request hook
   useAuthenticatedRequest();
+
   return (
     <div className="w-screen h-screen px-3 xl:px-[7%] 2xl:px-[10%] ">
-      <Navbar />
+      <MemoizedNavbar />
       <Outlet />
-      <Footer />
+      <MemoizedFooter />
     </div>
   );
 }

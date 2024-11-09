@@ -12,6 +12,12 @@ const fetchTopDailyViewedPosts = async (): Promise<Post[]> => {
 export const useTopDailyViewedPosts = () => {
   return useQuery<Post[], Error>(
     "topDailyViewedPosts",
-    fetchTopDailyViewedPosts
+    fetchTopDailyViewedPosts,
+    {
+      staleTime: 1000 * 60 * 10,
+      cacheTime: 1000 * 60 * 15,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
   );
 };
