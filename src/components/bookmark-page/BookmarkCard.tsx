@@ -8,11 +8,6 @@ function BookmarkCard({
   post_id,
   views,
   title,
-  content,
-  category_id,
-  category_name,
-  createDate,
-  updateDate,
   user_id,
   givenName,
   familyName,
@@ -47,7 +42,7 @@ function BookmarkCard({
 
       <div className="p-4 flex flex-col justify-between flex-1 bg-white">
         <div>
-          <h3 className="text-lg font-bold">{title}</h3>
+          <h3 className="text-sm font-bold truncate">{title}</h3>
         </div>
         <div className="text-sm text-gray-600 flex justify-between">
           <div className="flex gap-1 items-center">

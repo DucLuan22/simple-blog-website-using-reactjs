@@ -14,6 +14,8 @@ const usePostById = (
 ): UseQueryResult<Post, Error> => {
   return useQuery(["post", post_id], () => fetchPostById(post_id), {
     enabled: !!post_id,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
   });
 };
 

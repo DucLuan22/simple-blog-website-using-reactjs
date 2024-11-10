@@ -57,7 +57,9 @@ export default function Notifications({ user_id }: NotificationProps) {
         <div className="m-4">
           <div className="flex justify-between items-center">
             <Mails className="w-28 h-28 text-white " />
-            <p className=" text-8xl font-bold text-white">{totalBookmarks}</p>
+            <p className=" text-8xl font-bold text-white">
+              {totalBookmarks ? totalBookmarks : "0"}
+            </p>
           </div>
           <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
             Today Bookmarks
