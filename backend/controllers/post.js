@@ -960,3 +960,86 @@ exports.editPostById = async (req, res, next) => {
       .json({ success: true, message: "Post updated successfully" });
   });
 };
+
+exports.getPostStatsByUserId = async (req, res, next) => {
+  const { user_id } = req.params;
+
+  const query = `
+    SELECT 
+      p.post_id,
+      p.title,
+      p.thumbnail,
+      p.createDate AS created_date,
+      p.updateDate AS updated_date,
+      c.category_name,
+      
+      -- Total views for all time
+      IFNULL(SUM(v.view_count), 0) AS total_views,
+      
+      -- Daily views
+      IFNULL(SUM(CASE WHEN DATE(v.view_date) = CURRENT_DATE THEN v.view_count ELSE 0 END), 0) AS daily_views,
+      
+      -- Monthly views
+      IFNULL(SUM(CASE WHEN YEAR(v.view_date) = YEAR(CURRENT_DATE) AND MONTH(v.view_date) = MONTH(CURRENT_DATE) THEN v.view_count ELSE 0 END), 0) AS monthly_views,
+      
+      -- Yearly views
+      IFNULL(SUM(CASE WHEN YEAR(v.view_date) = YEAR(CURRENT_DATE) THEN v.view_count ELSE 0 END), 0) AS yearly_views,
+      
+      -- Total comments for all time
+      COUNT(cm.comment_id) AS total_comments,
+      
+      -- Daily comments
+      SUM(CASE WHEN DATE(cm.createdAt) = CURRENT_DATE THEN 1 ELSE 0 END) AS daily_comments,
+      
+      -- Monthly comments
+      SUM(CASE WHEN YEAR(cm.createdAt) = YEAR(CURRENT_DATE) AND MONTH(cm.createdAt) = MONTH(CURRENT_DATE) THEN 1 ELSE 0 END) AS monthly_comments,
+      
+      -- Yearly comments
+      SUM(CASE WHEN YEAR(cm.createdAt) = YEAR(CURRENT_DATE) THEN 1 ELSE 0 END) AS yearly_comments
+      
+    FROM 
+      posts p
+    LEFT JOIN 
+      post_views v ON p.post_id = v.post_id
+    LEFT JOIN 
+      comments cm ON p.post_id = cm.post_id
+    LEFT JOIN 
+      categories c ON p.category_id = c.category_id
+
+    WHERE 
+      p.user_id = ? 
+
+    GROUP BY 
+      p.post_id, p.title, p.thumbnail, p.createDate, p.updateDate, c.category_name;
+  `;
+
+  connection.query(query, [user_id], (err, results) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    if (results.length === 0) {
+      return res.status(200).json({
+        success: true,
+        data: [
+          {
+            post_id: null,
+            title: null,
+            thumbnail: null,
+            created_date: null,
+            updated_date: null,
+            category_name: null,
+            total_views: 0,
+            daily_views: 0,
+            monthly_views: 0,
+            yearly_views: 0,
+            total_comments: 0,
+            daily_comments: 0,
+            monthly_comments: 0,
+            yearly_comments: 0,
+          },
+        ],
+      });
+    }
+    res.status(200).json({ success: true, data: results });
+  });
+};

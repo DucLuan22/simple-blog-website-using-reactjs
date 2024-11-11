@@ -21,6 +21,8 @@ const {
   getTopDailyViewedPosts,
 
   editPostById,
+  getPostStatsWithCommentsByUserId,
+  getPostStatsByUserId,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -58,6 +60,12 @@ router.get(
   "/stats/daily-notification/:user_id",
   isAuthenticated,
   getTodayStatsByUserId
+);
+
+router.get(
+  "/stats/get-posts-stats/:user_id",
+  isAuthenticated,
+  getPostStatsByUserId
 );
 
 router.get("/stats/get-views/:user_id", isAuthenticated, getViews);
