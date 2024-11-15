@@ -19,6 +19,7 @@ function Navbar() {
     (state) => state.setNotAuthenticated
   );
   const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
+  const user = useCounterStore((state) => state.user);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 640) {
@@ -42,12 +43,12 @@ function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarImage src={user?.avatar_url} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel>ducluandang22@gmail.com</DropdownMenuLabel>
+              <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Link to="/profile" className="w-full h-full">

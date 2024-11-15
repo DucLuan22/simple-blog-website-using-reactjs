@@ -5,7 +5,7 @@ import { useCounterStore } from "@/store";
 
 function Profile() {
   const user = useCounterStore((state) => state.user);
-  console.log(user);
+
   return (
     <div className="w-full h-full z-10">
       <div className="flex flex-col lg:flex-row lg:h-full">
@@ -19,7 +19,6 @@ function Profile() {
             <h2 className="font-bold text-xl">
               {user?.familyName + " " + user?.givenName}
             </h2>
-            <p className="text-lg">Google's ID: {user?.google_id}</p>
           </div>
         </div>
         <div className="pl-3 pt-12 lg:pl-8 lg:pt-14 w-full space-y-5">
@@ -35,8 +34,8 @@ function Profile() {
             </div>
 
             <div className="col-span-2">
-              <Label htmlFor="surname">Google's ID</Label>
-              <Input type="text" placeholder={user?.google_id} readOnly />
+              <Label htmlFor="surname">Email</Label>
+              <Input type="text" placeholder={user?.email} readOnly />
             </div>
             <div>
               <Label htmlFor="name">Country</Label>

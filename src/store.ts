@@ -7,6 +7,7 @@ interface User {
   locale: string;
   familyName: string;
   givenName: string;
+  email: string;
 }
 
 interface AuthState {
@@ -25,6 +26,7 @@ const emptyUser: User = {
   locale: "",
   familyName: "",
   givenName: "",
+  email: "",
 };
 
 export const useCounterStore = create<AuthState>((set) => ({

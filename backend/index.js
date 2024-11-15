@@ -18,7 +18,11 @@ const isAuthenticated = require("./middlewares/isAuthenticated");
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 app.use(
-  cookieSession({ name: "session", keys: ["luan"], maxAge: 24 * 60 * 60 * 100 })
+  cookieSession({
+    name: "session",
+    keys: ["luan"],
+    maxAge: 10 * 365 * 24 * 60 * 60 * 1000,
+  })
 );
 
 app.use(passport.initialize());

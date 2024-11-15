@@ -3,11 +3,11 @@ const passport = require("passport");
 
 const dotenv = require("dotenv");
 const path = require("path");
-const { getUsers } = require("../controllers/user");
 
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 router.get("/login/success", (req, res) => {
+  console.log(req.user);
   if (req.user) {
     return res.status(200).json({
       success: true,
@@ -29,7 +29,10 @@ router.get("/logout", (req, res) => {
   res.redirect(process.env.CLIENT_URL);
 });
 
-router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 
 router.get(
   "/google/callback",

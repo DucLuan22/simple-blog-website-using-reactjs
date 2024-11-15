@@ -98,7 +98,7 @@ export default function Notifications({ user_id }: NotificationProps) {
           </p>
         </div>
         <div className="mx-1 px-5 bg-white h-[62px] rounded-lg flex items-center justify-between">
-          <p className="text-yellow-500">View Details</p>
+          <p className="text-yellow-500">Shares</p>
           <ArrowRightCircle className="w-6 h-6 text-yellow-500" />
         </div>
       </div>

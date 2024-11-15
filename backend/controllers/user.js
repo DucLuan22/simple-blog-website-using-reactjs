@@ -37,7 +37,8 @@ exports.getUser = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  const { google_id, familyName, givenName, avatar_url, locale } = req.body;
+  const { google_id, familyName, givenName, avatar_url, locale, email } =
+    req.body;
 
   if (!google_id) {
     return res.status(400).json({
@@ -48,8 +49,15 @@ exports.addUser = async (req, res, next) => {
 
   // Insert user into the database
   const query =
-    "INSERT INTO `users` (`google_id`, `familyName`, `givenName`, `avatar_url`, `locale`) VALUES (?, ?, ?, ?, ?)";
-  const values = [google_id, familyName, givenName, avatar_url || null, locale];
+    "INSERT INTO `users` (`google_id`, `familyName`, `givenName`, `avatar_url`, `locale`, `email`) VALUES (?, ?, ?, ?, ?,?)";
+  const values = [
+    google_id,
+    familyName,
+    givenName,
+    avatar_url || null,
+    locale,
+    email,
+  ];
 
   connection.query(query, values, (err, results, fields) => {
     if (err) {

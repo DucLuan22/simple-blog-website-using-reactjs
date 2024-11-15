@@ -8,6 +8,7 @@ interface UserData {
   locale: string;
   familyName: string;
   givenName: string;
+  email: string;
 }
 
 interface AuthResponse {
@@ -18,6 +19,7 @@ interface AuthResponse {
       locale: string;
       family_name: string;
       given_name: string;
+      email: string;
     };
   };
   success: boolean;
@@ -65,6 +67,7 @@ const useAuthenticatedRequest = () => {
         locale: response.data.user._json.locale,
         familyName: response.data.user._json.family_name,
         givenName: response.data.user._json.given_name,
+        email: response.data.user._json.email,
       };
 
       const userResponse = await axios.get<UserFetchResponse>(
