@@ -1,8 +1,4 @@
-import { Bell, MessageCircle } from "lucide-react";
-import React from "react";
 import LineGraph from "./LineGraph";
-import PieChart from "./PieChart";
-import BarChart from "./BarChart";
 
 import useGetViewStats from "@/hooks/useGetViewStat";
 import PostStats from "./PostStats";

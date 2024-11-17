@@ -1043,3 +1043,59 @@ exports.getPostStatsByUserId = async (req, res, next) => {
     res.status(200).json({ success: true, data: results });
   });
 };
+
+exports.createShare = async (req, res, next) => {
+  const { flatform, post_id, user_id } = req.body;
+  const createdDate = new Date();
+
+  const query = `
+    INSERT INTO \`shares\` (\`id\`, \`flatform\`, \`post_id\`, \`user_id\`, \`createdDate\`)
+    VALUES (SUBSTRING(UUID(), 1, 12), ?, ?, ?, ?)
+  `;
+  const values = [flatform, post_id, user_id, createdDate];
+
+  connection.query(query, values, (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message || "An error occurred while creating the share",
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Share created successfully",
+      data: {
+        id: results.insertId,
+        flatform,
+        post_id,
+        user_id,
+        createdDate,
+      },
+    });
+  });
+};
+
+exports.getTodaySharesByUser = async (req, res, next) => {
+  const { user_id } = req.params;
+
+  const query = `
+    SELECT id, flatform, post_id, user_id, createdDate
+    FROM shares
+    WHERE DATE(createdDate) = CURDATE() AND user_id = ?
+  `;
+
+  connection.query(query, [user_id], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        error: err.message || "An error occurred while fetching today's shares",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Today's shares for the user fetched successfully",
+      data: results,
+    });
+  });
+};

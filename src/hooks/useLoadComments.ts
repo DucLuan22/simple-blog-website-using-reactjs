@@ -14,9 +14,15 @@ const fetchCommentsByPostId = async (postId: string): Promise<Comment[]> => {
 };
 
 const useComments = (postId: string) => {
-  console.log(1);
-  return useQuery<Comment[], Error>(["comments", postId], () =>
-    fetchCommentsByPostId(postId)
+  return useQuery<Comment[], Error>(
+    ["comments", postId],
+    () => fetchCommentsByPostId(postId),
+    {
+      staleTime: 1000 * 60 * 5,
+      cacheTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
   );
 };
 

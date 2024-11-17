@@ -4,6 +4,7 @@ import {
   Eye,
   Mails,
   MessageSquareText,
+  Share,
   User,
 } from "lucide-react";
 
@@ -90,15 +91,15 @@ export default function Notifications({ user_id }: NotificationProps) {
       <div className="rounded-lg aspect-w-1 h-[250px] flex flex-col bg-yellow-500">
         <div className="m-4">
           <div className="flex justify-between items-center">
-            <User className="w-28 h-28 text-white " />
-            <p className=" text-8xl font-bold text-white">30</p>
+            <Share className="w-28 h-28 text-white " />
+            <p className=" text-8xl font-bold text-white">0</p>
           </div>
           <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
-            New Users
+            New Shares
           </p>
         </div>
         <div className="mx-1 px-5 bg-white h-[62px] rounded-lg flex items-center justify-between">
-          <p className="text-yellow-500">Shares</p>
+          <p className="text-yellow-500">View Details</p>
           <ArrowRightCircle className="w-6 h-6 text-yellow-500" />
         </div>
       </div>

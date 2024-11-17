@@ -6,11 +6,20 @@ import { Input } from "@/components/ui/input";
 import usePostById from "@/hooks/useGetPostById";
 import { useIncrementOnLoad } from "@/hooks/useUpdateViewCount";
 import { useCounterStore } from "@/store";
+import { BookMarked, Eye } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import PopularPost from "@/components/homepage/PopularPost";
 import Categories from "@/components/homepage/Categories";
 import EditorPick from "@/components/homepage/EditorPick";
-
+import {
+  FacebookIcon,
+  FacebookShareButton,
+  FacebookShareCount,
+  LinkedinIcon,
+  LinkedinShareButton,
+  TwitterIcon,
+  TwitterShareButton,
+} from "react-share";
 function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();
   const [comment, setComment] = useState("");
@@ -19,8 +28,11 @@ function BlogPost() {
   const { data: post, isLoading, isError, error } = usePostById(post_id || "");
   const user = useCounterStore((state) => state.user);
   const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
+
   const { count } = useIncrementOnLoad(post_id || null);
   const navigation = useNavigate();
+
+  const shareUrl = "https://www.facebook.com/";
 
   if (isLoading || !post_id) {
     return <div>Loading...</div>;
@@ -30,15 +42,17 @@ function BlogPost() {
     return <div>Error: {error?.message || "Post not found"}</div>;
   }
 
-  function htmlStringToElements(htmlString: string) {
+  function htmlStringToElements(htmlString: any) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, "text/html");
-    return Array.from(doc.body.children).map((element, index) => (
-      <div
-        key={index}
-        dangerouslySetInnerHTML={{ __html: element.outerHTML }}
-      />
-    ));
+    return Array.from(doc.body.children).map((element, index) => {
+      return (
+        <div
+          key={index}
+          dangerouslySetInnerHTML={{ __html: element.outerHTML }}
+        />
+      );
+    });
   }
 
   const submitComment = async () => {
@@ -103,13 +117,6 @@ function BlogPost() {
     }
   };
 
-  const shareUrl = window.location.href;
-  const shareTitle = post?.title || "Check out this post!";
-
-  const openShareWindow = (url: string) => {
-    window.open(url, "_blank", "width=600,height=400");
-  };
-
   return (
     <div className="space-y-7 w-full mb-36">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
@@ -145,17 +152,13 @@ function BlogPost() {
 
             <div className="flex gap-x-3 items-center">
               {post.user_id !== user?.id && (
-                <div
-                  className={`w-6 h-6 cursor-pointer ${
-                    isBookmarked ? "text-yellow-500" : ""
-                  }`}
+                <BookMarked
+                  className={`w-6 h-6 ${isBookmarked ? "text-yellow-500" : ""}`}
                   onClick={handleBookmark}
-                >
-                  Bookmark
-                </div>
+                />
               )}
               <div className="flex items-center gap-x-3">
-                <div className="w-6 h-6">Views</div>
+                <Eye className="w-6 h-6" />
                 <span>{post?.views}</span>
               </div>
             </div>
@@ -165,57 +168,28 @@ function BlogPost() {
             {htmlStringToElements(post?.content)}
           </section>
 
-          {/* Share Section */}
-          <div className="flex items-center gap-x-3 mt-4">
+          <div className="flex items-center gap-x-2 mt-4">
             <span>Share</span>
-            <div
-              className="cursor-pointer"
-              onClick={() =>
-                openShareWindow(
-                  `https://twitter.com/share?url=${encodeURIComponent(
-                    shareUrl
-                  )}&text=${encodeURIComponent(shareTitle)}`
-                )
-              }
+            <FacebookShareButton
+              url={shareUrl}
+              onShareWindowClose={() => console.log(1)}
             >
-              Twitter
-            </div>
-            <div
-              className="cursor-pointer"
-              onClick={() =>
-                openShareWindow(
-                  `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                    shareUrl
-                  )}`
-                )
-              }
+              <FacebookIcon size={32} round={true} />
+            </FacebookShareButton>
+            <TwitterShareButton
+              url={shareUrl}
+              onShareWindowClose={() => console.log(1)}
+              title={post.title}
             >
-              Facebook
-            </div>
-            <div
-              className="cursor-pointer"
-              onClick={() =>
-                openShareWindow(
-                  `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(
-                    shareUrl
-                  )}&description=${encodeURIComponent(shareTitle)}`
-                )
-              }
+              <TwitterIcon size={32} round={true} />
+            </TwitterShareButton>
+            <LinkedinShareButton
+              url={shareUrl}
+              onShareWindowClose={() => console.log(1)}
+              title={post.title}
             >
-              Pinterest
-            </div>
-            <div
-              className="cursor-pointer"
-              onClick={() =>
-                openShareWindow(
-                  `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
-                    shareUrl
-                  )}&title=${encodeURIComponent(shareTitle)}`
-                )
-              }
-            >
-              LinkedIn
-            </div>
+              <LinkedinIcon size={32} round={true} />
+            </LinkedinShareButton>
           </div>
 
           <section className="lg:basis-[10%]">
@@ -245,6 +219,7 @@ function BlogPost() {
               )}
             </div>
           </section>
+
           <CommentSection
             post_id={post_id}
             newComment={newComment}
