@@ -43,7 +43,10 @@ function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Avatar>
-                <AvatarImage src={user?.avatar_url} />
+                <AvatarImage
+                  src={user?.avatar_url}
+                  referrerPolicy="no-referrer"
+                />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>

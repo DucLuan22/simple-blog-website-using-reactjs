@@ -23,6 +23,7 @@ const {
   editPostById,
   getPostStatsWithCommentsByUserId,
   getPostStatsByUserId,
+  createShare,
 } = require("../controllers/post");
 const {
   toggleBookmark,
@@ -73,5 +74,7 @@ router.get("/stats/get-views/:user_id", isAuthenticated, getViews);
 router.get("/stats/top-daily-posts", getTopDailyViewedPosts);
 
 router.put("/edit-post/:post_id", isAuthenticated, editPostById);
+
+router.post("/shares/create-share", createShare);
 
 module.exports = router;

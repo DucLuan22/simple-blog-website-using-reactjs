@@ -7,7 +7,6 @@ const path = require("path");
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 router.get("/login/success", (req, res) => {
-  console.log(req.user);
   if (req.user) {
     return res.status(200).json({
       success: true,

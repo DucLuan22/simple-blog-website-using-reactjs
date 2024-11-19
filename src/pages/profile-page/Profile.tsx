@@ -15,6 +15,7 @@ function Profile() {
               src={user?.avatar_url}
               alt="Technology"
               className="rounded-[100%] border-[1px] border-black w-[120px] overflow-hidden"
+              referrerPolicy="no-referrer"
             />
             <h2 className="font-bold text-xl">
               {user?.familyName + " " + user?.givenName}
@@ -46,7 +47,10 @@ function Profile() {
               <Input type="text" placeholder="Region/State" />
             </div>
           </div>
-          <Button>Save</Button>
+          <div className="space-x-2">
+            <Button>Save</Button>
+            <Button variant={"destructive"}>Delete</Button>
+          </div>
         </div>
       </div>
     </div>

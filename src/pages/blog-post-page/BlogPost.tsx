@@ -14,12 +14,13 @@ import EditorPick from "@/components/homepage/EditorPick";
 import {
   FacebookIcon,
   FacebookShareButton,
-  FacebookShareCount,
   LinkedinIcon,
   LinkedinShareButton,
   TwitterIcon,
   TwitterShareButton,
 } from "react-share";
+import useCreateShare from "@/hooks/useCreateShare";
+import { format } from "date-fns";
 function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();
   const [comment, setComment] = useState("");
@@ -32,7 +33,8 @@ function BlogPost() {
   const { count } = useIncrementOnLoad(post_id || null);
   const navigation = useNavigate();
 
-  const shareUrl = "https://www.facebook.com/";
+  const { mutate: createShare } = useCreateShare();
+  const shareUrl = window.location.href;
 
   if (isLoading || !post_id) {
     return <div>Loading...</div>;
@@ -41,6 +43,10 @@ function BlogPost() {
   if (isError || !post) {
     return <div>Error: {error?.message || "Post not found"}</div>;
   }
+
+  const handleShare = (platform: string) => {
+    createShare({ post_id: post_id, flatform: platform });
+  };
 
   function htmlStringToElements(htmlString: any) {
     const parser = new DOMParser();
@@ -142,11 +148,14 @@ function BlogPost() {
                   src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
                   alt="Author"
                   className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
                 />
               </div>
               <div className="text-sm">
-                <p>Martin Bread</p>
-                <p className="text-gray-500">21.08.2023</p>
+                <p>{user?.familyName + " " + user?.givenName}</p>
+                <p className="text-gray-500">
+                  {format(post.createDate, "dd.MM.yyyy")}
+                </p>
               </div>
             </div>
 
@@ -172,20 +181,20 @@ function BlogPost() {
             <span>Share</span>
             <FacebookShareButton
               url={shareUrl}
-              onShareWindowClose={() => console.log(1)}
+              onShareWindowClose={() => handleShare("facebook")}
             >
               <FacebookIcon size={32} round={true} />
             </FacebookShareButton>
             <TwitterShareButton
               url={shareUrl}
-              onShareWindowClose={() => console.log(1)}
+              onShareWindowClose={() => handleShare("twitter")}
               title={post.title}
             >
               <TwitterIcon size={32} round={true} />
             </TwitterShareButton>
             <LinkedinShareButton
               url={shareUrl}
-              onShareWindowClose={() => console.log(1)}
+              onShareWindowClose={() => handleShare("linkedin")}
               title={post.title}
             >
               <LinkedinIcon size={32} round={true} />

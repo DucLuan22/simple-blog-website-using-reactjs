@@ -68,17 +68,14 @@ exports.uploadPost = async (req, res, next) => {
 
 exports.getPostByIdAndUpdateViewCount = async (req, res, next) => {
   const { post_id } = req.params;
-  const today = new Date().toISOString().slice(0, 10); // Get current date in YYYY-MM-DD format
+  const today = new Date().toISOString().slice(0, 10);
+  let results;
 
-  let results; // Declare the results variable outside for global scope
-
-  // Start a transaction to ensure all queries are executed together
   connection.beginTransaction((err) => {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
 
-    // Step 1: Retrieve the post and category details
     const selectQuery = `
       SELECT posts.*, categories.category_name 
       FROM posts 
@@ -145,7 +142,6 @@ exports.getPostByIdAndUpdateViewCount = async (req, res, next) => {
             if (viewResults.length > 0) {
               // Update the view count if the record exists
 
-              console.log(1);
               connection.query(
                 updateViewCountQuery,
                 [post_id, today],
@@ -664,17 +660,21 @@ exports.getTodayStatsByUserId = async (req, res, next) => {
       p.thumbnail,
       COALESCE(COUNT(DISTINCT c.comment_id), 0) AS total_comments,
       COALESCE(COUNT(DISTINCT b.post_id), 0) AS total_bookmarks,
-      COALESCE(SUM(v.view_count), 0) AS total_views
-    FROM simple_blog.posts p
-    LEFT JOIN simple_blog.comments c 
+      COALESCE(SUM(v.view_count), 0) AS total_views,
+      COALESCE(COUNT(DISTINCT s.id), 0) AS total_shares
+    FROM posts p
+    LEFT JOIN comments c 
       ON p.post_id = c.post_id 
       AND DATE(c.createdAt) = CURDATE() 
-    LEFT JOIN simple_blog.bookmarks b 
+    LEFT JOIN bookmarks b 
       ON p.post_id = b.post_id 
       AND DATE(b.createdAt) = CURDATE()  
-    LEFT JOIN simple_blog.post_views v 
+    LEFT JOIN post_views v 
       ON p.post_id = v.post_id 
       AND DATE(v.view_date) = CURDATE() 
+    LEFT JOIN shares s 
+      ON p.post_id = s.post_id 
+      AND DATE(s.createdDate) = CURDATE()
     WHERE p.user_id = ? 
     GROUP BY p.post_id;
   `;
@@ -695,6 +695,7 @@ exports.getTodayStatsByUserId = async (req, res, next) => {
             total_comments: 0,
             total_bookmarks: 0,
             total_views: 0,
+            total_shares: 0,
           },
         ],
       });
@@ -1049,8 +1050,8 @@ exports.createShare = async (req, res, next) => {
   const createdDate = new Date();
 
   const query = `
-    INSERT INTO \`shares\` (\`id\`, \`flatform\`, \`post_id\`, \`user_id\`, \`createdDate\`)
-    VALUES (SUBSTRING(UUID(), 1, 12), ?, ?, ?, ?)
+    INSERT INTO shares (flatform, post_id)
+    VALUES ( ?, ?)
   `;
   const values = [flatform, post_id, user_id, createdDate];
 

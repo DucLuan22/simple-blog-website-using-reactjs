@@ -8,6 +8,7 @@ interface PostStats {
   total_comments: number;
   total_bookmarks: number;
   total_views: number;
+  total_shares: number;
 }
 
 const fetchTodayStatsByUserId = async (

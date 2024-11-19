@@ -18,12 +18,13 @@ export default function Notifications({ user_id }: NotificationProps) {
     return <div></div>;
   }
 
-  const { totalViews, totalBookmarks, totalComments } = (
+  const { totalViews, totalBookmarks, totalComments, totalShares } = (
     data as
       | {
           total_views: string;
           total_bookmarks: string;
           total_comments: string;
+          total_shares: string;
         }[]
       | undefined
   )?.reduce(
@@ -31,10 +32,11 @@ export default function Notifications({ user_id }: NotificationProps) {
       acc.totalViews += parseInt(item.total_views, 10);
       acc.totalBookmarks += parseInt(item.total_bookmarks, 10);
       acc.totalComments += parseInt(item.total_comments, 10);
+      acc.totalShares += parseInt(item.total_shares, 10);
       return acc;
     },
-    { totalViews: 0, totalBookmarks: 0, totalComments: 0 }
-  ) ?? { totalViews: 0, totalBookmarks: 0, totalComments: 0 };
+    { totalViews: 0, totalBookmarks: 0, totalComments: 0, totalShares: 0 }
+  ) ?? { totalViews: 0, totalBookmarks: 0, totalComments: 0, totalShares: 0 };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -92,7 +94,7 @@ export default function Notifications({ user_id }: NotificationProps) {
         <div className="m-4">
           <div className="flex justify-between items-center">
             <Share className="w-28 h-28 text-white " />
-            <p className=" text-8xl font-bold text-white">0</p>
+            <p className=" text-8xl font-bold text-white">{totalShares}</p>
           </div>
           <p className="mt-3 text-end text-white text-lg font-semibold tracking-wider">
             New Shares
