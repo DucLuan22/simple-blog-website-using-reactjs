@@ -21,6 +21,7 @@ function PostStats() {
     setViewType(value);
   };
 
+  console.log(data);
   const sortedData = data?.sort((a, b) => {
     if (viewType === "total") {
       return b.total_views - a.total_views;

@@ -21,7 +21,6 @@ const fetchPosts = async (): Promise<Post[]> => {
 
 const useFetchPosts = () => {
   return useQuery<Post[], Error>("posts", fetchPosts, {
-    staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,

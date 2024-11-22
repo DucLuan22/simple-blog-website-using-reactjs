@@ -20,8 +20,6 @@ const useGetViewsCount = (user_id: number | undefined) => {
       return response.data.data;
     },
     {
-      // Optionally, you can specify configuration options here
-      staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
       cacheTime: 1000 * 60 * 10, // Cache data for 10 minutes
       refetchOnWindowFocus: true, // Refetch data when the window regains focus
       onError: (error: Error) => {

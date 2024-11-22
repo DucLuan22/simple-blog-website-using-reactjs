@@ -26,17 +26,15 @@ const useGetViewStats = (user_id: number | undefined) => {
           import.meta.env.VITE_BACKEND_URL
         }/api/posts/stats/get-views/${user_id}`
       );
-      return response.data.data; // Ensure the API response structure is correct
+      return response.data.data;
     },
     {
-      // Optionally, you can specify configuration options here
-      staleTime: 1000 * 60 * 5, // Data is fresh for 5 minutes
-      cacheTime: 1000 * 60 * 10, // Cache data for 10 minutes
-      refetchOnWindowFocus: true, // Refetch data when the window regains focus
+      cacheTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: true,
       onError: (error: Error) => {
         console.error("Error fetching view stats:", error.message);
       },
-      enabled: !!user_id, // Only run query if user_id is defined
+      enabled: !!user_id,
     }
   );
 };

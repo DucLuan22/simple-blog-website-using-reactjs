@@ -30,9 +30,8 @@ const useGetPostStatsByUserId = (user_id: number | undefined) => {
       return response.data.data;
     },
     {
-      enabled: !!user_id, // Only fetch if user_id is provided
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      cacheTime: 1000 * 60 * 10, // 10 minutes
+      enabled: !!user_id,
+      cacheTime: 1000 * 60 * 10,
       refetchOnWindowFocus: true,
       onError: (error: Error) => {
         console.error("Error fetching post statistics:", error.message);

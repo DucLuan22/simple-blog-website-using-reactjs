@@ -13,7 +13,7 @@ function Root() {
   useAuthenticatedRequest();
 
   return (
-    <div className="w-screen h-screen px-3 xl:px-[7%] 2xl:px-[10%] ">
+    <div className="w-screen h-screen px-3 xl:px-[3%] 2xl:px-[5%] ">
       <MemoizedNavbar />
       <Outlet />
       <MemoizedFooter />

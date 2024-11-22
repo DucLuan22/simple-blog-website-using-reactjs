@@ -965,84 +965,130 @@ exports.editPostById = async (req, res, next) => {
 exports.getPostStatsByUserId = async (req, res, next) => {
   const { user_id } = req.params;
 
-  const query = `
-    SELECT 
-      p.post_id,
-      p.title,
-      p.thumbnail,
-      p.createDate AS created_date,
-      p.updateDate AS updated_date,
-      c.category_name,
-      
-      -- Total views for all time
-      IFNULL(SUM(v.view_count), 0) AS total_views,
-      
-      -- Daily views
-      IFNULL(SUM(CASE WHEN DATE(v.view_date) = CURRENT_DATE THEN v.view_count ELSE 0 END), 0) AS daily_views,
-      
-      -- Monthly views
-      IFNULL(SUM(CASE WHEN YEAR(v.view_date) = YEAR(CURRENT_DATE) AND MONTH(v.view_date) = MONTH(CURRENT_DATE) THEN v.view_count ELSE 0 END), 0) AS monthly_views,
-      
-      -- Yearly views
-      IFNULL(SUM(CASE WHEN YEAR(v.view_date) = YEAR(CURRENT_DATE) THEN v.view_count ELSE 0 END), 0) AS yearly_views,
-      
-      -- Total comments for all time
-      COUNT(cm.comment_id) AS total_comments,
-      
-      -- Daily comments
-      SUM(CASE WHEN DATE(cm.createdAt) = CURRENT_DATE THEN 1 ELSE 0 END) AS daily_comments,
-      
-      -- Monthly comments
-      SUM(CASE WHEN YEAR(cm.createdAt) = YEAR(CURRENT_DATE) AND MONTH(cm.createdAt) = MONTH(CURRENT_DATE) THEN 1 ELSE 0 END) AS monthly_comments,
-      
-      -- Yearly comments
-      SUM(CASE WHEN YEAR(cm.createdAt) = YEAR(CURRENT_DATE) THEN 1 ELSE 0 END) AS yearly_comments
-      
-    FROM 
-      posts p
-    LEFT JOIN 
-      post_views v ON p.post_id = v.post_id
-    LEFT JOIN 
-      comments cm ON p.post_id = cm.post_id
-    LEFT JOIN 
-      categories c ON p.category_id = c.category_id
-
-    WHERE 
-      p.user_id = ? 
-
-    GROUP BY 
-      p.post_id, p.title, p.thumbnail, p.createDate, p.updateDate, c.category_name;
-  `;
-
-  connection.query(query, [user_id], (err, results) => {
-    if (err) {
-      return res.status(400).json({ message: err.message });
-    }
-    if (results.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: [
-          {
-            post_id: null,
-            title: null,
-            thumbnail: null,
-            created_date: null,
-            updated_date: null,
-            category_name: null,
-            total_views: 0,
-            daily_views: 0,
-            monthly_views: 0,
-            yearly_views: 0,
-            total_comments: 0,
-            daily_comments: 0,
-            monthly_comments: 0,
-            yearly_comments: 0,
-          },
-        ],
+  try {
+    // Query 1: Basic Post Information
+    const postInfoQuery = `
+      SELECT 
+          posts.post_id, posts.title, posts.thumbnail, 
+          posts.createDate AS created_date, posts.updateDate AS updated_date, 
+          categories.category_name
+      FROM 
+          posts
+      LEFT JOIN 
+          categories ON posts.category_id = categories.category_id
+      WHERE 
+          posts.user_id = ?;
+    `;
+    const postInfo = await new Promise((resolve, reject) => {
+      connection.query(postInfoQuery, [user_id], (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
       });
-    }
-    res.status(200).json({ success: true, data: results });
-  });
+    });
+
+    // Query 2: View Statistics
+    const viewStatsQuery = `
+      SELECT 
+          post_views.post_id,
+          SUM(post_views.view_count) AS total_views,
+          SUM(CASE WHEN post_views.view_date = CURDATE() THEN post_views.view_count ELSE 0 END) AS daily_views,
+          SUM(CASE WHEN MONTH(post_views.view_date) = MONTH(CURDATE()) AND YEAR(post_views.view_date) = YEAR(CURDATE()) THEN post_views.view_count ELSE 0 END) AS monthly_views,
+          SUM(CASE WHEN YEAR(post_views.view_date) = YEAR(CURDATE()) THEN post_views.view_count ELSE 0 END) AS yearly_views
+      FROM 
+          post_views
+      INNER JOIN 
+          posts ON post_views.post_id = posts.post_id
+      WHERE 
+          posts.user_id = ?
+      GROUP BY 
+          post_views.post_id;
+    `;
+    const viewStats = await new Promise((resolve, reject) => {
+      connection.query(viewStatsQuery, [user_id], (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
+      });
+    });
+
+    // Query 3: Comment Statistics
+    const commentStatsQuery = `
+      SELECT 
+          comments.post_id,
+          COUNT(comments.comment_id) AS total_comments,
+          COUNT(CASE WHEN DATE(comments.createdAt) = CURDATE() THEN 1 ELSE NULL END) AS daily_comments,
+          COUNT(CASE WHEN MONTH(comments.createdAt) = MONTH(CURDATE()) AND YEAR(comments.createdAt) = YEAR(CURDATE()) THEN 1 ELSE NULL END) AS monthly_comments,
+          COUNT(CASE WHEN YEAR(comments.createdAt) = YEAR(CURDATE()) THEN 1 ELSE NULL END) AS yearly_comments
+      FROM 
+          comments
+      INNER JOIN 
+          posts ON comments.post_id = posts.post_id
+      WHERE 
+          posts.user_id = ?
+      GROUP BY 
+          comments.post_id;
+    `;
+    const commentStats = await new Promise((resolve, reject) => {
+      connection.query(commentStatsQuery, [user_id], (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
+      });
+    });
+
+    // Query 4: Share Statistics
+    const shareStatsQuery = `
+      SELECT 
+          shares.post_id,
+          COUNT(shares.id) AS total_shares,
+          COUNT(CASE WHEN YEAR(shares.createdDate) = YEAR(CURDATE()) THEN 1 ELSE NULL END) AS yearly_shares,
+          COUNT(CASE WHEN MONTH(shares.createdDate) = MONTH(CURDATE()) AND YEAR(shares.createdDate) = YEAR(CURDATE()) THEN 1 ELSE NULL END) AS monthly_shares
+      FROM 
+          shares
+      INNER JOIN 
+          posts ON shares.post_id = posts.post_id
+      WHERE 
+          posts.user_id = ?
+      GROUP BY 
+          shares.post_id;
+    `;
+    const shareStats = await new Promise((resolve, reject) => {
+      connection.query(shareStatsQuery, [user_id], (err, results) => {
+        if (err) reject(err);
+        else resolve(results);
+      });
+    });
+
+    // Combine the results by post_id
+    const combinedData = postInfo.map((post) => {
+      const views = viewStats.find((v) => v.post_id === post.post_id) || {};
+      const comments =
+        commentStats.find((c) => c.post_id === post.post_id) || {};
+      const shares = shareStats.find((s) => s.post_id === post.post_id) || {};
+
+      return {
+        post_id: post.post_id,
+        title: post.title,
+        thumbnail: post.thumbnail,
+        created_date: post.created_date,
+        updated_date: post.updated_date,
+        category_name: post.category_name,
+        total_views: views.total_views || 0,
+        daily_views: views.daily_views || 0,
+        monthly_views: views.monthly_views || 0,
+        yearly_views: views.yearly_views || 0,
+        total_comments: comments.total_comments || 0,
+        daily_comments: comments.daily_comments || 0,
+        monthly_comments: comments.monthly_comments || 0,
+        yearly_comments: comments.yearly_comments || 0,
+        total_shares: shares.total_shares || 0,
+        yearly_shares: shares.yearly_shares || 0,
+        monthly_shares: shares.monthly_shares || 0,
+      };
+    });
+
+    res.status(200).json({ success: true, data: combinedData });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 };
 
 exports.createShare = async (req, res, next) => {
