@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 passport.js
 .env
+backend-old
