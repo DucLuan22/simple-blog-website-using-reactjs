@@ -42,12 +42,12 @@ export const options = {
       text: "View Statistics",
       font: {
         size: 16,
-        weight: "bold" as const, // Ensure the type aligns with expectations
+        weight: "bold" as const,
       },
-      color: "#334155", // Dark blue-gray color
+      color: "#334155",
     },
     tooltip: {
-      backgroundColor: "#1E3A8A", // Dark blue background for tooltip
+      backgroundColor: "#1E3A8A",
       titleColor: "#fff",
       bodyColor: "#fff",
       padding: 10,
@@ -66,8 +66,8 @@ export const options = {
         color: "#E5E7EB",
       },
       ticks: {
-        color: "#64748B", // Gray color for Y-axis labels
-        stepSize: 1, // Adjust step size based on data range
+        color: "#64748B",
+        stepSize: 1,
       },
     },
   },

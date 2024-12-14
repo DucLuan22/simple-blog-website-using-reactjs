@@ -21,7 +21,7 @@ export class Bookmark {
   post_id: string;
 
   @CreateDateColumn({ type: 'timestamp' })
-  createDate: Date;
+  createdDate: Date;
 
   @ManyToOne(() => User, (user) => user.bookmarks, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })

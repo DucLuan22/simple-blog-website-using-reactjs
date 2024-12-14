@@ -1,6 +1,6 @@
+import useGetViewStats from "@/hooks/useGetViewStat";
 import LineGraph from "./LineGraph";
 
-import useGetViewStats from "@/hooks/useGetViewStat";
 import PostStats from "./PostStats";
 
 interface BodyProps {
