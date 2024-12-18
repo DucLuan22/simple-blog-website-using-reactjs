@@ -96,6 +96,44 @@ export class PostService {
     }
   }
 
+  async getPostsByUserId(user_id: string): Promise<any> {
+    const posts = await this.postRepository
+      .createQueryBuilder('posts')
+      .leftJoinAndSelect('posts.category', 'category')
+      .leftJoinAndSelect('posts.user', 'user')
+      .leftJoinAndSelect('posts.viewsDetails', 'postViews')
+      .select([
+        'posts.post_id AS post_id',
+        'posts.title AS title',
+        'posts.thumbnail AS thumbnail',
+        'posts.content AS content',
+        'posts.createDate AS createDate',
+        'posts.updateDate AS updateDate',
+        'user.givenName AS givenName',
+        'user.familyName AS familyName',
+        'category.category_name AS category_name',
+        'SUM(postViews.view_count) AS views',
+      ])
+      .where('posts.user_id = :user_id', { user_id })
+      .groupBy('posts.post_id')
+      .addGroupBy('category.category_name')
+      .addGroupBy('user.givenName')
+      .addGroupBy('user.familyName')
+      .orderBy('posts.createDate', 'DESC')
+      .getRawMany();
+
+    if (!posts || posts.length === 0) {
+      throw new NotFoundException(
+        `No posts found for user with ID "${user_id}"`,
+      );
+    }
+
+    return {
+      success: true,
+      data: posts,
+    };
+  }
+
   async updatePostViewCount(postId: string): Promise<number> {
     const today = new Date().toISOString().split('T')[0];
 
@@ -128,7 +166,6 @@ export class PostService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Fetch top 5 posts by daily views
     const topViewedPosts = await this.postRepository
       .createQueryBuilder('posts')
       .leftJoinAndSelect('posts.category', 'category')

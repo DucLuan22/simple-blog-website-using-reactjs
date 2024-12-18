@@ -98,4 +98,13 @@ export class PostController {
       );
     }
   }
+
+  @Get('user/:user_id')
+  async getPostsByUserId(@Param('user_id') user_id: string) {
+    try {
+      return await this.postService.getPostsByUserId(user_id);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
 }
