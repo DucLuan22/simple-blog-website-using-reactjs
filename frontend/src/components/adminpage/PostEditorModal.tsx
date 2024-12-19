@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,18 +11,22 @@ import { Edit } from "lucide-react";
 import ReactQuill from "react-quill";
 import { Input } from "../ui/input";
 import { useEditPost } from "@/hooks/useEditPost";
+import useCategory from "@/hooks/useCategories";
+import { Category } from "@/interface/Category";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
-function htmlStringToElements(htmlString: any) {
+function htmlStringToElements(htmlString: string) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlString, "text/html");
-  return Array.from(doc.body.children).map((element, index) => {
-    return (
-      <div
-        key={index}
-        dangerouslySetInnerHTML={{ __html: element.outerHTML }}
-      />
-    );
-  });
+  return Array.from(doc.body.children).map((element, index) => (
+    <div key={index} dangerouslySetInnerHTML={{ __html: element.outerHTML }} />
+  ));
 }
 
 interface PostEditorModelProps {
@@ -30,6 +34,7 @@ interface PostEditorModelProps {
   title: string;
   post_content: string;
   thumbnail: string;
+  category_id: number;
 }
 
 function PostEditorModal({
@@ -37,36 +42,58 @@ function PostEditorModal({
   post_content,
   thumbnail,
   title,
+  category_id,
 }: PostEditorModelProps) {
   const reactQuillRef = useRef<ReactQuill>(null);
   const [content, setContent] = useState<string>(post_content);
   const [image, setImage] = useState<string | null>(thumbnail);
   const [post_title, setTitle] = useState<string>(title);
   const [modelOpen, setModelOpen] = useState(false);
-
+  const [category, setCategory] = useState(category_id.toString());
   const mutation = useEditPost();
+  const { data, isLoading } = useCategory();
 
-  // Function to handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl); // Preview the uploaded image
-    }
-  };
+  // Efficient image upload handling with useCallback
+  const handleImageUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const imageUrl = URL.createObjectURL(file);
+        setImage(imageUrl);
+      }
+    },
+    []
+  );
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     mutation.mutate({
       post_id,
       title: post_title,
       thumbnail: image || "",
       content,
+      category_id: parseInt(category),
     });
     setModelOpen(false);
-  };
+  }, [mutation, post_id, post_title, image, content, category]);
+
+  useEffect(() => {
+    if (!modelOpen && content !== post_content) {
+      setContent(post_content);
+    }
+  }, [modelOpen, post_content, content]);
+
+  useEffect(() => {
+    if (reactQuillRef.current) {
+      reactQuillRef.current.focus();
+    }
+  }, [content]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <Dialog onOpenChange={() => setModelOpen(!modelOpen)} open={modelOpen}>
+    <Dialog onOpenChange={(open) => setModelOpen(open)} open={modelOpen}>
       <DialogTrigger>
         <Button className="bg-blue-500">
           <Edit className="w-4 h-4" />
@@ -78,6 +105,24 @@ function PostEditorModal({
         </DialogHeader>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[2fr_1fr] md:gap-4 lg:gap-6">
           <div className="flex flex-col w-full">
+            <div className="mb-3">
+              <Select onValueChange={setCategory} value={category}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {data?.map((category) => (
+                    <SelectItem
+                      value={category.category_id.toString()}
+                      key={category.category_id}
+                    >
+                      {category.category_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <Input
               className="mb-4"
               placeholder="Post title..."

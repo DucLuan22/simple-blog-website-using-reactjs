@@ -12,6 +12,7 @@ function PopularCategories() {
       <div className="flex flex-wrap gap-4">
         {data?.map((e) => (
           <CategoryCard
+            key={e.category_id}
             category_id={e.category_id}
             category_name={e.category_name}
           />

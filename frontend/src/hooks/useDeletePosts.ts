@@ -6,14 +6,16 @@ const deletePosts = async ({
   user_id,
   post_id,
 }: {
-  user_id: number;
+  user_id: number | undefined;
   post_id: string;
 }) => {
-  const { data } = await axios.post(
+  const { data } = await axios.delete(
     `${import.meta.env.VITE_BACKEND_URL}/api/posts/delete`,
     {
-      user_id,
-      post_id,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      data: { user_id, post_id },
     }
   );
   return data;

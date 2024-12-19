@@ -3,23 +3,27 @@ import axios from "axios";
 import { Category } from "@/interface/Category";
 
 const fetchCategories = async (): Promise<Category[]> => {
+  console.log("useCategory hook called");
   const { data } = await axios.get<Category[]>(
     `${import.meta.env.VITE_BACKEND_URL}/api/category`
   );
 
-  if (data) {
+  if (Array.isArray(data)) {
     return data;
   } else {
-    throw new Error("Failed to fetch categories");
+    throw new Error("Invalid category data received from server");
   }
 };
 
 const useCategory = () => {
   return useQuery<Category[], Error>("categories", fetchCategories, {
-    staleTime: 1000 * 60 * 5,
     cacheTime: 1000 * 60 * 10,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    initialData: [],
+    onError: (error: Error) => {
+      console.error("Failed to fetch categories:", error);
+    },
   });
 };
 

@@ -23,6 +23,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
   imports: [
     TypeOrmModule.forFeature([User]),
     JwtModule.registerAsync(jwtConfig.asProvider()),
+    JwtModule.registerAsync(refreshJwtConfig.asProvider()),
     ConfigModule.forFeature(jwtConfig),
     ConfigModule.forFeature(refreshJwtConfig),
     ConfigModule.forFeature(googleConfig),

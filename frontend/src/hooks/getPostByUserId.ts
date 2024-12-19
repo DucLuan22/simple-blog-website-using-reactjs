@@ -6,7 +6,12 @@ const fetchPostsByUserId = async (
   user_id: number | undefined
 ): Promise<Post[]> => {
   const { data } = await axios.get<{ success: boolean; data: Post[] }>(
-    `${import.meta.env.VITE_BACKEND_URL}/api/posts/users/${user_id}`
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/user/${user_id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }
   );
 
   return data.data;

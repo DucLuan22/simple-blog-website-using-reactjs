@@ -2,27 +2,23 @@ import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "../../index.css";
 import "react-quill/dist/quill.snow.css";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import useCategory from "@/hooks/useCategories";
 import { useCounterStore } from "@/store";
-import axios from "axios";
-import { Input } from "@/components/ui/input";
+import { uploadPost } from "@/hooks/uploadPost";
+import Header from "@/components/writepage/Header";
+import TitleInput from "@/components/writepage/TitleInput";
+import CategoryAndThumbnail from "@/components/writepage/CategoryAndThumbNail";
+import RichTextEditor from "@/components/writepage/RichTextEditor";
 
 function Writepage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [thumbnail, setThumbnail] = useState<string | null>(null);
-  const reactQuillRef = useRef<ReactQuill>(null);
-  const { data, error, isLoading } = useCategory();
 
+  const reactQuillRef = useRef<ReactQuill>(null);
+  const { data: categories = [], isLoading } = useCategory(); // Default categories to empty array
   const user = useCounterStore((state) => state.user);
 
   const handleSetTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,131 +37,54 @@ function Writepage() {
   };
 
   const handleUploadPost = async () => {
-    if (!title || !content || !category || !user) {
+    if (!title || !content || !category || !user?.id) {
       alert("Please fill all fields and ensure you are logged in.");
       return;
     }
-    try {
-      const accessToken = localStorage.getItem("accessToken");
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/posts/upload`,
-        {
-          title,
-          content,
-          user_id: user?.id,
-          category_id: parseInt(category),
-          thumbnail: thumbnail || "thumbnail_placeholder",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+    try {
+      const response = await uploadPost({
+        title,
+        content,
+        category_id: parseInt(category, 10),
+        thumbnail: thumbnail || "thumbnail_placeholder",
+        user_id: user.id,
+      });
 
       if (response) {
         alert("Post uploaded successfully");
-      } else {
-        alert("Failed to upload post");
+        resetForm();
       }
     } catch (error) {
       alert("An error occurred while uploading the post");
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setCategory("");
+    setThumbnail(null);
+  };
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading categories...</div>;
   }
 
   return (
     <div className="h-full w-full space-y-5 mb-96">
-      <div className="w-full flex justify-end">
-        <Button variant={"default"} onClick={handleUploadPost}>
-          Publish
-        </Button>
-      </div>
-      <div className="flex w-full">
-        <input
-          type="text"
-          placeholder="Title"
-          onChange={handleSetTitle}
-          value={title}
-          className="border-none p-[20px] md:p-[30px] lg:p-[40px] md:text-[40px] lg:text-[50px] outline-none w-full focus:text-foreground bg-primary-foreground"
-        />
-      </div>
-
-      <div className="flex gap-3">
-        <Select onValueChange={setCategory}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            {data?.map((category) => (
-              <SelectItem
-                value={category.category_id.toString()}
-                key={category.category_id}
-              >
-                {category.category_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <div className="w-[250px]">
-          <Input
-            type="file"
-            accept="image/jpeg, image/png"
-            onChange={handleThumbnailChange}
-          />
-        </div>
-      </div>
-
-      <ReactQuill
-        theme="snow"
-        ref={reactQuillRef}
-        placeholder="Tell your story..."
-        modules={{
-          toolbar: {
-            container: [
-              [{ header: "1" }, { header: "2" }, { font: [] }],
-              [{ size: [] }],
-              ["bold", "italic", "underline", "strike", "blockquote"],
-              [
-                { list: "ordered" },
-                { list: "bullet" },
-                { indent: "-1" },
-                { indent: "+1" },
-              ],
-              ["link", "image", "video"],
-              ["code-block"],
-              ["clean"],
-            ],
-          },
-          clipboard: {
-            matchVisual: false,
-          },
-        }}
-        formats={[
-          "header",
-          "font",
-          "size",
-          "bold",
-          "italic",
-          "underline",
-          "strike",
-          "blockquote",
-          "list",
-          "bullet",
-          "indent",
-          "link",
-          "image",
-          "video",
-          "code-block",
-        ]}
+      <Header onPublish={handleUploadPost} />
+      <TitleInput value={title} onChange={handleSetTitle} />
+      <CategoryAndThumbnail
+        categories={categories}
+        selectedCategory={category}
+        onCategoryChange={setCategory}
+        onThumbnailChange={handleThumbnailChange}
+      />
+      <RichTextEditor
         value={content}
         onChange={setContent}
-        className="w-full text-foreground h-full"
+        quillRef={reactQuillRef}
       />
     </div>
   );

@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Get,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -68,11 +69,6 @@ export class PostController {
     }
   }
 
-  @Put(':id')
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(id, updatePostDto);
-  }
-
   @Public()
   @Post(':postId/view')
   async updateViewCount(@Param('postId') postId: string): Promise<number> {
@@ -105,6 +101,28 @@ export class PostController {
       return await this.postService.getPostsByUserId(user_id);
     } catch (error) {
       throw new NotFoundException(error.message);
+    }
+  }
+
+  @Delete('delete')
+  async deletePost(@Body() body: { post_id: string; user_id: string }) {
+    const { post_id, user_id } = body;
+    return await this.postService.deletePost(post_id, user_id);
+  }
+
+  @Put('edit-post/:id')
+  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    try {
+      return await this.postService.update(id, updatePostDto);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Failed to update post',
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 }

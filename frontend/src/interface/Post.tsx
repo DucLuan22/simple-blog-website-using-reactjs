@@ -10,4 +10,5 @@ export interface Post {
   category_name: string;
   givenName: string;
   familyName: string;
+  category_id: number;
 }

@@ -6,6 +6,7 @@ interface EditPostPayload {
   title?: string;
   thumbnail?: string;
   content?: string;
+  category_id: number;
 }
 
 interface EditPostResponse {
@@ -17,12 +18,15 @@ const editPost = async (
   payload: EditPostPayload
 ): Promise<EditPostResponse> => {
   const { post_id, ...data } = payload;
-  console.log(payload);
   const response = await axios.put(
-    `http://localhost:5000/api/posts/edit-post/${post_id}`,
-    data
+    `${import.meta.env.VITE_BACKEND_URL}/api/posts/edit-post/${post_id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    }
   );
-
   return response.data;
 };
 

@@ -19,12 +19,16 @@ const deleteBookmark = async ({
   );
   return data;
 };
+
 const useDeleteBookmark = () => {
   const queryClient = useQueryClient();
 
   return useMutation(deleteBookmark, {
     onSuccess: () => {
-      queryClient.invalidateQueries("post");
+      queryClient.invalidateQueries("bookmark");
+    },
+    onError: (error) => {
+      console.error("Error deleting bookmark:", error);
     },
   });
 };

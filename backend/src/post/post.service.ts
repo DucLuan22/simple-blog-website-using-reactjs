@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -83,17 +87,29 @@ export class PostService {
     return post;
   }
 
-  async update(post_id: string, updatePostDto: UpdatePostDto): Promise<Post> {
-    const post = await this.findOne(post_id);
-    Object.assign(post, updatePostDto);
-    return this.postRepository.save(post);
-  }
+  async deletePost(post_id: string, user_id: string): Promise<any> {
+    const post = await this.postRepository
+      .createQueryBuilder('post')
+      .where('post.post_id = :post_id', { post_id })
+      .andWhere('post.user_id = :user_id', { user_id })
+      .getOne();
 
-  async delete(post_id: string): Promise<void> {
-    const result = await this.postRepository.delete(post_id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Post with ID "${post_id}" not found`);
+    if (!post) {
+      throw new ForbiddenException(
+        'Unauthorized: You do not have permission to delete this post',
+      );
     }
+
+    const deleteResult = await this.postRepository.delete(post_id);
+
+    if (deleteResult.affected === 0) {
+      throw new NotFoundException('Post not found');
+    }
+
+    return {
+      success: true,
+      message: 'Post deleted successfully',
+    };
   }
 
   async getPostsByUserId(user_id: string): Promise<any> {
@@ -112,6 +128,7 @@ export class PostService {
         'user.givenName AS givenName',
         'user.familyName AS familyName',
         'category.category_name AS category_name',
+        'category.category_id AS category_id',
         'SUM(postViews.view_count) AS views',
       ])
       .where('posts.user_id = :user_id', { user_id })
@@ -122,16 +139,7 @@ export class PostService {
       .orderBy('posts.createDate', 'DESC')
       .getRawMany();
 
-    if (!posts || posts.length === 0) {
-      throw new NotFoundException(
-        `No posts found for user with ID "${user_id}"`,
-      );
-    }
-
-    return {
-      success: true,
-      data: posts,
-    };
+    return { data: posts || [] };
   }
 
   async updatePostViewCount(postId: string): Promise<number> {
@@ -218,5 +226,18 @@ export class PostService {
       .orderBy('RAND()')
       .limit(5)
       .getRawMany();
+  }
+  async update(post_id: string, updatePostDto: UpdatePostDto): Promise<Post> {
+    const post = await this.postRepository.findOne({
+      where: { post_id },
+    });
+
+    if (!post) {
+      throw new NotFoundException(`Post with ID "${post_id}" not found`);
+    }
+
+    // Apply the updates
+    Object.assign(post, updatePostDto);
+    return this.postRepository.save(post);
   }
 }
