@@ -125,4 +125,9 @@ export class PostController {
       );
     }
   }
+
+  @Get('/category/:category_id')
+  async getPostsByCategory(@Param('category_id') category_id: number) {
+    return this.postService.getPostByCategory(category_id);
+  }
 }

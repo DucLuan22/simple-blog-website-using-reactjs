@@ -170,6 +170,40 @@ export class PostService {
     return totalViews?.totalViews ?? 0;
   }
 
+  async getPostByCategory(category_id: number): Promise<any> {
+    if (!category_id) {
+      throw new Error('Category ID is required');
+    }
+
+    const posts = await this.postRepository
+      .createQueryBuilder('posts')
+      .leftJoinAndSelect('posts.category', 'category')
+      .leftJoinAndSelect('posts.user', 'user')
+      .leftJoinAndSelect('posts.viewsDetails', 'postViews')
+      .select([
+        'posts.post_id AS post_id',
+        'posts.title AS title',
+        'posts.thumbnail AS thumbnail',
+        'posts.content AS content',
+        'posts.createDate AS createDate',
+        'posts.updateDate AS updateDate',
+        'user.givenName AS givenName',
+        'user.familyName AS familyName',
+        'category.category_name AS category_name',
+        'category.category_id AS category_id',
+        'SUM(postViews.view_count) AS views',
+      ])
+      .where('posts.category_id = :category_id', { category_id })
+      .groupBy('posts.post_id')
+      .addGroupBy('category.category_name')
+      .addGroupBy('user.givenName')
+      .addGroupBy('user.familyName')
+      .orderBy('posts.createDate', 'DESC')
+      .getRawMany();
+
+    return { posts: posts || [] };
+  }
+
   async getTopDailyViewedPosts() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
