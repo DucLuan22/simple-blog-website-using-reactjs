@@ -18,6 +18,7 @@ function BookMark() {
         {data?.map((post) => {
           return (
             <BookmarkCard
+              category_id={post.category_id}
               thumbnail={post.thumbnail}
               post_id={post.post_id}
               views={post.views}

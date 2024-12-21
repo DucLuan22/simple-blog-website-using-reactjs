@@ -1,4 +1,10 @@
-import { Eye, ThumbsUp } from "lucide-react";
+import {
+  Bookmark,
+  Eye,
+  MessageSquareMore,
+  Share,
+  ThumbsUp,
+} from "lucide-react";
 import React, { useState } from "react";
 import {
   Select,
@@ -15,31 +21,32 @@ function PostStats() {
   const user = useCounterStore((state) => state.user);
   const { data, isLoading } = useGetPostStatsByUserId(user?.id);
 
-  const [viewType, setViewType] = useState("total");
+  const [viewType, setViewType] = useState("today");
 
   const handleViewChange = (value: string) => {
     setViewType(value);
   };
 
-  console.log(data);
   const sortedData = data?.sort((a, b) => {
-    if (viewType === "total") {
-      return b.total_views - a.total_views;
-    } else if (viewType === "today") {
-      return b.daily_views - a.daily_views;
-    } else if (viewType === "monthly") {
-      return b.monthly_views - a.monthly_views;
-    } else if (viewType === "yearly") {
-      return b.yearly_views - a.yearly_views;
+    switch (viewType) {
+      case "total":
+        return b.total_views - a.total_views;
+      case "today":
+        return b.daily_views - a.daily_views;
+      case "monthly":
+        return b.monthly_views - a.monthly_views;
+      case "yearly":
+        return b.yearly_views - a.yearly_views;
+      default:
+        return 0;
     }
-    return 0;
   });
 
   return (
     <div className="p-6 bg-white rounded-md shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <p className="text-xl font-semibold text-gray-800">Popular Posts</p>
-        <Select onValueChange={handleViewChange}>
+        <Select onValueChange={handleViewChange} value={viewType}>
           <SelectTrigger className="w-[180px] border border-gray-300 rounded-md shadow-sm text-gray-600">
             <SelectValue placeholder="Select View" />
           </SelectTrigger>
@@ -51,7 +58,7 @@ function PostStats() {
           </SelectContent>
         </Select>
       </div>
-      <div className="max-h-[600px] overflow-y-clip">
+      <div className="max-h-[600px] overflow-y-auto">
         {isLoading ? (
           <p>Loading...</p>
         ) : (
@@ -61,7 +68,6 @@ function PostStats() {
               className="flex flex-col md:flex-row md:items-center justify-between border-b-[1px] border-opacity-60 last:border-b-0 py-5"
             >
               <div className="flex items-center space-x-4 mb-4 md:mb-0 gap-x-5">
-                {/* Thumbnail Image */}
                 <img
                   src={post.thumbnail}
                   alt={post.title}
@@ -87,20 +93,83 @@ function PostStats() {
                 <div className="flex items-center space-x-1">
                   <Eye className="w-4 h-4" />
                   <span>
-                    {viewType === "total"
-                      ? post.total_views.toLocaleString()
-                      : viewType === "today"
-                      ? post.daily_views.toLocaleString()
-                      : viewType === "monthly"
-                      ? post.monthly_views.toLocaleString()
-                      : viewType === "yearly"
-                      ? post.yearly_views.toLocaleString()
-                      : ""}
+                    {(() => {
+                      switch (viewType) {
+                        case "total":
+                          return post.total_views.toLocaleString();
+                        case "today":
+                          return post.daily_views.toLocaleString();
+                        case "monthly":
+                          return post.monthly_views.toLocaleString();
+                        case "yearly":
+                          return post.yearly_views.toLocaleString();
+                        default:
+                          return "";
+                      }
+                    })()}
                   </span>
                 </div>
+
                 <div className="flex items-center space-x-1">
-                  <ThumbsUp className="w-4 h-4" />
-                  <span>{post.total_comments}</span>
+                  <Bookmark className="w-4 h-4" />
+                  <span>
+                    {(() => {
+                      switch (viewType) {
+                        case "total":
+                          return post.total_bookmarks.toLocaleString();
+                        case "today":
+                          return post.daily_bookmarks.toLocaleString();
+                        case "monthly":
+                          return post.monthly_bookmarks.toLocaleString();
+                        case "yearly":
+                          return post.yearly_bookmarks.toLocaleString();
+                        default:
+                          return "";
+                      }
+                    })()}
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-1">
+                  <MessageSquareMore className="w-4 h-4" />
+                  <span>
+                    <span>
+                      {(() => {
+                        switch (viewType) {
+                          case "total":
+                            return post.total_comments.toLocaleString();
+                          case "today":
+                            return post.daily_comments.toLocaleString();
+                          case "monthly":
+                            return post.monthly_comments.toLocaleString();
+                          case "yearly":
+                            return post.yearly_comments.toLocaleString();
+                          default:
+                            return "";
+                        }
+                      })()}
+                    </span>
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-1">
+                  <Share className="w-4 h-4" />
+                  <span>
+                    {(() => {
+                      switch (viewType) {
+                        case "total":
+                          return post.total_shares.toLocaleString();
+                        case "today":
+                          return post.daily_shares.toLocaleString();
+                        case "monthly":
+                          return post.monthly_shares.toLocaleString();
+                        case "yearly":
+                          return post.yearly_shares.toLocaleString();
+                        default:
+                          return "";
+                      }
+                    })()}
+                  </span>
                 </div>
               </div>
             </div>

@@ -261,6 +261,7 @@ export class PostService {
       .limit(5)
       .getRawMany();
   }
+
   async update(post_id: string, updatePostDto: UpdatePostDto): Promise<Post> {
     const post = await this.postRepository.findOne({
       where: { post_id },

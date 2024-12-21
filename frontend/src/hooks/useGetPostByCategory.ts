@@ -31,7 +31,7 @@ const usePostsByCategoryId = (
     ["posts", category_id],
     () => fetchPostsByCategoryId(category_id),
     {
-      enabled: !!category_id, // Fetch only if category_id is defined
+      enabled: !!category_id,
     }
   );
 };
