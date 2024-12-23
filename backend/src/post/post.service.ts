@@ -275,4 +275,31 @@ export class PostService {
     Object.assign(post, updatePostDto);
     return this.postRepository.save(post);
   }
+
+  async getRandomPost(): Promise<any> {
+    // Fetch a random post from the database
+    const randomPost = await this.postRepository
+      .createQueryBuilder('post')
+      .select([
+        'post.post_id AS post_id',
+        'post.title AS title',
+        'post.content AS content',
+      ])
+      .orderBy('RAND()')
+      .limit(1)
+      .getRawOne();
+
+    if (!randomPost) {
+      throw new Error('No posts available.');
+    }
+
+    return {
+      post_id: randomPost.post_id,
+      category_name: randomPost.category_name,
+      title: randomPost.title,
+      givenName: randomPost.givenName,
+      lastName: randomPost.lastName,
+      createdDate: randomPost.createdDate,
+    };
+  }
 }

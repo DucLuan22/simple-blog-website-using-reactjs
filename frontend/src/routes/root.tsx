@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import useAuthenticatedRequest from "../hooks/useAuthenticate";
@@ -9,14 +9,18 @@ const MemoizedNavbar = React.memo(Navbar);
 const MemoizedFooter = React.memo(Footer);
 
 function Root() {
-  // Run the authentication request hook
+  const location = useLocation();
   useAuthenticatedRequest();
+
+  const noFooterRoutes = ["/write", "/login"];
+
+  const hideFooter = noFooterRoutes.includes(location.pathname);
 
   return (
     <div className="w-screen h-screen px-3 xl:px-[3%] 2xl:px-[5%] ">
       <MemoizedNavbar />
       <Outlet />
-      <MemoizedFooter />
+      {!hideFooter && <MemoizedFooter />}
     </div>
   );
 }
