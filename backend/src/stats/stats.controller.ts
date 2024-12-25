@@ -20,10 +20,4 @@ export class StatsController {
   async getPostStatsByUserId(@Param('user_id') user_id: number) {
     return this.statisticsService.getPostStatsByUserId(user_id);
   }
-
-  @Public()
-  @Get('get-users-choice-posts')
-  async getUserChoicePosts() {
-    return this.statisticsService.getTopBookmarkedPosts();
-  }
 }

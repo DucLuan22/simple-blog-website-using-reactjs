@@ -25,7 +25,7 @@ const PopularPost = React.lazy(
   () => import("@/components/homepage/PopularPost")
 );
 const Categories = React.lazy(() => import("@/components/homepage/Categories"));
-const EditorPick = React.lazy(() => import("@/components/homepage/EditorPick"));
+const UsersPick = React.lazy(() => import("@/components/homepage/UsersPick"));
 
 function BlogPost() {
   const { post_id } = useParams<{ post_id: string }>();
@@ -152,7 +152,7 @@ function BlogPost() {
         </div>
       </div>
       <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
-        <div className="space-y-10 basis-full ">
+        <div className="space-y-10 lg:basis-[70%] xl:basis-[65%]">
           <p className="text-2xl md:text-3xl lg:text-5xl font-bold">
             {post?.title}
           </p>
@@ -253,11 +253,11 @@ function BlogPost() {
           </React.Suspense>
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-10 lg:basis-[30%] xl:basis-[35%]">
           <React.Suspense fallback={<div>Loading...</div>}>
             <PopularPost />
             <Categories />
-            <EditorPick />
+            <UsersPick />
           </React.Suspense>
         </div>
       </div>

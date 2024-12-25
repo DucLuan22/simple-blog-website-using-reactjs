@@ -130,4 +130,16 @@ export class PostController {
   async getPostsByCategory(@Param('category_id') category_id: number) {
     return this.postService.getPostByCategory(category_id);
   }
+
+  @Public()
+  @Get('/getRandomPosts')
+  async getRandomPosts() {
+    return this.postService.getRandomPost();
+  }
+
+  @Public()
+  @Get('home/get-users-choice-posts')
+  async getUserChoicePosts() {
+    return this.postService.getTopBookmarkedPosts();
+  }
 }

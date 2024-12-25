@@ -276,7 +276,7 @@ export class PostService {
     return this.postRepository.save(post);
   }
 
-  async getRandomPost(): Promise<any> {
+  async getRandomPost() {
     // Fetch a random post from the database
     const randomPost = await this.postRepository
       .createQueryBuilder('post')
@@ -301,5 +301,72 @@ export class PostService {
       lastName: randomPost.lastName,
       createdDate: randomPost.createdDate,
     };
+  }
+
+  async getTopBookmarkedPosts(): Promise<any> {
+    const lastMonthTopPosts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.bookmarks', 'bookmark')
+      .leftJoin('post.category', 'category')
+      .leftJoin('post.user', 'user')
+      .select([
+        'post.post_id AS post_id',
+        'category.category_name AS category_name',
+        'post.title AS title',
+        'user.givenName AS givenName',
+        'user.familyName AS familyName',
+        'post.createDate AS createDate',
+        'post.thumbnail AS thumbnail',
+        'COUNT(bookmark.post_id) AS monthly_bookmark_count',
+      ])
+      .where('bookmark.createdDate >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)')
+      .groupBy('post.post_id')
+      .orderBy('monthly_bookmark_count', 'DESC')
+      .limit(5)
+      .getRawMany();
+
+    if (lastMonthTopPosts.length > 0) {
+      return lastMonthTopPosts.map((post) => ({
+        post_id: post.post_id,
+        category_name: post.category_name,
+        title: post.title,
+        givenName: post.givenName,
+        familyName: post.familyName,
+        createDate: post.createDate,
+        thumbnail: post.thumbnail,
+        bookmark_count: parseInt(post.monthly_bookmark_count, 10),
+      }));
+    }
+
+    const allTimeTopPosts = await this.postRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.bookmarks', 'bookmark')
+      .leftJoin('post.category', 'category')
+      .leftJoin('post.user', 'user')
+      .select([
+        'post.post_id AS post_id',
+        'category.category_name AS category_name',
+        'post.title AS title',
+        'user.givenName AS givenName',
+        'user.famiyName AS familyName',
+        'post.createDate AS createDate',
+        'post.thumbnail AS thumbnail',
+        'COUNT(bookmark.post_id) AS total_bookmark_count',
+      ])
+      .groupBy('post.post_id')
+      .orderBy('total_bookmark_count', 'DESC')
+      .limit(5)
+      .getRawMany();
+
+    return allTimeTopPosts.map((post) => ({
+      post_id: post.post_id,
+      category_name: post.category_name,
+      title: post.title,
+      givenName: post.givenName,
+      familyName: post.familyName,
+      createdDate: post.createdDate,
+      thumbnail: post.thumbnail,
+      bookmark_count: parseInt(post.total_bookmark_count, 10),
+    }));
   }
 }

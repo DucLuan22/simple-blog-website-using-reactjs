@@ -1,10 +1,12 @@
 import Categories from "@/components/homepage/Categories";
-import EditorPick from "@/components/homepage/EditorPick";
+
 import PopularCategories from "@/components/homepage/PopularCategories";
 import PopularPost from "@/components/homepage/PopularPost";
 import RandomPost from "@/components/homepage/RandomPost";
 import RecentPostList from "@/components/homepage/RecentPostList";
+import UsersPick from "@/components/homepage/UsersPick";
 import useFetchPosts from "@/hooks/useGetPosts";
+import useGetUsersChoice from "@/hooks/useGetUsersChoice";
 
 export default function Homepage() {
   const { isLoading, data, error } = useFetchPosts();
@@ -14,13 +16,13 @@ export default function Homepage() {
       <RandomPost />
       <PopularCategories />
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-x-16 xl:gap-x-28">
-        <div className="lg:basis-[70%] xl:basis-[65%]">
+        <div className="lg:basis-[70%] xl:basis-[80%]">
           <RecentPostList isLoading={isLoading} data={data} />
         </div>
-        <div className="lg:basis-[30%] xl:basis-[35%] space-y-10">
+        <div className=" space-y-10">
           <PopularPost />
           <Categories />
-          <EditorPick />
+          <UsersPick />
         </div>
       </div>
     </div>
