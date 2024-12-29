@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useCounterStore } from "@/store";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { ThemeToggle } from "./theme-toggle";
-import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,9 +13,23 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import axios from "axios";
+import { Input } from "./ui/input";
+import SearchBar from "./navbar/SearchBar";
+import useSearchedPosts from "@/hooks/useGetSearchedPosts";
+import SearchResults from "./navbar/SearchResults";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const debouncedValue = useDebouncedValue(searchValue, 500);
+  const {
+    data: posts = [],
+    isLoading,
+    isError,
+    error,
+  } = useSearchedPosts(debouncedValue);
   const setNotAuthenticated = useCounterStore(
     (state) => state.setNotAuthenticated
   );
@@ -26,45 +39,33 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
-
-      if (!accessToken) {
-        console.error("No access token found in localStorage");
-        return;
-      }
+      if (!accessToken) return;
 
       await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/signout`,
         { id: user?.id },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${accessToken}` } }
       );
 
-      // Clear the access token from localStorage
       localStorage.removeItem("accessToken");
-
-      // Clear the authentication state in Zustand store
       setNotAuthenticated();
     } catch (error) {
       console.error("Logout failed", error);
     }
   };
 
-  const handleToggleNavMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const handleToggleNavMenu = () => setIsOpen((prev) => !prev);
+  const handleToggleSearch = () => setIsSearchOpen((prev) => !prev);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 640) {
         setIsOpen(false);
+        setIsSearchOpen(false);
       }
     };
 
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -76,22 +77,22 @@ function Navbar() {
       {isAuthenticated && <Link to="/write">Write</Link>}
       {isAuthenticated ? (
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger aria-label="User Menu">
             <Avatar>
               <AvatarImage
                 src={user?.avatar_url}
                 referrerPolicy="no-referrer"
               />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>
+                {user?.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link to="/profile" className="w-full h-full">
-                Profile
-              </Link>
+              <Link to="/profile">Profile</Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
@@ -102,59 +103,66 @@ function Navbar() {
     </>
   );
 
-  const NavSocialIcon = () => (
-    <>
-      <div className="w-[30px]">
-        <img src="/logos/facebook.svg" alt="Facebook" />
-      </div>
-      <div className="w-[30px]">
-        <img src="/logos/instagram.svg" alt="Instagram" />
-      </div>
-      <div className="w-[30px]">
-        <img src="/logos/tiktok.svg" alt="TikTok" />
-      </div>
-      <div className="w-[35px]">
-        <img src="/logos/youtube.svg" alt="YouTube" />
-      </div>
-    </>
-  );
-
   return (
-    <nav className="flex justify-between py-5 items-center flex-wrap">
-      <div className="hover:cursor-pointer" onClick={handleToggleNavMenu}>
-        {!isOpen ? (
-          <Menu className="w-6 h-6 visible md:hidden" />
-        ) : (
-          <X className="w-6 h-6 visible md:hidden" />
+    <nav className="flex flex-wrap items-center justify-between py-5">
+      <button
+        onClick={handleToggleNavMenu}
+        className="md:hidden"
+        aria-label="Toggle Navigation"
+      >
+        {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+
+      <p className="font-bold text-2xl">luanblog</p>
+
+      <div className="relative hidden md:inline">
+        <SearchBar searchValue={searchValue} setSearchValue={setSearchValue} />
+        {debouncedValue && (
+          <SearchResults
+            posts={posts}
+            isLoading={isLoading}
+            isError={isError}
+            error={error}
+          />
         )}
       </div>
 
-      <ul className="md:flex gap-x-4 hidden md:visible">
-        <NavSocialIcon />
-      </ul>
-
-      <p className="font-bold text-2xl mx-auto inline-block">luanblog</p>
-
-      <div className="flex gap-x-4 items-center">
+      <div className="flex items-center gap-4">
         <ThemeToggle />
-        <div className="md:flex md:visible hidden gap-4 font-semibold items-center">
+        <button
+          onClick={handleToggleSearch}
+          className="md:hidden"
+          aria-label="Toggle Search"
+        >
+          <Search className="w-6 h-6" />
+        </button>
+        <div className="hidden md:flex items-center gap-4">
           <NavLink />
         </div>
       </div>
 
-      <div
-        className={cn(
-          `relative transition-all duration-100 ease-in-out flex flex-col items-center basis-full gap-y-4 mt-5  ${
-            isOpen ? "h-auto opacity-100" : "h-0 opacity-0"
-          }`,
-          !isOpen && "invisible -translate-y-14"
-        )}
-      >
-        <NavLink />
-        <div className="flex gap-5 mt-2 ">
-          <NavSocialIcon />
+      {isSearchOpen && (
+        <div className="w-full relative mt-4">
+          <SearchBar
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+          />
+          {debouncedValue && (
+            <SearchResults
+              posts={posts}
+              isLoading={isLoading}
+              isError={isError}
+              error={error}
+            />
+          )}
         </div>
-      </div>
+      )}
+
+      {isOpen && (
+        <div className="flex flex-col items-center w-full gap-4 mt-5">
+          <NavLink />
+        </div>
+      )}
     </nav>
   );
 }

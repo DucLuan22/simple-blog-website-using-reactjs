@@ -44,7 +44,7 @@ export class PostController {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: 'Failed to create post',
+          error: 'Failed to fetch posts',
           message: error.message,
         },
         HttpStatus.BAD_REQUEST,
@@ -58,14 +58,7 @@ export class PostController {
     try {
       return await this.postService.findOne(id);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Failed to fetch post',
-          message: error.message,
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new NotFoundException(`Post with ID "${id}" not found`);
     }
   }
 
@@ -73,10 +66,11 @@ export class PostController {
   @Post(':postId/view')
   async updateViewCount(@Param('postId') postId: string): Promise<number> {
     try {
-      const totalViews = await this.postService.updatePostViewCount(postId);
-      return totalViews;
+      return await this.postService.updatePostViewCount(postId);
     } catch (error) {
-      throw new NotFoundException(`Post with ID "${postId}" not found`);
+      throw new NotFoundException(
+        `Failed to update views for post with ID "${postId}"`,
+      );
     }
   }
 
@@ -84,9 +78,7 @@ export class PostController {
   @Get('stats/daily')
   async getTopDailyViewedPosts() {
     try {
-      const topPosts = await this.postService.getTopDailyViewedPosts();
-
-      return topPosts;
+      return await this.postService.getTopDailyViewedPosts();
     } catch (error) {
       throw new HttpException(
         { success: false, error: error.message || 'Internal server error' },
@@ -100,14 +92,26 @@ export class PostController {
     try {
       return await this.postService.getPostsByUserId(user_id);
     } catch (error) {
-      throw new NotFoundException(error.message);
+      throw new NotFoundException(
+        `Failed to fetch posts for user ID "${user_id}"`,
+      );
     }
   }
 
   @Delete('delete')
   async deletePost(@Body() body: { post_id: string; user_id: string }) {
-    const { post_id, user_id } = body;
-    return await this.postService.deletePost(post_id, user_id);
+    try {
+      return await this.postService.deletePost(body.post_id, body.user_id);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Failed to delete post',
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   @Put('edit-post/:id')
@@ -126,20 +130,64 @@ export class PostController {
     }
   }
 
+  @Public()
   @Get('/category/:category_id')
   async getPostsByCategory(@Param('category_id') category_id: number) {
-    return this.postService.getPostByCategory(category_id);
+    try {
+      return await this.postService.getPostByCategory(category_id);
+    } catch (error) {
+      throw new NotFoundException(
+        `Failed to fetch posts for category ID "${category_id}"`,
+      );
+    }
   }
 
   @Public()
   @Get('/getRandomPosts')
   async getRandomPosts() {
-    return this.postService.getRandomPost();
+    try {
+      return await this.postService.getRandomPost();
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to fetch random posts',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Public()
   @Get('home/get-users-choice-posts')
   async getUserChoicePosts() {
-    return this.postService.getTopBookmarkedPosts();
+    try {
+      return await this.postService.getTopBookmarkedPosts();
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'Failed to fetch user choice posts',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Public()
+  @Get('/search/:keywords')
+  async getSearchedPosts(@Param('keywords') keywords: string) {
+    try {
+      return await this.postService.searchPostsByTitle(keywords);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Failed to search posts',
+          message: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

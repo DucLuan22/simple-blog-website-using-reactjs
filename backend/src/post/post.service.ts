@@ -369,4 +369,23 @@ export class PostService {
       bookmark_count: parseInt(post.total_bookmark_count, 10),
     }));
   }
+
+  async searchPostsByTitle(keyword: string): Promise<any[]> {
+    if (!keyword || keyword.trim() === '') {
+      throw new Error('Search keyword is required');
+    }
+
+    const searchResults = await this.postRepository
+      .createQueryBuilder('posts')
+      .select([
+        'posts.post_id AS post_id',
+        'posts.title AS title',
+        'posts.thumbnail AS thumbnail',
+      ])
+      .where('posts.title LIKE :keyword', { keyword: `%${keyword}%` })
+      .orderBy('posts.createDate', 'DESC')
+      .getRawMany();
+
+    return searchResults;
+  }
 }

@@ -13,7 +13,6 @@ function PopularPostCard({
   category_name,
   createDate,
   post_id,
-  thumbnail,
   title,
   familyName,
   givenName,
