@@ -122,6 +122,7 @@ function Navbar() {
             posts={posts}
             isLoading={isLoading}
             isError={isError}
+            setSearchValue={setSearchValue}
             error={error}
           />
         )}
@@ -152,6 +153,7 @@ function Navbar() {
               posts={posts}
               isLoading={isLoading}
               isError={isError}
+              setSearchValue={setSearchValue}
               error={error}
             />
           )}

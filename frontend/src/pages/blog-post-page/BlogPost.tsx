@@ -17,6 +17,7 @@ import {
 } from "react-share";
 import useCreateShare from "@/hooks/useCreateShare";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 const CommentSection = React.lazy(
   () => import("@/components/blogpage/CommentSection")
@@ -37,7 +38,7 @@ function BlogPost() {
   const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
   const { count } = useIncrementOnLoad(post_id);
   const navigation = useNavigate();
-
+  const { toast } = useToast();
   const { mutate: createShare } = useCreateShare();
   const shareUrl = window.location.href;
 
@@ -125,21 +126,39 @@ function BlogPost() {
 
       if (response.data.success) {
         setIsBookmarked((prev) => !prev);
-        alert(response.data.message);
+        toast({
+          title: response.data?.isBookmark
+            ? "Removed from Bookmarks"
+            : "Added to Bookmarks",
+          description: response.data.message,
+          variant: response.data?.isBookmark ? "destructive" : "default",
+        });
       } else {
-        alert(response.data.message || "An error occurred");
+        toast({
+          title: "Error",
+          description: response.data.message || "An error occurred",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        alert(error.response.data.error || "An error occurred");
+        toast({
+          title: "Error",
+          description: error.response.data.error || "An error occurred",
+          variant: "destructive",
+        });
       } else {
-        alert("An error occurred while handling the bookmark");
+        toast({
+          title: "Error",
+          description: "An error occurred while handling the bookmark",
+          variant: "destructive",
+        });
       }
     }
   };
 
   return (
-    <div className="space-y-7 w-full mb-36">
+    <div className="space-y-7 w-full mb-36 ">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
         <div className="flex flex-col gap-y-5 md:gap-y-6 lg:gap-y-10">
           <div className="w-full">
@@ -152,7 +171,7 @@ function BlogPost() {
         </div>
       </div>
       <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
-        <div className="space-y-10 lg:basis-[70%] xl:basis-[65%]">
+        <div className="space-y-10 lg:basis-[70%] xl:basis-[80%]">
           <p className="text-2xl md:text-3xl lg:text-5xl font-bold">
             {post?.title}
           </p>
@@ -220,7 +239,7 @@ function BlogPost() {
             <div className="space-y-3">
               <h2 className="text-2xl">Comments</h2>
               {isAuthenticate ? (
-                <div className="h-[80px] flex w-full items-center space-x-2">
+                <div className="h-[80px] flex w-full items-center space-x-2 ">
                   <Input
                     type="text"
                     placeholder="Type your comment..."
@@ -253,7 +272,7 @@ function BlogPost() {
           </React.Suspense>
         </div>
 
-        <div className="space-y-10 lg:basis-[30%] xl:basis-[35%]">
+        <div className="space-y-10 ">
           <React.Suspense fallback={<div>Loading...</div>}>
             <PopularPost />
             <Categories />

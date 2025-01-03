@@ -25,15 +25,19 @@ const fetchUsersChoice = async (): Promise<GetUserChoiceProps[]> => {
 };
 
 const useGetUsersChoice = () => {
-  return useQuery<GetUserChoiceProps[], Error>("posts", fetchUsersChoice, {
-    cacheTime: 1000 * 60 * 10,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    initialData: [],
-    onError: (error: Error) => {
-      console.error("Failed to fetch categories:", error);
-    },
-  });
+  return useQuery<GetUserChoiceProps[], Error>(
+    "users-choice-posts",
+    fetchUsersChoice,
+    {
+      cacheTime: 1000 * 60 * 10,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      initialData: [],
+      onError: (error: Error) => {
+        console.error("Failed to fetch categories:", error);
+      },
+    }
+  );
 };
 
 export default useGetUsersChoice;

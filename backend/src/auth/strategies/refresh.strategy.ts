@@ -1,13 +1,12 @@
 import { ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-import { Inject, Injectable } from '@nestjs/common';
-
-import { Request } from 'express';
+import { Injectable, Inject } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import { AuthJWtPayload } from '../types/auth-jwt-payload';
 import refreshJwtConfig from 'src/config/refresh-jwt.config';
+import { UnauthorizedException } from '@nestjs/common';
+import { Request } from 'express';
+import { AuthJWtPayload } from '../types/auth-jwt-payload';
 
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(
@@ -20,16 +19,34 @@ export class RefreshJwtStrategy extends PassportStrategy(
     private authService: AuthService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: Request) => {
+          return req.cookies['refresh_token'];
+        },
+      ]),
       secretOrKey: refreshJwtConfiguration.secret,
       ignoreExpiration: false,
       passReqToCallback: true,
     });
   }
 
-  validate(req: Request, payload: AuthJWtPayload) {
-    const refreshToken = req.get('authorization').replace('Bearer', '').trim();
+  async validate(req: Request, payload: AuthJWtPayload) {
+    const refreshToken = req.cookies['refresh_token'];
     const userId = payload.sub;
-    return this.authService.validateRefreshToken(userId, refreshToken);
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found in cookies');
+    }
+
+    const isValid = await this.authService.validateRefreshToken(
+      userId,
+      refreshToken,
+    );
+
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
+
+    return { userId };
   }
 }

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useCounterStore } from "@/store";
+import { jwtDecode } from "jwt-decode";
 
 interface UserData {
   id: number;
@@ -13,83 +13,90 @@ interface UserData {
   email: string;
 }
 
+interface DecodedToken {
+  exp: number;
+}
+
 const useAuthenticatedRequest = () => {
-  const setAuthenticated = useCounterStore((state) => state.setAuthenticated);
-  const setNotAuthenticated = useCounterStore(
-    (state) => state.setNotAuthenticated
+  const { setAuthenticated, setNotAuthenticated, setUsers } = useCounterStore(
+    (state) => ({
+      setAuthenticated: state.setAuthenticated,
+      setNotAuthenticated: state.setNotAuthenticated,
+      setUsers: state.setUsers,
+    })
   );
-  const setUsers = useCounterStore((state) => state.setUsers);
+
+  const isTokenExpired = (token: string): boolean => {
+    try {
+      const { exp } = jwtDecode<DecodedToken>(token);
+      return exp < Math.floor(Date.now() / 1000);
+    } catch {
+      return true;
+    }
+  };
+
+  const getStoredToken = () => {
+    const storedToken = localStorage.getItem("accessToken");
+    if (storedToken && !isTokenExpired(storedToken)) {
+      return storedToken;
+    }
+    return null;
+  };
 
   const ensureAccessToken = async (): Promise<string> => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get("token");
-
-    if (urlToken) {
-      localStorage.setItem("accessToken", urlToken);
-
-      const newUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-
-      return urlToken;
+    const tokenFromUrl = new URLSearchParams(window.location.search).get(
+      "token"
+    );
+    if (tokenFromUrl) {
+      localStorage.setItem("accessToken", tokenFromUrl);
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.origin + window.location.pathname
+      );
+      return tokenFromUrl;
     }
 
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken) {
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        setNotAuthenticated();
-        throw new Error("No access token or refresh token found");
-      }
-
-      try {
-        // Attempt to refresh the access token
-        const tokenResponse = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          }
-        );
-
-        const newAccessToken = tokenResponse.data.accessToken;
-        localStorage.setItem("accessToken", newAccessToken);
-
-        return newAccessToken;
-      } catch (error) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        setNotAuthenticated();
-        throw new Error("Failed to refresh access token");
-      }
+    const storedToken = getStoredToken();
+    if (!storedToken) {
+      return refreshAccessToken();
     }
 
-    return accessToken;
+    return storedToken;
+  };
+
+  const refreshAccessToken = async (): Promise<string> => {
+    try {
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/refresh`,
+        {},
+        { withCredentials: true }
+      );
+      const newAccessToken = data.accessToken;
+      localStorage.setItem("accessToken", newAccessToken);
+      return newAccessToken;
+    } catch (error) {
+      localStorage.removeItem("accessToken");
+      setNotAuthenticated();
+      throw new Error("Failed to refresh access token");
+    }
   };
 
   const fetchAuthenticatedData = async () => {
     try {
       const accessToken = await ensureAccessToken();
-
-      // Fetch user info using the access token
-      const response = await axios.get<UserData>(
+      const { data } = await axios.get<UserData>(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/profile`,
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${accessToken}` },
         }
       );
-
-      if (!response.data) throw new Error("User not authenticated!");
-
-      // Update Zustand state with user info
-      setUsers(response.data);
-      return { success: true, user: response.data };
+      if (!data) throw new Error("User not authenticated");
+      setUsers(data);
+      setAuthenticated();
+      return { success: true, user: data };
     } catch (error) {
-      // Handle errors by checking for token expiration or invalid token
+      console.error("Failed to fetch authenticated data:", error);
       setNotAuthenticated();
       throw error;
     }
@@ -99,15 +106,11 @@ const useAuthenticatedRequest = () => {
     "authenticatedData",
     fetchAuthenticatedData,
     {
-      staleTime: 1000 * 60 * 5, // Data remains fresh for 5 minutes
-      cacheTime: 1000 * 60 * 10, // Cache data for 10 minutes
-      refetchOnWindowFocus: false, // Don't refetch when window is focused
-      onSuccess: (data) => {
-        if (data.success) setAuthenticated();
-      },
-      onError: () => {
-        setNotAuthenticated();
-      },
+      staleTime: 300000, // 5 minutes in milliseconds
+      cacheTime: 600000, // 10 minutes in milliseconds
+      refetchOnWindowFocus: false,
+      retry: false,
+      onError: () => setNotAuthenticated(),
     }
   );
 

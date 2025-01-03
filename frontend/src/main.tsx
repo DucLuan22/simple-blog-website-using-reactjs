@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { useCounterStore } from "./store.ts";
 import Root from "./routes/root.tsx";
 import ProfileRoutes from "./routes/ProfileRoutes.tsx";
+import { ToastProvider } from "@radix-ui/react-toast";
 
 const Contact = lazy(() => import("./pages/contact-page/Contact.tsx"));
 const Error = lazy(() => import("./pages/error-page/Error.tsx"));
@@ -73,9 +74,11 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
+      <ToastProvider>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </ToastProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

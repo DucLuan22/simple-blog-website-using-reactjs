@@ -10,7 +10,7 @@ const MemoizedFooter = React.memo(Footer);
 
 function Root() {
   const location = useLocation();
-  useAuthenticatedRequest();
+  const { isLoading } = useAuthenticatedRequest();
 
   const noFooterRoutes = ["/write", "/login"];
 

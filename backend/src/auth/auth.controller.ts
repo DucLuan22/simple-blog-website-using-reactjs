@@ -44,9 +44,15 @@ export class AuthController {
   }
 
   @UseGuards(RefreshAuthGuard)
+  @Public()
   @Post('refresh')
   refreshToken(@Req() req) {
     return this.authService.refreshToken(req.user.id);
+  }
+
+  private parseExpiry(expiry: string): number {
+    const days = parseInt(expiry.replace('d', ''), 10);
+    return days * 24 * 60 * 60 * 1000;
   }
 
   @Public()
@@ -55,8 +61,20 @@ export class AuthController {
   async handleCallback(@Req() req, @Res() res) {
     const response = await this.authService.login(req.user.id);
 
-    // Get FRONTEND_URL from the environment variables
     const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+    const refreshToken = response.refreshToken;
+    const refreshTokenExpiry = this.configService.get<string>(
+      'REFRESH_JWT_EXPIRE_IN',
+    );
+
+    const expiryDuration = this.parseExpiry(refreshTokenExpiry);
+
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      expires: new Date(Date.now() + expiryDuration),
+      sameSite: 'Strict',
+    });
 
     res.redirect(`${frontendUrl}?token=${response.accessToken}`);
   }

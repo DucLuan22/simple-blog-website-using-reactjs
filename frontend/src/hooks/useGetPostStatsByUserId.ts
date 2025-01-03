@@ -39,7 +39,6 @@ const useGetPostStatsByUserId = (user_id: number | undefined) => {
         }/api/stats/get-posts-stats/${user_id}`
       );
 
-      console.log(response.data);
       return response.data;
     },
     {

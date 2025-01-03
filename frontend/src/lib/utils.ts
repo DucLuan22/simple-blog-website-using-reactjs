@@ -47,3 +47,9 @@ export function getRandomBgColor() {
   const randomIndex = Math.floor(Math.random() * colors.length);
   return colors[randomIndex];
 }
+
+export const getCookieValue = (cookieName: string): string | undefined => {
+  const cookies = document.cookie.split("; ");
+  const cookie = cookies.find((row) => row.startsWith(`${cookieName}=`));
+  return cookie ? cookie.split("=")[1] : undefined;
+};

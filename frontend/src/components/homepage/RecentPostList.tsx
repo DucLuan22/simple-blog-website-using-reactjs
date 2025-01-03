@@ -3,13 +3,10 @@ import PostItem from "./PostItem";
 import { Post } from "@/interface/Post";
 import { PostSkeleton } from "./PostSkeleton";
 import { PaginationControls } from "./PaginationControl";
+import useFetchPosts from "@/hooks/useGetPosts";
 
-interface PostListProps {
-  isLoading: boolean;
-  data?: Post[];
-}
-
-function RecentPostList({ isLoading, data }: PostListProps) {
+function RecentPostList() {
+  const { isLoading, data, error } = useFetchPosts();
   const rowsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -25,25 +22,25 @@ function RecentPostList({ isLoading, data }: PostListProps) {
     return [];
   }, [currentPage, data]);
 
+  if (isLoading) {
+    return <div></div>;
+  }
+
   return (
     <div className="space-y-10 basis-full lg:basis-4/5">
       <p className="text-xl md:text-2xl font-bold">Recent Posts</p>
       <div className="space-y-10">
-        {isLoading ? (
-          <PostSkeleton rowsPerPage={rowsPerPage} />
-        ) : (
-          currentPosts.map((e) => (
-            <PostItem
-              title={e.title}
-              post_id={e.post_id}
-              createDate={e.createDate}
-              content={e.content}
-              key={e.post_id}
-              thumbnail={e.thumbnail}
-              category_name={e.category_name}
-            />
-          ))
-        )}
+        {currentPosts.map((e) => (
+          <PostItem
+            title={e.title}
+            post_id={e.post_id}
+            createDate={e.createDate}
+            content={e.content}
+            key={e.post_id}
+            thumbnail={e.thumbnail}
+            category_name={e.category_name}
+          />
+        ))}
       </div>
       <PaginationControls
         currentPage={currentPage}

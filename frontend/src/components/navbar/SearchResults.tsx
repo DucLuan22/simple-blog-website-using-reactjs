@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 type SearchPost = {
   title: string;
@@ -11,6 +12,7 @@ interface SearchResultsProps {
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
+  setSearchValue: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
@@ -18,6 +20,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   isLoading,
   isError,
   error,
+  setSearchValue,
 }) => {
   if (isLoading) {
     return (
@@ -44,23 +47,25 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   }
 
   return (
-    <ul className="absolute top-full left-0 w-full bg-primary-foreground bg-op shadow-lg rounded-md mt-2 p-2 z-50 max-h-[400px] overflow-y-scroll">
+    <section className="absolute top-full left-0 w-full bg-primary-foreground bg-op shadow-lg rounded-md mt-2 p-2 z-50 max-h-[400px] overflow-y-scroll scroll">
       {posts.map((post) => (
-        <li
+        <Link
+          to={`/posts/${post.post_id}`}
+          onClick={() => setSearchValue("")}
           key={post.post_id}
-          className="border-b last:border-b-0 p-2 hover:bg-gray-600 hover:bg-opacity-30 flex items-center gap-x-4"
+          className="border-b last:border-b-0 p-2 hover:bg-gray-600 hover:bg-opacity-30 flex gap-x-2"
         >
-          <div className="w-[100px] md:w-[100px] lg:w-[140px] xl:w-[160px]">
+          <div className="w-[100px] lg:w-[100px] xl:w-[120px]">
             <img
               src={post.thumbnail}
               alt={post.title}
               className="object-cover rounded-md"
             />
           </div>
-          <p className="font-bold line-clamp-1">{post.title}</p>
-        </li>
+          <p className="font-semibold line-clamp-1">{post.title}</p>
+        </Link>
       ))}
-    </ul>
+    </section>
   );
 };
 

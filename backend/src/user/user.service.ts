@@ -33,6 +33,7 @@ export class UserService {
         'avatar_url',
         'email',
         'google_id',
+        'hashedRefreshToken',
       ],
     });
   }

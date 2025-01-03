@@ -23,7 +23,11 @@ export class BookmarkService {
 
     if (existingBookmark) {
       await this.bookmarkRepository.delete({ user_id, post_id });
-      return { success: true, message: 'Bookmark removed successfully' };
+      return {
+        success: true,
+        message: 'Bookmark removed successfully',
+        isBookmark: false,
+      };
     } else {
       const newBookmark = this.bookmarkRepository.create({ user_id, post_id });
       await this.bookmarkRepository.save(newBookmark);
@@ -31,6 +35,7 @@ export class BookmarkService {
         success: true,
         message: 'Bookmark added successfully',
         data: { user_id, post_id },
+        isBookmark: true,
       };
     }
   }
