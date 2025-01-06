@@ -18,7 +18,7 @@ function Writepage() {
   const [thumbnail, setThumbnail] = useState<string | null>(null);
 
   const reactQuillRef = useRef<ReactQuill>(null);
-  const { data: categories = [], isLoading } = useCategory(); // Default categories to empty array
+  const { data: categories = [], isLoading } = useCategory();
   const user = useCounterStore((state) => state.user);
 
   const handleSetTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,20 +72,25 @@ function Writepage() {
   }
 
   return (
-    <div className="h-full w-full space-y-5 mb-96">
-      <Header onPublish={handleUploadPost} />
-      <TitleInput value={title} onChange={handleSetTitle} />
-      <CategoryAndThumbnail
-        categories={categories}
-        selectedCategory={category}
-        onCategoryChange={setCategory}
-        onThumbnailChange={handleThumbnailChange}
-      />
-      <RichTextEditor
-        value={content}
-        onChange={setContent}
-        quillRef={reactQuillRef}
-      />
+    <div className="h-full w-full mb-96 flex-col lg:gap-5 lg:flex-row flex gap-y-5">
+      <div className="lg:basis-1/2 space-y-5">
+        <Header onPublish={handleUploadPost} />
+        <TitleInput value={title} onChange={handleSetTitle} />
+        <CategoryAndThumbnail
+          categories={categories}
+          selectedCategory={category}
+          onCategoryChange={setCategory}
+          onThumbnailChange={handleThumbnailChange}
+        />
+        <RichTextEditor
+          value={content}
+          onChange={setContent}
+          quillRef={reactQuillRef}
+        />
+      </div>
+      <div className="lg:basis-1/2">
+        <h1>Previews</h1>
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ interface HeaderProps {
 
 function Header({ onPublish }: HeaderProps) {
   return (
-    <div className="w-full flex justify-end">
+    <div className="w-full flex">
       <Button variant="default" onClick={onPublish}>
         Publish
       </Button>

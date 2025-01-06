@@ -1,28 +1,54 @@
+import { Post } from "@/interface/Post";
 import { Button } from "../ui/button";
+import { Link } from "react-router-dom";
 
-function RandomPost() {
+interface PostListProps {
+  isLoading: boolean;
+  data?: Post[];
+}
+
+function extractFirstParagraph(content: string): string {
+  // Use DOMParser to extract the first <p> tag's content
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(content, "text/html");
+  const firstParagraph = doc.querySelector("p");
+  return firstParagraph ? firstParagraph.textContent || "" : "";
+}
+
+function RandomPost({ isLoading, data }: PostListProps) {
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (!data || data.length === 0) {
+    return <p>No posts available.</p>;
+  }
+
+  const randomIndex = Math.floor(Math.random() * data.length);
+  const randomPost = data[randomIndex];
+
+  // Extract and clean up the content
+  const cleanedContent = extractFirstParagraph(randomPost.content);
+
   return (
     <div className="flex md:flex-row flex-col md:justify-start items-start md:items-center gap-5">
       <div className="max-w-[600px] overflow-hidden basis-1/2">
         <img
-          src="https://images.unsplash.com/photo-1713365747492-7918df1942b7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxNnx8fGVufDB8fHx8fA%3D%3D"
-          alt="test"
+          src={randomPost.thumbnail || "https://via.placeholder.com/600x400"}
+          alt={randomPost.title}
           className="w-full"
         />
       </div>
 
       <div className="basis-1/2 space-y-3">
-        <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold line ">
-          This is an example title for a blog post and is only used for testing
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold line">
+          {randomPost.title}
         </h2>
         <p className="line-clamp-2 md:line-clamp-3 lg:line-clamp-none">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente quos
-          quas sequi beatae fugit nesciunt aliquam, a eveniet aspernatur ducimus
-          tenetur repellendus earum in inventore alias, perferendis provident?
-          Cumque, tenetur.
+          {cleanedContent}
         </p>
         <Button aria-label="Read More" variant={"outline"}>
-          Read More
+          <Link to={`/posts/${randomPost.post_id}`}>Read More</Link>
         </Button>
       </div>
     </div>

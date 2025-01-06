@@ -3,10 +3,13 @@ import PostItem from "./PostItem";
 import { Post } from "@/interface/Post";
 import { PostSkeleton } from "./PostSkeleton";
 import { PaginationControls } from "./PaginationControl";
-import useFetchPosts from "@/hooks/useGetPosts";
 
-function RecentPostList() {
-  const { isLoading, data, error } = useFetchPosts();
+interface PostListProps {
+  isLoading: boolean;
+  data?: Post[];
+}
+
+function RecentPostList({ isLoading, data }: PostListProps) {
   const rowsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -25,7 +28,6 @@ function RecentPostList() {
   if (isLoading) {
     return <div></div>;
   }
-
   return (
     <div className="space-y-10 basis-full lg:basis-4/5">
       <p className="text-xl md:text-2xl font-bold">Recent Posts</p>
