@@ -13,7 +13,7 @@ function TitleInput({ value, onChange }: TitleInputProps) {
         placeholder="Title"
         value={value}
         onChange={onChange}
-        className="border-none p-[20px] md:p-[30px] lg:p-[40px] md:text-[40px] lg:text-[50px] outline-none w-full focus:text-foreground bg-primary-foreground"
+        className="h-[30px] border-none p-[20px] md:p-[30px] lg:p-[40px] md:text-[40px] lg:text-[50px] outline-none w-full focus:text-foreground bg-primary-foreground"
       />
     </div>
   );

@@ -68,7 +68,6 @@ function PostHistory() {
         </TableBody>
       </Table>
 
-      {/* Mobile View */}
       <div className="md:hidden w-full">
         {formattedData.map((item) => (
           <PostMobileCard

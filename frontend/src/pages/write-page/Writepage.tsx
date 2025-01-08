@@ -10,12 +10,13 @@ import Header from "@/components/writepage/Header";
 import TitleInput from "@/components/writepage/TitleInput";
 import CategoryAndThumbnail from "@/components/writepage/CategoryAndThumbNail";
 import RichTextEditor from "@/components/writepage/RichTextEditor";
+import PreviewSection from "@/components/writepage/PreviewSection";
 
 function Writepage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
+  const [thumbnail, setThumbnail] = useState<string>("");
 
   const reactQuillRef = useRef<ReactQuill>(null);
   const { data: categories = [], isLoading } = useCategory();
@@ -64,7 +65,7 @@ function Writepage() {
     setTitle("");
     setContent("");
     setCategory("");
-    setThumbnail(null);
+    setThumbnail("");
   };
 
   if (isLoading) {
@@ -89,7 +90,7 @@ function Writepage() {
         />
       </div>
       <div className="lg:basis-1/2">
-        <h1>Previews</h1>
+        <PreviewSection thumbnail={thumbnail} title={title} content={content} />
       </div>
     </div>
   );

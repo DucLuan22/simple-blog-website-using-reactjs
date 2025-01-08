@@ -24,11 +24,12 @@ function CategoryAndThumbnail({
 }: CategoryAndThumbnailProps) {
   return (
     <div className="flex gap-3">
-      <Select onValueChange={onCategoryChange}>
+      <Select onValueChange={onCategoryChange} value={selectedCategory}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Category" />
+          <SelectValue placeholder="Select category" />
         </SelectTrigger>
         <SelectContent>
+          <SelectItem value="none">Select category</SelectItem>
           {categories.map((category) => (
             <SelectItem
               key={category.category_id}
