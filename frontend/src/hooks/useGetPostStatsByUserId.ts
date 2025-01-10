@@ -36,7 +36,12 @@ const useGetPostStatsByUserId = (user_id: number | undefined) => {
       const response = await axios.get(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/api/stats/get-posts-stats/${user_id}`
+        }/api/stats/get-posts-stats/${user_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        }
       );
 
       return response.data;

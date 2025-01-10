@@ -36,7 +36,7 @@ function PreviewSection({ thumbnail, title, content }: PostPreviewProps) {
           />
         </div>
         <p className="text-xl lg:text-2xl xl:text-3xl font-bold">{title}</p>
-        <div>{htmlStringToElements(content)}</div>
+        <div className="text-2xl">{htmlStringToElements(content)}</div>
       </div>
     </section>
   );
