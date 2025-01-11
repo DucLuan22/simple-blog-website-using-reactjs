@@ -1,8 +1,8 @@
-import type { Post } from "@/interface/Post";
-import { Button } from "../ui/button";
+import React from "react";
 import { format } from "date-fns";
-import { getTextFromParagraphString } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
+import { getTextFromParagraphString } from "@/lib/utils";
 
 interface RecentPostProps {
   post_id: string;
@@ -13,49 +13,45 @@ interface RecentPostProps {
   content: string;
 }
 
-function PostItem({
-  post_id,
-  category_name,
-  createDate,
-  title,
-  thumbnail,
-  content,
-}: RecentPostProps) {
-  const navigate = useNavigate();
-  const handleRedirect = () => {
-    navigate(`/posts/${post_id}`);
-  };
+const PostItem: React.FC<RecentPostProps> = React.memo(
+  ({ post_id, category_name, createDate, title, thumbnail, content }) => {
+    const navigate = useNavigate();
 
-  return (
-    <div
-      className="flex md:flex-row flex-col md:justify-start items-start md:items-center gap-5"
-      key={post_id}
-    >
-      <div className="w-full h-full overflow-hidden basis lg:basis-1/2">
-        <img
-          src={thumbnail}
-          alt={title}
-          className="w-full h-auto object-cover rounded-lg"
-        />
-      </div>
-
-      <div className="basis-1/2 space-y-3 md:space-y-4 lg:space-y-7">
-        <div className="text-gray-400 text-sm">
-          {format(createDate, "dd-MM-yyyy")} -{" "}
-          <span className="text-pink-800">{category_name.toUpperCase()}</span>
+    return (
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-5">
+        <div className="w-full md:basis-1/2 overflow-hidden">
+          <img
+            src={thumbnail || "/placeholder.jpg"}
+            alt={title || "Post Thumbnail"}
+            className="w-full h-auto object-cover rounded-lg"
+            loading="lazy"
+          />
         </div>
-        <h2 className="text-lg xl:text-xl font-semibold line">{title}</h2>
-        <p className="line-clamp-2">{getTextFromParagraphString(content)}</p>
-        <Button
-          aria-label="Read More"
-          variant={"outline"}
-          onClick={handleRedirect}
-        >
-          Read More
-        </Button>
+
+        <div className="space-y-3 md:space-y-4 lg:space-y-7 md:basis-1/2">
+          <div className="text-gray-400 text-sm">
+            {format(createDate, "dd-MM-yyyy")} -{" "}
+            <span className="text-pink-800">
+              {category_name?.toUpperCase() || "CATEGORY"}
+            </span>
+          </div>
+          <h2 className="text-lg xl:text-xl font-semibold line-clamp-2">
+            {title || "Untitled Post"}
+          </h2>
+          <p className="line-clamp-2">
+            {getTextFromParagraphString(content) || "No content available."}
+          </p>
+          <Button
+            aria-label="Read More"
+            variant="outline"
+            onClick={() => navigate(`/posts/${post_id}`)}
+          >
+            Read More
+          </Button>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
 
 export default PostItem;

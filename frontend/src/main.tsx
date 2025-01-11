@@ -73,12 +73,12 @@ const App = () => (
 const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <ToastProvider>
+    <ToastProvider>
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <QueryClientProvider client={queryClient}>
           <App />
         </QueryClientProvider>
-      </ToastProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ToastProvider>
   </React.StrictMode>
 );

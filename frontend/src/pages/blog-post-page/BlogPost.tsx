@@ -35,51 +35,30 @@ function BlogPost() {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const { data: post, isLoading, isError, error } = usePostById(post_id || "");
   const user = useCounterStore((state) => state.user);
-  const isAuthenticate = useCounterStore((state) => state.isAuthenticated);
+  const isAuthenticated = useCounterStore((state) => state.isAuthenticated);
   const { count } = useIncrementOnLoad(post_id);
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { mutate: createShare } = useCreateShare();
   const shareUrl = window.location.href;
 
-  if (isLoading || !post_id) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError || !post) {
-    return <div>Error: {error?.message || "Post not found"}</div>;
-  }
-
   const handleShare = (platform: string) => {
-    createShare({ post_id: post_id, flatform: platform });
+    if (!post_id) {
+      return null;
+    }
+    createShare({ post_id, flatform: platform });
   };
-
-  function htmlStringToElements(htmlString: any) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlString, "text/html");
-    return Array.from(doc.body.children).map((element, index) => {
-      return (
-        <div
-          key={index}
-          dangerouslySetInnerHTML={{ __html: element.outerHTML }}
-        />
-      );
-    });
-  }
 
   const submitComment = async () => {
     if (!comment) return;
-
-    if (user?.id === null) {
-      return;
-    }
+    if (!user?.id) return;
 
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/comment`,
         {
           user_id: user?.id,
-          post_id: post_id,
+          post_id,
           content: comment,
         },
         {
@@ -93,30 +72,23 @@ function BlogPost() {
         setComment("");
         setNewComment(response.data);
       } else {
-        alert(response.data.error || "An error occurred");
+        toastError(response.data.error);
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        alert(error.response.data.error || "An error occurred");
-      } else {
-        alert("An error occurred while submitting the comment");
-      }
+      // toastError(error.response?.data?.error || "An error occurred");
     }
   };
 
   const handleBookmark = async () => {
-    if (!isAuthenticate) {
-      navigation("/login");
+    if (!isAuthenticated) {
+      navigate("/login");
       return;
     }
 
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/bookmark/toggle`,
-        {
-          user_id: user?.id,
-          post_id: post_id,
-        },
+        { user_id: user?.id, post_id },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -125,70 +97,75 @@ function BlogPost() {
       );
 
       if (response.data.success) {
-        setIsBookmarked((prev) => !prev);
+        setIsBookmarked(response.data.isBookmark);
         toast({
-          title: response.data?.isBookmark
-            ? "Removed from Bookmarks"
-            : "Added to Bookmarks",
+          title: response.data.isBookmark
+            ? "Added to Bookmarks"
+            : "Removed from Bookmarks",
           description: response.data.message,
-          variant: response.data?.isBookmark ? "destructive" : "default",
+          variant: response.data.isBookmark ? "default" : "destructive",
         });
       } else {
-        toast({
-          title: "Error",
-          description: response.data.message || "An error occurred",
-          variant: "destructive",
-        });
+        toastError(response.data.message);
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast({
-          title: "Error",
-          description: error.response.data.error || "An error occurred",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "An error occurred while handling the bookmark",
-          variant: "destructive",
-        });
-      }
+      // toastError(error.response?.data?.error || "An error occurred");
     }
   };
 
+  const toastError = (message: string) => {
+    toast({
+      title: "Error",
+      description: message,
+      variant: "destructive",
+    });
+  };
+
+  const renderHtmlContent = (htmlString: string) => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, "text/html");
+    return Array.from(doc.body.children).map((element, index) => (
+      <div
+        key={index}
+        dangerouslySetInnerHTML={{ __html: element.outerHTML }}
+      />
+    ));
+  };
+
+  if (isLoading || !post_id) return <div>Loading...</div>;
+  if (isError || !post)
+    return <div>Error: {error?.message || "Post not found"}</div>;
+
   return (
-    <div className="space-y-7 w-full mb-36 ">
+    <div className="space-y-7 w-full mb-36">
       <div className="w-full mx-auto md:mx-0 md:max-w-6xl">
         <div className="flex flex-col gap-y-5 md:gap-y-6 lg:gap-y-10">
-          <div className="w-full">
-            <img
-              src={post?.thumbnail}
-              alt="Thumbnail"
-              className="w-full h-auto md:h-full object-cover"
-            />
-          </div>
+          <img
+            src={post?.thumbnail}
+            alt="Thumbnail"
+            className="w-full h-auto md:h-full object-cover"
+          />
         </div>
       </div>
+
       <div className="flex flex-col lg:flex-row md:gap-x-16 md:mx-0">
         <div className="space-y-10 lg:basis-[70%] xl:basis-[80%]">
-          <p className="text-2xl md:text-3xl lg:text-5xl font-bold">
+          <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold">
             {post?.title}
-          </p>
+          </h1>
+
           <div className="flex justify-between">
             <div className="flex gap-x-3 items-center">
-              <div className="rounded-full border-[1px] border-black w-10 h-10 overflow-hidden">
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
-                  alt="Author"
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
+              <img
+                src={user?.avatar_url}
+                alt="Author"
+                className="rounded-full border-[1px] border-black w-10 h-10 object-cover"
+                referrerPolicy="no-referrer"
+              />
               <div className="text-sm">
-                <p>{user?.familyName + " " + user?.givenName}</p>
+                <p>{`${user?.familyName} ${user?.givenName}`}</p>
                 <p className="text-gray-500">
-                  {format(post.createDate, "dd.MM.yyyy")}
+                  {format(new Date(post.createDate), "dd.MM.yyyy")}
                 </p>
               </div>
             </div>
@@ -208,7 +185,7 @@ function BlogPost() {
           </div>
 
           <section className="space-y-3">
-            {htmlStringToElements(post?.content)}
+            {renderHtmlContent(post?.content)}
           </section>
 
           <div className="flex items-center gap-x-2 mt-4">
@@ -217,29 +194,29 @@ function BlogPost() {
               url={shareUrl}
               onShareWindowClose={() => handleShare("facebook")}
             >
-              <FacebookIcon size={32} round={true} />
+              <FacebookIcon size={32} round />
             </FacebookShareButton>
             <TwitterShareButton
               url={shareUrl}
-              onShareWindowClose={() => handleShare("twitter")}
               title={post.title}
+              onShareWindowClose={() => handleShare("twitter")}
             >
-              <TwitterIcon size={32} round={true} />
+              <TwitterIcon size={32} round />
             </TwitterShareButton>
             <LinkedinShareButton
               url={shareUrl}
-              onShareWindowClose={() => handleShare("linkedin")}
               title={post.title}
+              onShareWindowClose={() => handleShare("linkedin")}
             >
-              <LinkedinIcon size={32} round={true} />
+              <LinkedinIcon size={32} round />
             </LinkedinShareButton>
           </div>
 
           <section className="lg:basis-[10%]">
             <div className="space-y-3">
               <h2 className="text-2xl">Comments</h2>
-              {isAuthenticate ? (
-                <div className="h-[80px] flex w-full items-center space-x-2 ">
+              {isAuthenticated ? (
+                <div className="h-[80px] flex w-full items-center space-x-2">
                   <Input
                     type="text"
                     placeholder="Type your comment..."
@@ -247,15 +224,12 @@ function BlogPost() {
                     onChange={(e) => setComment(e.target.value)}
                     value={comment}
                   />
-
-                  <Button type="submit" onClick={submitComment}>
-                    Submit
-                  </Button>
+                  <Button onClick={submitComment}>Submit</Button>
                 </div>
               ) : (
                 <p
-                  className="underline hover:cursor-pointer"
-                  onClick={() => navigation("/login")}
+                  className="underline cursor-pointer"
+                  onClick={() => navigate("/login")}
                 >
                   Login to write a comment
                 </p>
@@ -272,7 +246,7 @@ function BlogPost() {
           </React.Suspense>
         </div>
 
-        <div className="space-y-10 ">
+        <div className="space-y-10">
           <React.Suspense fallback={<div>Loading...</div>}>
             <PopularPost />
             <Categories />
