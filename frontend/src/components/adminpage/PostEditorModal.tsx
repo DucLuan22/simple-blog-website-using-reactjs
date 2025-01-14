@@ -208,7 +208,7 @@ function PostEditorModal({
               )}
             </label>
 
-            <div className="self-start pr-3 overflow-y-auto break-words max-h-[200px] max-w-full lg:max-w-[300px] xl:max-h-[400px] 2xl:max-w-[480px]">
+            <div className="self-start pr-3 overflow-y-auto break-words max-h-[200px] max-w-full lg:max-w-[300px] xl:max-h-[400px] 2xl:max-w-[480px] ql-editor">
               {content ? (
                 htmlStringToElements(content)
               ) : (

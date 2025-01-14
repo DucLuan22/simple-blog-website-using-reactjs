@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import useAuthenticatedRequest from "../hooks/useAuthenticate";
 import React from "react";
+import { Toaster } from "@/components/ui/toaster";
 
 // Optimize rendering of Navbar and Footer components
 const MemoizedNavbar = React.memo(Navbar);
@@ -21,6 +22,7 @@ function Root() {
       <MemoizedNavbar />
       <Outlet />
       {!hideFooter && <MemoizedFooter />}
+      <Toaster />
     </div>
   );
 }

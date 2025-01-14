@@ -8,6 +8,7 @@ import { useCounterStore } from "./store.ts";
 import Root from "./routes/root.tsx";
 import ProfileRoutes from "./routes/ProfileRoutes.tsx";
 import { ToastProvider } from "@radix-ui/react-toast";
+import { Toaster } from "./components/ui/toaster.tsx";
 
 const Contact = lazy(() => import("./pages/contact-page/Contact.tsx"));
 const Error = lazy(() => import("./pages/error-page/Error.tsx"));

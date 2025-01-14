@@ -5,19 +5,12 @@ function Footer() {
     <div className="items-center flex md:flex-row flex-col md:justify-between gap-y-4 md:gap-y-0">
       <div className="md:basis-2/3 space-y-5">
         <div className="flex gap-x-3 items-center justify-center md:justify-start">
-          <div className="rounded-[100%] border-[1px] border-black w-[50px] overflow-hidden">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTb3SrkE0mHISTLOlX7loaRSitX5-jWw3-6cGIsm11duw&s"
-              alt="Technology"
-            />
-          </div>
-          <div className="text-2xl md:text-lg font-semibold">luanblog</div>
+          <div className="text-4xl md:text-lg font-semibold">luanblog</div>
         </div>
-        <p className="mx-5 md:mx-0">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum
-          sunt quaerat iure quas officia distinctio aliquam consequatur
-          quibusdam, ab nemo nam autem odio. Tempora accusamus est unde dolore
-          cumque ex?
+        <p className="mx-5 md:mx-0 leading-9 text-xl">
+          Discover insights, stories, and inspiration on LuanBlog, your go-to
+          destination for engaging content and fresh perspectives. Stay
+          connected, stay informed.
         </p>
 
         <div className="flex justify-center md:justify-start gap-x-10 md:gap-x-3">

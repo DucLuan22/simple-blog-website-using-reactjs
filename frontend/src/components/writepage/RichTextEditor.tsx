@@ -1,6 +1,7 @@
 import React from "react";
 import ReactQuill from "react-quill";
-
+import "react-quill/dist/quill.snow.css"; // Import Quill's default styles
+import "../../index.css";
 interface RichTextEditorProps {
   value: string;
   onChange: (content: string) => void;
@@ -9,7 +10,7 @@ interface RichTextEditorProps {
 
 function RichTextEditor({ value, onChange, quillRef }: RichTextEditorProps) {
   return (
-    <div>
+    <div className="rich-text-editor-container">
       <ReactQuill
         theme="snow"
         ref={quillRef}
@@ -52,7 +53,7 @@ function RichTextEditor({ value, onChange, quillRef }: RichTextEditorProps) {
           "video",
           "code-block",
         ]}
-        className="lg:max-w-[600px] xl:max-w-[800px] 2xl:max-w-[1000px] text-foreground "
+        className="lg:max-w-[600px] xl:max-w-[800px] 2xl:max-w-[1000px] text-foreground"
       />
     </div>
   );

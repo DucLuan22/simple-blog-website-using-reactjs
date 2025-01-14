@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import "../../index.css";
 import "react-quill/dist/quill.snow.css";
-
 import useCategory from "@/hooks/useCategories";
 import { useCounterStore } from "@/store";
 import { uploadPost } from "@/hooks/uploadPost";

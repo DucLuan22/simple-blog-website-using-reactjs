@@ -100,3 +100,33 @@ h2 {
   -ms-overflow-style: none; /* Internet Explorer 10+ */
   scrollbar-width: none; /* Firefox */
 }
+
+/* Tailwind CSS styles for Quill's editor */
+
+.ql-editor ol {
+  @apply list-decimal pl-2;
+}
+
+.ql-editor ul {
+  @apply list-disc pl-2;
+}
+
+.ql-editor li {
+  @apply mb-2;
+}
+
+.ql-indent-1 {
+  @apply pl-6;
+}
+
+.ql-indent-2 {
+  @apply pl-12;
+}
+
+.ql-indent-3 {
+  @apply pl-16;
+}
+
+.ql-indent-4 {
+  @apply pl-24;
+}

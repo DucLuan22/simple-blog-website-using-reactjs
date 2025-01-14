@@ -41,10 +41,8 @@ function UsersPickCard({
           {title}
         </h2>
 
-        <div className="flex justify-start lg:justify-between text-xs space-x-1">
-          <span className="truncate">{author}</span>
-          <span> - </span>
-          <span className="text-gray-400 flex-shrink-0">{formattedDate}</span>
+        <div className="flex text-xs space-x-2">
+          {author} - <span className="text-gray-500 ml-1">{formattedDate}</span>
         </div>
       </div>
     </div>

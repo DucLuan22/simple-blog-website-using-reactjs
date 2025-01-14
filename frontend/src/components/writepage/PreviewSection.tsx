@@ -42,7 +42,7 @@ const PreviewSection: React.FC<PostPreviewProps> = React.memo(
             />
           </div>
           <p className="text-xl lg:text-2xl xl:text-3xl font-bold">{title}</p>
-          <div className="text-2xl">{parsedContent}</div>
+          <div className="text-2xl ql-editor">{parsedContent}</div>
         </div>
       </section>
     );

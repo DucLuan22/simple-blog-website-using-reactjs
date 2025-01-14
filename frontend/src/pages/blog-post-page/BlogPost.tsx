@@ -184,7 +184,7 @@ function BlogPost() {
             </div>
           </div>
 
-          <section className="space-y-3">
+          <section className="space-y-3 ql-editor">
             {renderHtmlContent(post?.content)}
           </section>
 
