@@ -42,6 +42,7 @@ function BlogPost() {
   const { mutate: createShare } = useCreateShare();
   const shareUrl = window.location.href;
 
+  console.log(post?.user_id);
   const handleShare = (platform: string) => {
     if (!post_id) {
       return null;

@@ -22,7 +22,6 @@ const Sidebar = ({ children }: SidebarProps) => {
 
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
       <div
         className={`fixed inset-y-0 z-50 transition-transform transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"

@@ -73,6 +73,7 @@ export class PostService {
         'posts.updateDate AS updateDate',
         'user.givenName AS givenName',
         'user.familyName AS familyName',
+        'posts.user_id AS user_id',
         'category.category_name AS category_name',
         'SUM(postViews.view_count) AS views',
       ])

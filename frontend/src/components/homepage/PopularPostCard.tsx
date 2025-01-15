@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface PopularPropsProps {
   post_id: string;
@@ -18,7 +19,7 @@ function PopularPostCard({
   givenName,
 }: PopularPropsProps) {
   return (
-    <div className="space-y-3" key={post_id}>
+    <Link className="space-y-3" key={post_id} to={`/posts/${post_id}`}>
       <span className="bg-orange-400 p-y-3 px-4 rounded-3xl">
         {category_name}
       </span>
@@ -30,7 +31,7 @@ function PopularPostCard({
           {format(createDate, "dd.MM.yyyy")}
         </span>
       </span>
-    </div>
+    </Link>
   );
 }
 
