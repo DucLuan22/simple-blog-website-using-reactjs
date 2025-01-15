@@ -1,10 +1,13 @@
+import ProfileDeleteModal from "@/components/profile-page/ProfileDeleteModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCounterStore } from "@/store";
+import { useState } from "react";
 
 function Profile() {
   const user = useCounterStore((state) => state.user);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   return (
     <div className="w-full h-full z-10">
@@ -49,10 +52,19 @@ function Profile() {
           </div>
           <div className="space-x-2">
             <Button>Save</Button>
-            <Button variant={"destructive"}>Delete</Button>
+            <Button
+              variant={"destructive"}
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              Delete
+            </Button>
           </div>
         </div>
       </div>
+      <ProfileDeleteModal
+        onOpenChange={setDeleteDialogOpen}
+        open={isDeleteDialogOpen}
+      />
     </div>
   );
 }

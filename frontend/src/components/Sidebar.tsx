@@ -29,12 +29,6 @@ const Sidebar = ({ children }: SidebarProps) => {
         } bg-white shadow-lg w-64 lg:translate-x-0 lg:static lg:w-64`}
       >
         <div className="p-6 mt-8 lg:mt-0">
-          {/* Placeholder for user profile */}
-          <div className="mb-6 text-center">
-            <div className="h-16 w-16 bg-gray-800 rounded-full mx-auto"></div>
-            <p className="mt-4 text-gray-800 font-semibold">User Name</p>
-          </div>
-
           {/* Navigation links */}
           <nav className="mt-6">
             <ul className="space-y-2 text-gray-600 font-sans font-semibold">

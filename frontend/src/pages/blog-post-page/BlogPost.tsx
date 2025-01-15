@@ -184,8 +184,10 @@ function BlogPost() {
             </div>
           </div>
 
-          <section className="space-y-3 ql-editor">
-            {renderHtmlContent(post?.content)}
+          <section className="">
+            <div className="ql-editor space-y-3">
+              {renderHtmlContent(post?.content)}
+            </div>
           </section>
 
           <div className="flex items-center gap-x-2 mt-4">
